@@ -1,0 +1,122 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.inner_sub_box { margin-bottom:20px;}
+</style>
+<div class="wrapper_house clearfix" id="app">
+	<item-cat v-for="(item,index) in Cat_arrList" :key="item.Categoryid" :loupanid="Loupanid" :index_parent="index" :item2="item.imgList" :item="item"></item-cat>
+	
+</div>
+<div style="display:none;">
+	<img id="image" src="" />
+	<form enctype="multipart/form-data" method="post" id="fileForm">
+		<input name="table_id" type="hidden" value="house_loupan_pic" />
+		<input name="id" id="id" type="hidden" value="" />
+		<input name="classid" id="classid" type="hidden" value="" />
+		<input id="dir" name="dir" type="hidden" value="" />
+		<input id="state" name="state" type="hidden" value="" />
+		<input id="filewidth" name="filewidth" type="hidden" value="900" />
+		<input id="fileheight" name="fileheight" type="hidden" value="0" />	
+		<input id="smallfilewidth" name="smallfilewidth" type="hidden" value="195" />
+		<input id="smallfileheight" name="smallfileheight" type="hidden" value="145" />
+		<input type="hidden" id="Base64" name="Base64" value="1" />
+		<input type="hidden" id="Base64Filename" name="Base64Filename" value="" />
+		<input type="hidden" id="imgFile" name="imgFile" value="" />
+		<input type="file" multiple id="Base64File" onChange="handler(event)" style="display:none;" />
+		<input type="submit" id="fileFormsubmit" value="提交" />
+	</form>
+</div>
+<input type="hidden" id="indexParent" value="" />
+<script type="text/x-template" id="page-template">
+<div class="inner_sub_box">
+	<div class="hd">{{item.Chrcategory}}</div>
+	<div id="xiangce" class="my_prop_imgitem_node clearfix">
+		
+		<item-img v-for="(tag, index) in item2" :key="tag.Id" :tag="tag" :index="index" :index_parent="index_parent" :sid="loupanid" :length="item2.length"></item-img>
+		<div class="upimgFileBtnNode"><div id="pageLoaderNode"><span id="pageLoader">loadding</span></div><img src="{$Default_tplPath}images/upimg.png" :data-id="item.Categoryid"  :data-indexParent="index_parent" class="upimgFileBtn imgview" :alt="index_parent" /></div>
+	</div>
+</div>
+</script>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$Default_tplPath}js/cropper/bootstrap.min.js"></script>
+<script src="{$Default_tplPath}js/cropper/cropper.min.js"></script>
+<script src="{$atplPath}js/vue/upLoadImg2018_house.js"></script>
+<script>
+window['table_id'] = 'house_loupan_pic';
+var Item_cat = {
+	props: ['item','item2','loupanid','index_parent'],
+	data:function(){
+		return {
+			ImgFileList:[]
+		}
+	},
+	components: {
+		'item-img':Item_img
+	},
+	methods:{
+		
+	},
+	template: '#page-template'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item-cat':Item_cat
+	},
+	data: {
+		classid:'',
+		Cat_arrList:[]
+	},
+	methods:{
+		getData:function(){
+			var that = this,url='/api/loupan/SearchLoupanPicInfo?id='+that.Loupanid+'&timer='+Math.random();
+			$.ajax({'url':url,success:function(data){
+				var i=0,i_len=data.length,k=0,k_len=that.Cat_arrList.length,arr=[];
+				
+				for(k=0;k<k_len;k++){
+					Vue.set(that.Cat_arrList[k],'imgList',[]);
+					for(i=0;i<i_len;i++){
+						if(data[i].PicType === that.Cat_arrList[k].Categoryid){
+							that.Cat_arrList[k].imgList.push(data[i]);
+						}
+					}
+				}
+				setTimeout(function(){
+					upLoad_init();
+				},100);
+			}});
+		},
+		getTagData:function(styleid,sid,forname){
+			var that = this,url='/api/Category/SearchCategory';
+			$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+				var i=0,len=data[sid].length,arr=[];
+				if(that[forname]!==''){
+					arr = that[forname];
+				}
+				for(;i<len;i++){
+					that[forname].push(data[sid][i]);
+				}
+				that.getData();
+			}});
+		},
+		setmobileSelect:function(){
+			var that=this;
+			that.getTagData('1','32','Cat_arrList');
+		}
+	},
+	created:function(){
+		var that = this;
+		var url_obj = $.url(window.location.href).param();
+		if(!!url_obj['Loupanid'] && url_obj['Loupanid']!==''){
+			that.Loupanid = url_obj['Loupanid'];
+			that.setmobileSelect();
+			$('#id').val(url_obj['Loupanid']);
+		}else{
+			MSGwindowShow('house','1','页面加载错误，缺少小区ID！','xiaoqu','');
+		}
+	},
+});
+</script>

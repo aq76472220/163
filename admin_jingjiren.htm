@@ -1,0 +1,71 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" /> 
+<script src="{$atplPath}js/cookies.js"></script>
+<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+    {
+	    setCookie("delurl",window.location.href);
+        location.href = "jingjiren.aspx?action=del&ID=" + id
+     }
+}
+function delAll(o,str,astr)
+{
+	if ( confirm("您确定要"+astr+"所有选中的信息吗？"))
+	{
+		setCookie("delurl",window.location.href);
+		document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+	}
+}
+</script>
+<div class="wrapper">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li id="purl"><a href="?colname=">全部<em>{$total$}</em></a></li>
+			<li id="purl0"><a href="?colname=0">新申请认证<em>{$num1$}</em></a></li>
+			<li id="purl1"><a href="?colname=1">认证<em>{$num2$}</em></a></li>
+			<li id="purl2"><a href="?colname=2">非认证<em>{$num3$}</em></a></li>
+			<div class="right" style="padding:0;"><a href="?action=add" class="global2_btn_orange global2_btn_add">添加经纪人</a></div>
+		</ul>
+	</div>
+	<form name="form2" method="post" action="" style="display:block; padding:5px 0 20px;">
+		<div style="display:none;">按状态查找： <input type="radio" name="colname" value="" {$colname}/> 全部 <input type="radio" name="colname" value="0" {$colname0}/> 新申请<input type="radio" name="colname" value="1" {$colname1}/> 认证 <input type="radio" name="colname" value="2" {$colname2}/> 非认证</div>
+		按姓名/电话搜索：
+		<input name="KeyWord" type="text"  value="{$keyword}" size="20">　按服务区域显示：{$category} <input type="submit" name="Submit3" class="global2_btn" style="line-height:26px;" value="确定">
+	</form>
+	
+	<form name="form" id="form" method="post" action="?action=del">
+	<input type="hidden" name="styleid" id="styleid" value="1">
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr>
+			<th>选择</th>
+			<th>昵称</th>
+			<th>经纪人姓名</th>
+			<th>所属中介公司门店</th>
+			<th>状态</th>
+			<th>属性</th>
+			<th>加入时间</th>
+			<th>操作</th>
+		</tr>
+		<tag:Loop ListType="listjingjiren" RecType="New" PageSize="50" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_jingjiren_Tr.htm" />
+	</table>
+	<div style="margin-top:10px;">
+		<input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">全选　<a href="javascript:delAll(this,'1','认证');" class="global2_btn_orange">通过认证</a> <a href="javascript:delAll(this,2,'取消认证');" class="global2_btn_orange">取消认证</a> <a href="javascript:delAll(this,'3','推荐');" class="global2_btn_blue">设为推荐</a> <a href="javascript:delAll(this,'4','取消推荐');" class="global2_btn_blue">取消推荐</a> <a href="javascript:delAll(this,'5','删除经纪人和房源');" class="global2_btn">删除经纪人和房源</a> <a href="javascript:delAll(this,'6','删除经纪人保留房源');" class="global2_btn">删除经纪人保留房源</a>
+		
+	</div>
+	</form>
+	<div style="padding:20px 0;">{$PageSplit}</div>
+</div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script>
+var current_host = window.location;
+var url_obj = $.url(current_host).param();
+if(!!url_obj['colname'] && url_obj['colname'] !== ''){
+	$('#purl'+url_obj['colname']).addClass('cur');
+}else{
+	$('#purl').addClass('cur');
+}
+</script>
+</body></html>

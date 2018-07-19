@@ -1,0 +1,253 @@
+
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<style>
+</style>
+<form id="myForm">
+<div class="wrapper_house clearfix" id="app">
+	<div class="inner_sub_box">
+		<div class="hd">小区基本资料（必填）</div>
+			<input type="hidden" name="Loupanid" v-model="Loupanid" />
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">小区名称：</span>
+					<div class="con">
+						<input type="text" name="Chrloupan" v-model="Chrloupan" placeholder=" " class="int inp-form-sz inp3">  
+					</div>
+				</li>
+				<li>
+					<span class="txt">小区位置：</span>
+					<div class="con">
+						<input type="hidden" name="Quyuid" id="Quyuid" v-model="Quyuid" />
+						<input type="hidden" name="Diduanid" id="Diduanid" v-model="Diduanid" />
+						<div class="sel_box" @mouseenter="QuyuidShow=true" @mouseleave="QuyuidShow=false">{{QuyuidName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!QuyuidShow">
+								<item-select v-for="tag in QuyuidList" :key="tag.Categoryid" :tag="tag" forid="Quyuid" fortxt="QuyuidName" fotaction="QuyuidShow" is2="Diduanid"></item-select>
+							</div>
+						</div><div class="sel_box" @mouseenter="if(DiduanidList.length!='0') DiduanidShow=true" @mouseleave="DiduanidShow=false">{{DiduanidName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!DiduanidShow">
+								<item-select v-for="tag in DiduanidList" :key="tag.Categoryid" :tag="tag" forid="Diduanid" fortxt="DiduanidName" fotaction="DiduanidShow" is2=""></item-select>
+							</div>
+						</div><input type="text" name="Chraddress" v-model="Chraddress" placeholder="请输入" class="int inp-form-sz inp1 inp5"><a href="javascript:void(0)" class="a-map" onClick="return biaozhu_2018();"></a>
+						<input type="hidden" name="Loupan_x" v-model="Shop_x">
+						<input type="hidden" name="Loupan_y" v-model="Shop_y">
+						<input type="hidden" name="Loupan_z" v-model="Shop_z">
+					</div>
+				</li>
+				<li>
+					<span class="txt">封面图片：</span>
+					<div class="con up_img">
+						<input type="hidden" name="Filepath" v-model="Filepath" />
+						<span class="po_re" v-show="Filepath!=''"><img :src="'../'+Filepath" /><span class="reup" @click="reupload('Filepath')">重新上传</span></span>
+						<span class="" v-show="Filepath==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=Filepath&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+					</div>
+				</li>
+				<li>
+					<span class="txt">小区类型：</span>
+					<div class="con">
+						<input type="hidden" name="Categoryids" v-model="Categoryids" />
+						<div class="sel_box" @mouseenter="CategoryidsShow=true" @mouseleave="CategoryidsShow=false">{{CategoryidsName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!CategoryidsShow">
+								<item-select v-for="tag in CategoryidsList" :key="tag.Categoryid" :tag="tag" forid="Categoryids" fortxt="CategoryidsName" fotaction="CategoryidsShow" is2=""></item-select>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">建筑形态：</span>
+					<div class="con">
+						<input type="hidden" name="BuildingType" v-model="BuildingType" />
+						<div class="sel_box" @mouseenter="BuildingTypeShow=true" @mouseleave="BuildingTypeShow=false">{{BuildingTypeName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!BuildingTypeShow">
+								<item-select v-for="tag in BuildingTypeList" :key="tag.Categoryid" :tag="tag" forid="BuildingType" fortxt="BuildingTypeName" fotaction="BuildingTypeShow" is2=""></item-select>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">建筑年代：</span>
+					<div class="con">
+						<input type="text" name="Niandai" v-model="Niandai" placeholder=" " class="int inp-form-sz inp7">   
+					</div>
+				</li>
+				<li>
+					<span class="txt">开发商：</span>
+					<div class="con">
+						<input type="text" name="Chrsupply" v-model="Chrsupply" placeholder=" " class="int inp-form-sz inp7">   
+					</div>
+				</li>
+
+				<li>
+					<span class="txt">当前均价：</span> 
+					<div class="con"><div class="box"><input type="number" name="Avgprice" v-model="Avgprice" placeholder="" class="int inp-form-sz inp1 inp5"> <span class="txt2">元/平米</span></div> <span class="zhu2 zhu1">请输入均价</span></div>
+				</li>
+			</ul>
+			<input type="submit" value="确认提交" class="btn-form ani">
+		
+	</div>
+ 
+</div>
+</form>
+<div class="map_iframe" id="map_iframe" data-isloaded="0" style="display:none;">
+	<div id="allmap"></div>
+	<div class="bottom">
+		<div class="left"><input type="text" class="search_txt" id="search_txt" /><button type="button" class="search_btn" onClick="get_point()">查找</button></div>
+		<div class="right"><a href="javascript:void(0);" onClick="return bz_ok();" class="btn_blue">确定标注</a>　<a href="javascript:void(0);" onClick="return bz_cancel();" class="btn_gray">取消</a></div>
+	</div>
+</div>
+<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={$ggmapkey}"></script>
+<script type="text/javascript" src="//developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+
+<script>
+window['CITY'] = '{$city}';
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item-s': Item_s,
+		'item-tag':Item_tag,
+		'item-tese':Item_tese,
+		'item-select':Item_select
+	},
+	data: {
+		Avgprice:'',
+		Chrloupan:'',
+		Filepath:'',
+		Loupanid:'',
+		Chrsupply:'',
+		Intorder:'0',
+		Niandai:'',
+		//选择器
+		BuildingTypeShow:false,
+		BuildingType:'0',
+		BuildingTypeName:'请选择',
+		BuildingTypeList:[],
+		CategoryidsShow:false,
+		Categoryids:'0',
+		CategoryidsName:'请选择',
+		CategoryidsList:[],
+		QuyuidShow:false,
+		Quyuid:'0',
+		QuyuidName:'请选择区域',
+		QuyuidList:[],
+		DiduanidShow:false,
+		Diduanid:'0',
+		DiduanidName:'请选择',
+		DiduanidList:[],
+		//小区搜索
+		Chraddress:'',
+		Shop_x:0,
+		Shop_y:0,
+		Shop_z:0
+		
+	},
+	methods:{
+		reupload:function(forname){
+			var that = this;
+			that[forname]='';
+		},
+		getData:function(sid){
+			var that = this;
+			var url = '/api/XiaoQu/GetXiaoQuInfoByStatus?xiaoQuid='+that.Loupanid+'&timer='+Date.parse(new Date());
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					return;
+				}
+				var Data = res.data;
+				if(!Data.Filepath){Data.Filepath = '';}
+				that.Shop_x = Data.Loupan_x;
+				that.Shop_y = Data.Loupan_y;
+				
+				for(var k in Data){
+					that[k] = Data[k];
+				}
+				that.setmobileSelect();
+			}).catch(function(err){that.ifLoadding = false;alert('抱歉，加载失败了！');});
+		},
+		getTagData:function(styleid,sid,forname){
+			var that = this,url='';
+			if(styleid === '0'){
+				url = '/api/HouseCategory/SearchHouseCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					
+				}});
+			}else{
+				url = '/api/Category/SearchCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					var i=0,len=data[sid].length,arr=[];
+					if(that[forname]!==''){
+						arr = that[forname];
+					}
+					console.info(arr);
+					for(;i<len;i++){
+						for(var k = 0;k<arr.length;k++){
+							if(arr[k] == data[sid][i].Categoryid){
+								data[sid][i].checked=true;
+							}
+						}
+						that[forname+'List'].push(data[sid][i]);
+					}
+				}});
+			}
+		},
+		setmobileSelect:function(){
+			var that=this;
+			getHouseCatJSON('1','0','Quyuid',setQuyuSel_vue);
+			getHouseCatJSON('1','12','Categoryids',setQuyuSel_vue);
+			getHouseCatJSON('1','33','BuildingType',setQuyuSel_vue);
+		},
+		selectAllTag:function(forname){
+			var that = this;
+			var arr = that[forname+'List'];
+			that[forname+'_allin'] = !that[forname+'_allin'];
+			for(var i=0;i<arr.length;i++){
+				Vue.set(arr[i], 'checked', that[forname+'_allin']);
+			}
+		}
+	},
+	created:function(){
+		var that = this;
+		var url_obj = $.url(window.location.href).param();
+		var formUrl = '';
+		if(!!url_obj['Loupanid'] && url_obj['Loupanid']!==''){
+			that.Loupanid = url_obj['Loupanid'];
+			that.getData();
+		}else{
+			MSGwindowShow('house','0','页面加载错误，缺少小区ID！','','');
+			
+		}
+		
+		$('#myForm').loadForm('/api/XiaoQu/XiaoQuBaseInfoUpdate',function(myForm){
+			if(myForm[0].Chrloupan.value===''){
+				MSGwindowShow('house','0','请输入小区名称！','','');
+				return false;
+			}
+			if(myForm[0].Quyuid.value==='0'||myForm[0].Quyuid.value===''){
+				MSGwindowShow('house','0','请选择小区所在的区域！','','');
+				return false;
+			}
+			if(myForm[0].Chraddress.value===''){
+				MSGwindowShow('house','0','请输入小区详细地址！','','');
+				return false;
+			}
+			if(myForm[0].Loupan_x.value==='0'){
+				MSGwindowShow('house','0','请给小区标注一下地理位置哦！','','');
+				return false;
+			}
+			return true;
+		},function(myForm,data){
+			MSGwindowShow('house','1','提交成功！','xiaoqu','');
+			
+		});
+	},
+});
+function uploadsuccess(sid,surl,num){
+	mypage[num] = surl;
+}
+</script>

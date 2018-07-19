@@ -1,0 +1,44 @@
+﻿<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+<tr>
+<td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+<td width="100%" background="{$atplPath}Images/r_0.gif">
+  <table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td>&nbsp;经纪人级别与图标(图片存在放template/pc/default/images/house/文件夹)</td>
+	  <td align="right">&nbsp;</td>
+    </tr>
+  </table>
+</td>
+<td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+</tr>
+<tr>
+<td></td>
+<td>
+<form name="form" method="post" action="?action=dengjisave" style="margin:0">
+<table align="center" cellpadding="4" width="100%" cellspacing="1" class="toptable grid" border="1">
+				<tr  align="center">
+				<td width="50" class="category">ID</td>
+				<td class="category">等级名称</td><td class="category">最少房源数量</td>
+				<td class="category" colspan=2>等级图片</td>
+				</tr>
+				<tag:Loop ListType="Listdengjihouse" RecType="New" PageSize="16" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_dengji_Tr.htm" />
+				
+				
+	<tr > 
+       <td height="24" align="center" bgcolor="#FFFFFF" colspan=15>
+			<input type="submit" name="Submit" value="确定提交"> &nbsp; 
+        <input name="Reset" type="reset" id="Reset" value="取消重写">
+	  </td>
+    </tr>
+</table>
+</form>
+<!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+</body></html>

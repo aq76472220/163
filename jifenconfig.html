@@ -1,0 +1,221 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+	.pr60{padding-right: 60px!important;}
+	.mb20{margin-bottom: 20px!important;} 
+</style>
+<div class="wrapper_house clearfix"  id='app'>
+	<div class="col_main"><div class="main_wrap">
+		<div class="inner_sub_box">
+		<div class="hd">积分配置</div>
+		
+		<form action="" @submit.prevent="submitHandle()"> 
+			<ul class="ul-form clearfix">  
+				<li>
+					<span class="txt">收费方式：</span>
+					<div class="con">
+						<input type="hidden" name="PayType" v-model= 'PayType'>
+						<label class="open_close2" :class="PayType == 0 ?  'on' : ''" @click = 'PayTypeHandle(0)'>{{jifenname}}</label>
+						<label class="open_close2" :class="PayType == 1 ?  'on' : ''" @click = 'PayTypeHandle(1)'>{{daijinname}}</label>
+					</div>
+				</li>
+				<li>
+					<span class="txt">房源置顶：</span>
+					<div class="con">
+						<div class="box mb20"><input type="number" name=" "  class="int inp-form-sz inp2 pr60" v-model='PayDetails_1_1.Money'><span class="txt2">{{PayTypeName}}/1天</span></div>
+						<div class="box mb20"><input type="number" name=" "  class="int inp-form-sz inp2 pr60" v-model='PayDetails_1_3.Money'><span class="txt2">{{PayTypeName}}/3天</span></div>
+						<div class="box mb20"><input type="number" name=" "  class="int inp-form-sz inp2 pr60" v-model='PayDetails_1_7.Money'><span class="txt2">{{PayTypeName}}/7天</span></div> 
+						<div class="box mb20"><input type="number" name=" "  class="int inp-form-sz inp2 pr60" v-model='PayDetails_1_15.Money'><span class="txt2">{{PayTypeName}}/15天</span></div> 
+						<div class="box mb20"><input type="number" name=" "  class="int inp-form-sz inp2 pr60" v-model='PayDetails_1_30.Money'><span class="txt2">{{PayTypeName}}/30天</span></div> 
+					</div>
+				</li> 
+
+				<li>
+					<span class="txt">手动刷新：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Ting" class="int inp-form-sz inp2 pr60" v-model='HouseManualRefresh' ><span class="txt2">{{PayTypeName}}/1次</span></div>
+						<span class="zhu1 zhu2">0表示免费</span>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt">智能刷新：</span>
+					<div class="con">
+						<div class="box mb20"><input type="number" name=" " class="int inp-form-sz inp2 pr60" v-model='PayDetails_2_1.Money'><span class="txt2"  >{{PayTypeName}}/1天</span></div>
+						<div class="box mb20"><input type="number" name=" " class="int inp-form-sz inp2 pr60" v-model='PayDetails_2_3.Money'><span class="txt2" >{{PayTypeName}}/3天</span></div>
+						<div class="box mb20"><input type="number" name=" " class="int inp-form-sz inp2 pr60" v-model='PayDetails_2_7.Money'><span class="txt2"  >{{PayTypeName}}/7天</span></div> 
+						<div class="box mb20"><input type="number" name=" " class="int inp-form-sz inp2 pr60" v-model='PayDetails_2_15.Money'><span class="txt2"  >{{PayTypeName}}/15天</span></div> 
+						<div class="box mb20"><input type="number" name=" " class="int inp-form-sz inp2 pr60" v-model='PayDetails_2_30.Money'><span class="txt2"  >{{PayTypeName}}/30天</span></div> 
+					</div>
+				</li>
+
+				<li>
+					<span class="txt">门店置顶：</span>
+					<div class="con">
+						<div class="box mb20"><input type="number" name="Ting" class="int inp-form-sz inp2 pr60" v-model='PayDetails_3_15.Money'><span class="txt2">{{PayTypeName}}/15天</span></div>
+						<div class="box mb20"><input type="number" name="Wei" class="int inp-form-sz inp2 pr60" v-model='PayDetails_3_30.Money'><span class="txt2">{{PayTypeName}}/30天</span></div>
+						<div class="box mb20"><input type="number" name="Wei" class="int inp-form-sz inp2 pr60" v-model='PayDetails_3_60.Money'><span class="txt2">{{PayTypeName}}/60天</span></div> 
+						<div class="box mb20"><input type="number" name="Wei" class="int inp-form-sz inp2 pr60" v-model='PayDetails_3_90.Money'><span class="txt2">{{PayTypeName}}/90天</span></div>  
+					</div>
+				</li>
+
+				<li>
+					<span class="txt">钻石会员：</span>
+					<div class="con">
+						<div class="box mb20"><input type="number" name="Ting" class="int inp-form-sz inp2 pr60"  v-model='PayDetails_4_1.Money'><span class="txt2">{{PayTypeName}}/1年</span></div>
+						<div class="box mb20"><input type="number" name="Wei"  class="int inp-form-sz inp2 pr60"  v-model='PayDetails_4_2.Money'><span class="txt2">{{PayTypeName}}/2年</span></div>
+						<div class="box mb20"><input type="number" name="Wei"  class="int inp-form-sz inp2 pr60"  v-model='PayDetails_4_3.Money'><span class="txt2">{{PayTypeName}}/3年</span></div>   
+					</div>
+				</li> 
+			
+			</ul>
+			<input type="submit" value="确认提交" class="btn-form ani"> 
+		</form>
+	</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config.html" ><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig.html"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig.html"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig.html" class="on"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig.html"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig.html"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig.html"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig.html"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig.html"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+
+
+<script> 
+		new Vue({
+			el: '#app',
+			data:function (){
+				return {
+					PayType:'', //支付方式
+					PayTypeName:'',//支付方式的名称
+					PayDetails:[], // 获取房源配置项
+					HouseManualRefresh:'',//手动刷新
+					jifenname:'',
+					daijinname:'',
+ 
+					PayDetails_1_1:{},
+					PayDetails_1_3:{},
+					PayDetails_1_7:{},
+					PayDetails_1_15:{},
+					PayDetails_1_30:{},
+
+					PayDetails_2_1:{},
+					PayDetails_2_3:{},
+					PayDetails_2_7:{},
+					PayDetails_2_15:{},
+					PayDetails_2_30:{},
+
+					PayDetails_3_15:{},
+					PayDetails_3_30:{},
+					PayDetails_3_60:{},
+					PayDetails_3_90:{},
+
+					PayDetails_4_1:{},
+					PayDetails_4_2:{},
+					PayDetails_4_3:{},
+
+
+				}
+			},
+			methods:{
+				submitHandle:function(){  //修改房产模块积分配置
+					var that = this
+					var PayDetails =[]; 
+					that.PayDetails.forEach(function(item){
+						PayDetails.push(that['PayDetails_'+item.BizType+'_'+item.time]) 
+					}) 
+
+					axios.post('/api/HouseConfig/UpdateJiFen',{  
+						PayType: that.PayType,
+						HouseManualRefresh: that.HouseManualRefresh,
+						PayDetails: PayDetails
+					}).then(function(res){
+						if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','操作成功了哦！','','');   
+					}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);}); 
+				},
+				PayTypeHandle: function (n){
+					if(n == 1){
+						this.PayType =1;
+						this.PayTypeName=this.daijinname
+					}else {
+						this.PayType =0;
+						this.PayTypeName=this.jifenname
+					}
+				},
+				
+							
+				_getHouseConfig:function(){ //初始化页面获取数据
+					var that = this;
+					axios.get('/api/HouseConfig/GetHouseConfig').then(function(res){
+						if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						//MSGwindowShow('house','0','操作成功了哦！','','');   
+						if(res.data.PayType==0){
+							that.PayTypeName=that.jifenname;
+							that.PayType=0;
+						}else if(res.data.PayType==1){
+							that.PayTypeName=that.daijinname;
+							that.PayType=1;
+						} 
+
+						that.HouseManualRefresh =res.data.HouseManualRefresh
+						that.PayDetails = res.data.PayDetails  
+						that.PayDetails.forEach(function(item, index){ 
+							that['PayDetails_'+item.BizType+'_'+item.time].BizType = item.BizType;
+							that['PayDetails_'+item.BizType+'_'+item.time].time = item.time;
+							that['PayDetails_'+item.BizType+'_'+item.time].Money = item.Money;   
+						});
+
+						that._getConfig()
+
+					}).catch(function(err){
+						MSGwindowShow('house','0','操作失败了！','','');console.log(err);
+					});
+				},
+
+				_getConfig:function(){ // 获取金币代金币名称
+					var that = this;
+					axios.get('/api/SiteConfig/GetConfig').then(function(res){
+						if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						//MSGwindowShow('house','0','操作成功了哦！','',''); 
+						that.jifenname=res.data.jifenname;
+						that.daijinname=res.data.daijinname; 
+						if(that.PayType==0){
+							that.PayTypeName=that.jifenname; 
+						}else if(that.PayType==1){
+							that.PayTypeName=that.daijinname; 
+						}  
+					}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);}); 
+				}
+			},
+			created:function() {
+				var that = this;
+				that._getHouseConfig()
+				
+			},
+		}) 
+		</script>

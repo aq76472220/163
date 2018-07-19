@@ -1,0 +1,286 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.huxinglist { margin-top:10px;}
+.huxinglist .item {height:250px; background-color:#f9f9f9; padding-bottom:5px; float:left; width:200px; margin:10px; font-size: 14px; color: #666; text-align: center; line-height: 24px;}
+.huxinglist .item img { width:200px; height:150px;}
+.huxinglist .item p { height:24px; overflow:hidden; white-space:nowrap; word-break:break-all; text-overflow:ellipsis}
+.huxinglist .item .tag { margin-bottom:10px;}
+.huxinglist .item .tag span { font-size:12px; display:inline-block; margin:0 3px; background-color:#fff; padding:0 4px; border-radius:4px; border:1px solid #eee; line-height:20px;}
+</style>
+<form id="myForm">
+<div class="wrapper_house clearfix" id="app">
+	<div class="inner_sub_box">
+		<div class="hd">已添加房型管理</div>
+			<ul class="huxinglist clearfix">
+				<item v-for="(item,index) in displayedItems" :key="item.id" :item="item" :index="index"></item>
+			</ul>
+			<div style="text-align:center; margin-top:15px;"><button type="button" @click="addHuxing()" class="btn-form purple ani add small1" style="margin:0 auto;">添加房型</button></div>
+	</div>
+	<div class="inner_sub_box" style="margin-top:20px;" v-show="isshowform">
+		<div class="hd">添加/编辑房型图</div>
+			<input type="hidden" name="Detailsid" v-model="Detailsid" />
+			<input type="hidden" name="Loupanid" v-model="Loupanid" />
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">户型名称：</span>
+					<div class="con">
+						 <input type="text" name="Cname" v-model="Cname" placeholder="请输入" class="int inp-form-sz inp3">
+					</div>
+				</li>
+				<li>
+					<span class="txt">户型结构：</span>
+					<div class="con">
+						 <div class="box"><input type="number" name="Shi" v-model="Shi" class="int inp-form-sz inp2"><span class="txt2">室</span></div><div class="box"><input type="number" name="Ting" v-model="Ting" class="int inp-form-sz inp2"><span class="txt2">厅</span></div><div class="box"><input type="number" name="Wei" v-model="Wei" class="int inp-form-sz inp2"><span class="txt2">卫</span></div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">户型面积：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Chrsize" v-model="Chrsize" class="int inp-form-sz inp2"><span class="txt2">平米</span></div>
+						<span class="zhu1 zhu2">建筑面积</span>
+					</div>
+				</li>
+				
+				<li>
+					<span class="txt">户型图片：</span>
+					<div class="con up_img">
+						<input type="hidden" name="Chrpic" v-model="Chrpic" />
+						<span class="po_re" v-show="Chrpic!=''"><img :src="'../'+Chrpic" /><span class="reup" @click="reupload('Chrpic')">重新上传</span></span>
+						<span class="" v-show="Chrpic==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=Chrpic&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+						<span class="zhu1 zhu2">2M以内，JPG/PNG</span>
+					</div>
+				</li>
+				<li>
+					<span class="txt">户型特色：</span>
+					<div class="con">
+						<item-tese v-for="(tag, index) in TeseList" :key="tag.Categoryid" :tag="tag" :index="index" :Ccid="-1" forname="Tese"></item-tese>
+						<span class="zhu1 zhu2">最多选择三项</span>
+					</div>
+				</li>
+			</ul>
+			<input type="submit" value="确认提交" class="btn-form ani">
+	</div>
+	
+</div>
+</form>
+
+<script type="text/x-template" id="page-template">
+<li class="item"> 
+	<img :src="'../'+item.Chrpic" />
+	<p class="p">{{item.Shi}}室{{item.Ting}}厅{{item.Wei}}卫　{{item.Chrsize}}㎡</p>
+	<div class="tag"><blog-tag v-for="tag in item.TeseEntities" :tag="tag"></blog-tag></div>
+	<a href="#" @click.prevent="editHuxing(item.Detailsid,index,item)" class="sys_btn_a"><i class="edit"></i>编辑</a> <a href="#" @click.prevent="delHuxing(item.Detailsid,index)" class="sys_btn_a"><i class="del"></i>删除</a>
+</li>
+</script>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+<script>
+var BlogTag = {
+  props: ['tag'],
+  template: '<span>{{tag.TeseName}}</span>'
+};
+var Item = {
+	components: {
+		'blog-tag': BlogTag
+	},
+	props: ['item','index'],
+	methods: {
+		delHuxing:function(id,index){
+			if(!window.confirm('您确定要删除该楼栋信息吗？')){return false;}
+			var that = this,url= '/api/XiaoQu/XiaoQuHuxingDelete?huxingId='+id;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		editHuxing:function(id,index,item){
+			var that = this;
+			that.$parent.Detailsid = id;
+			that.$parent.isfabu = false;
+			var item1 = item['TeseEntities'],item2 = that.$parent.TeseList;
+			item2.forEach(function(val){
+				Vue.set(val, 'checked', false);
+			});
+			for(var i=0;i<item1.length;i++){
+				for(var k=0;k<item2.length;k++){
+					if(item1[i].Teseid === item2[k].Categoryid){
+						Vue.set(item2[k], 'checked', true);
+					}
+				}
+			}
+			for(var key in item){
+				that.$parent[key] = item[key];
+			}
+			that.$parent.isshowform=true;
+		}
+	},
+	template: '#page-template'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item': Item,
+		'item-tese':Item_tese
+	},
+	data: {
+		isshowform:'',
+		isfabu:true,
+		fabuUrl:'/api/XiaoQu/XiaoQuHuxingSubmit',
+		editUrl:'/api/XiaoQu/XiaoQuHuxingUpdate',
+		Loupanid:'',
+		displayedItems:[],
+		//form data
+		Detailsid:'',
+		Cname:'',
+		Shi:'',
+		Ting:'',
+		Wei:'',
+		Chrsize:'',
+		Chrpic:'',
+		Tese:'',
+		TeseList:[]
+	},
+	methods:{
+		addHuxing:function(){
+			var that = this;
+			
+			var obj = {
+				Detailsid:'',
+				Cname:'',
+				Shi:'',
+				Ting:'',
+				Wei:'',
+				Chrsize:'',
+				Chrpic:'',
+				Tese:''
+			};
+			that.TeseList.forEach(function(val){
+				val.checked = false;
+			});
+			for(var key in obj){
+				that[key] = obj[key];
+			}
+			that.isshowform=true;
+		},
+		reupload:function(forname){
+			var that = this;
+			that[forname]='';
+		},
+		getTagData:function(styleid,sid,forname){
+			var that = this,url='';
+			if(styleid === '0'){
+				url = '/api/HouseCategory/SearchHouseCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					
+				}});
+			}else{
+				url = '/api/Category/SearchCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					var i=0,len=data[sid].length,arr=[];
+					if(that[forname]!==''){
+						arr = that[forname];
+					}
+					for(;i<len;i++){
+						for(var k = 0;k<arr.length;k++){
+							if(arr[k] == data[sid][i].Categoryid){
+								data[sid][i].checked=true;
+							}
+						}
+						that[forname+'List'].push(data[sid][i]);
+					}
+				}});
+			}
+		},
+		getData:function(id){
+			var that = this,url='';
+			url = '/api/XiaoQu/GetXiaoQuHuxingListInfo?top=0&xiaoQuid='+that.Loupanid;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data;
+				if(!Data){return false;}
+				var len=Data.length;
+				if(len===0){
+					that.isshowform = true;
+				}
+				
+				len>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		}
+	},
+	created:function(){
+		var that = this;
+		var url_obj = $.url(window.location.href).param();
+		
+		if(!!url_obj['Loupanid'] && url_obj['Loupanid']!==''){
+			that.Loupanid = url_obj['Loupanid'];
+			that.getData(url_obj['Loupanid']);
+		}else{
+			
+		}
+		that.getTagData('1','28','Tese');
+		that.defaultData = JSON.parse(JSON.stringify(that.$data));
+	},
+});
+window.onload = function(){
+	$('#myForm').loadForm(function(myForm){
+		/*if(myForm[0].Name.value===''){
+			MSGwindowShow('house','0','请输入楼栋标号！','','');
+			return false;
+		}
+		if(myForm[0].Left.value==='' || myForm[0].Left.value==='0'){
+			MSGwindowShow('house','0','请标注楼栋位置！','','');
+			return false;
+		}*/
+		return true;
+	},function(myForm,data){
+		MSGwindowShow('house','1','提交成功！',window.location.href,'');
+	});
+};
+function uploadsuccess(sid,surl,num){
+	mypage[num] = surl;
+}
+$.fn.loadForm = function(callbefore,callback,datajson){
+	var myForm = $(this),submit_btn = myForm.find('button[type="submit"]');
+	myForm.submit(function() {
+		
+		if(!!callbefore){
+			var result = callbefore.call(this,myForm);
+			if(!result){
+				return false;
+			}
+		}
+		submit_btn.addClass('disabled').prop('disabled',true);
+		var contentType = 'application/x-www-form-urlencoded';
+		var idata = myForm.serializeArray();
+		if(typeof datajson !=='undefined'){
+			idata = JSON.stringify(datajson);
+			contentType = 'application/json';
+		}
+		var url = mypage.isfabu?mypage.fabuUrl:mypage.editUrl;
+		
+		$.ajax({type:'POST',url:url,data:idata,dataType:'json',contentType:contentType,success:function(data){
+			submit_btn.removeClass('disabled').prop('disabled',false);
+			if(data.iserror===1){
+				MSGwindowShow('house','0','提交失败了哦！','','');
+				return false;
+			}
+			callback&&callback.call(this,myForm,data);
+		},error:function(){
+			MSGwindowShow('house','0','提交失败了哦！','','');
+			submit_btn.removeClass('disabled').prop('disabled',false);
+		}});
+		return false;
+	});
+}
+</script>

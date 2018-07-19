@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>查询小区</title>
+<style type=text/css>
+body {
+    font-size:10pt;
+    font-family: Arial, Helvetica,'宋体', sans-serif;
+    color: #333;
+    background: #fff;
+    height:auto;
+}
+
+#showCommNameBox{
+	background-color:#F2FBFF;
+	border:1px solid #A5D4F7;
+	font-size:12px;
+	padding:5px;
+	width:315px;
+}
+
+.showCommName ul{
+    width:300px;
+    padding:5px;
+    margin:0px 0px 0px 0px;
+}
+.showCommName li{
+    list-style:none;
+    list-style-type:none;
+    height:auto;
+    padding:2px 0;
+}
+.showCommName li span{
+    cursor:pointer;
+    color: #0041D9;
+    text-decoration: underline;
+}
+a:link {
+    color: #0041D9;
+    text-decoration: underline;
+}
+a:visited {
+    color: #0041D9;
+    text-decoration: underline;
+}
+a:hover {
+    color: #fff;
+    background-color:#0041D9;
+    text-decoration: none;
+}
+a:active {
+    color: #fff;
+    background-color:#0041D9;
+    text-decoration:none;
+}
+/* Clear Fix */
+
+.clearfix:after
+{
+content:".";
+display:block;
+height:0;
+clear:both;
+visibility:hidden;
+}
+.clearfix
+{
+display:inline-block;
+}
+/* Hide from IE Mac \*/
+.clearfix {display:block;}
+/* End hide from IE Mac */
+/* end of clearfix */
+
+/***/
+</style>
+</head>
+<body style="margin:0;">
+<div id="showCommNameBox" style="background-color:#f1ffe4;border:1px solid #6baf2a;">
+<div style='padding-left: 5px; color: red;'>请选择</div><div class="showCommName clearfix"><ul> {$lists}  </ul></div>{$msg}</div>
+<script language="javascript" type="text/javascript">
+var ifm = parent.document.getElementById('listComm');
+var elem = document.getElementById('showCommNameBox');
+var h = 0;
+if (elem.clientHeight) {
+    h = elem.clientHeight;
+} else {
+    h = elem.offsetHeight;
+}
+var h2 = parseInt(h) + 10;
+ifm.style.height = h2 + 'px' ;
+function selectComm(commName, commId, commRoad, commNumb) {
+    var txtCommName = parent.document.getElementById('CommName');
+    if(txtCommName!=null){
+        txtCommName.title = commId;
+        txtCommName.value = commName;
+    }
+    var houseAddr1 = parent.document.getElementById('houseAddr1')
+    if(houseAddr1!=null){
+        houseAddr1.value = commRoad;
+    }
+    var houseAddr2 = parent.document.getElementById('houseAddr2');
+    if(houseAddr2!=null){
+        houseAddr2.value=commNumb;
+    }
+    var listComm = parent.document.getElementById('listComm');
+    if(listComm!=null){
+        listComm.style.display = 'none';
+    }
+    var ifrm = parent.document.getElementById('uploadframe');
+    if(ifrm!=null){
+        ifrm.src="anjuke_commpic.php?commId=" + commId;
+    }
+    var objCommpicUpload = parent.document.getElementById('commpicupload');
+    if(objCommpicUpload){
+        objCommpicUpload.setAttribute("href", "../commitpic.php?commid=" + commId + "&upsort=addpic");
+    }
+    parent.iUp.getCommModelList(commId);
+    parent.iUp.getCommImageList(commId);
+}
+function selectCommName(commName,commId,commAddr,CommOtherName,wiki_CommOtherName,lx,ly,lz) {
+    var houseAddr1 = parent.document.getElementById('xiaoqu')
+    if(houseAddr1!=null){
+        houseAddr1.value = commName;
+    }
+	var houseAddr2 = parent.document.getElementById('chraddress')
+    if(houseAddr2!=null){
+        houseAddr2.value = commAddr;
+    }
+	var CommIdt = parent.document.getElementById('CommId')
+    if(CommIdt!=null){
+        CommIdt.value = commId;
+    }
+	var i,num,op
+	num=parent.document.getElementById('loupancategory').length
+	for(i=0;i<num;i++){
+		op=parent.document.getElementById('loupancategory').options[i]
+		if(op.value==CommOtherName) op.selected=true;
+	}
+	parent.showloupancategory(CommOtherName,wiki_CommOtherName);
+	
+	var tt2 = parent.document.getElementById('listComm')
+    if(tt2!=null){
+        tt2.src="";;
+    }
+	var tt1 = parent.document.getElementById('keytishi')
+    if(tt1!=null){
+        tt1.style.display="none";;
+    }
+	var x = parent.document.getElementById('shop_x')
+    if(x!=null){
+        x.value=lx;;
+    }
+	var y = parent.document.getElementById('shop_y')
+    if(y!=null){
+        y.value=ly;;
+    }
+	var z= parent.document.getElementById('shop_z')
+    if(z!=null){
+        z.value=lz;;
+    }
+}
+function addcomm() {
+    var strConfirm = "友情提醒：\n\n" +
+                     "本站已经收集了10000多个小区的信息，请再次确认你添加的小区确实不存在。\n\n" +
+                     "请你检查：\n" +
+                     "1. 小区名称中无错别字。\n" +
+                     "2. 不可直接粘贴小区名称到输入框，必须一个字一个字依次输入。\n" +
+                     "3. 小区名称中不可出现无关的文字或符号，如“专营、楼盘、#、【】、￥”等。\n\n" +
+                     "如果确认添加，请按确定\n" +
+                     "如果想重新输入，请按取消";
+    if (confirm(strConfirm)) {
+        
+    }
+}
+function selectShopName(name,id)
+{
+	var tt2 = parent.document.getElementById('listComm')
+    if(tt2!=null){
+        tt2.src="";;
+    }
+	var tt1 = parent.document.getElementById('keytishi')
+    if(tt1!=null){
+        tt1.style.display="none";;
+    }
+	parent.document.getElementById("xiaoqu").value=name;
+	parent.document.getElementById("shopid").value=id;
+}
+function selectLoupanName(name,id)
+{
+	var tt2 = parent.document.getElementById('listComm')
+    if(tt2!=null){
+        tt2.src="";;
+    }
+	var tt1 = parent.document.getElementById('keytishi')
+    if(tt1!=null){
+        tt1.style.display="none";;
+    }
+	parent.document.getElementById("xiaoqu").value=name;
+	parent.document.getElementById("loupanid").value=id;
+}
+</script>
+</body>
+</html>
+﻿

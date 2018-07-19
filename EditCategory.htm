@@ -1,0 +1,60 @@
+﻿
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+  <tr>
+    <td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+    <td width="100%" background="{$atplPath}Images/r_0.gif"><table cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+         <td width="60%">修改{$title}&nbsp;&nbsp;&nbsp; 有<font color="#FF0000">*</font>号的是必填项目</td>
+          <td width="40%" align="right"><input name="GoToGQList" type="submit" id="GoToGQList" value="返回至{$title}列表" onClick="javscript:window.history.go(-1);"></td>
+      </tr>
+    </table></td>
+    <td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="category"> <!--startprint-->
+   <table width="100%" border="1" cellspacing="1" cellpadding="4" class="toptable grid">
+   
+
+  <form name="form1" method="post" action="houseconfig.aspx?action=editsave" ID="Form1">
+    <tr > 
+      <td  height="25">名称<font color="#FF0000">*</font>： 
+      </td>
+      <td class="category"> <input name="Chrcategory" type="text" size="30" ID="Text1" value="{$Chrcategory}"></td>
+    </tr>
+	 <tr > 
+      <td  height="25">价格范围<font color="#FF0000">*</font>： 
+      </td>
+      <td class="category">友情揭示：如果表示一万以下，只要填写从0到10000，如果表示一万元以上，只要填写10000到0就可以了！<p></p> 从：<input name="startmoney" value="{$startmoney}" type="text" size="8" onKeyUp="if(isNaN(value))execCommand('undo')">元 到：<input name="endmoney" value="{$endmoney}" type="text" size="8" onKeyUp="if(isNaN(value))execCommand('undo')">元</td>
+    </tr>
+  <tr > 
+      <td  height="25">排序<font color="#FF0000">*</font>： 
+      </td>
+      <td class="category"> <input name="Intorder" type="text" size="8" ID="Text2" value="{$Intorder}" onKeyUp="if(isNaN(value))execCommand('undo')"></td>
+    </tr>
+	
+    <tr > 
+      <td  height="25">是否显示<font color="#FF0000">*</font>： 
+      </td>
+      <td class="category"> <input name="Isopen" type="radio" value="0" {$Isopen0} ID="Radio1">显示 <input name="Isopen" type="radio" value="1" ID="Radio2" {$Isopen1}>隐藏</td>
+    </tr>
+		
+    <tr > <td></td>
+      <td height="25"  class="category"><input type=hidden name=gotourl value="{$gotourl}">
+		<INPUT TYPE="hidden" NAME="ID" value="{$ID}" ID="Hidden1">
+		<input type="submit" name="Submit" value="确定提交" ID="Submit1"> &nbsp; 
+        <input name="Reset" type="reset" id="Reset" value="取消重写"></td>
+    </tr>
+  </form>
+</table>
+ <!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+  </body>
+</html>

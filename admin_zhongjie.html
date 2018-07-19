@@ -1,0 +1,437 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+.ss-img{ display:block; vertical-align:top; width:50px; height:50px; border-radius:25px;}
+
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/ZhongJie/SearchZhongJie'; //获取门店经纪人
+window['keyvalues'] = { //请求列表参数 
+	"MenDianId":'', //门店id
+	'ManId':'', //中介id
+	'Status':'',//中介状态
+	'PageSort':'', //页面排序方式
+	'PageSize':'20',//每页条数
+	'Keywords':'',//关键字
+	"pageid":window['pageid'],// 当前分页页数
+	'Top':''//前top条
+};
+</script>
+<div class="wrapper" id="app">
+<div class="agent_tips_window" style="display:block; height: 140px; margin-top:-70px;" v-show="agent_tips_window">
+		<div class="hd"><a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a><span class="tit">快速加入门店</span></div>
+		<div class="bd">
+			<ul class="ul-form clearfix">
+				<li style="border-bottom:0 none;">
+				<span class="txt">加入门店：</span>
+				<div class="con">
+						<div class="sel_box" @mouseenter="MendianShow=true" @mouseleave="MendianShow=false">{{MendianName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!MendianShow">
+								<item-select v-for="tag in MendianList" :key="tag.Categoryid" :tag="tag" forid="Mendian" fortxt="MendianName" fotaction="MendianShow" is2=""></item-select>
+							</div>
+						</div>
+						<button style="display:inline-block; vertical-align:middle;" type="button" @click="bindMendian()" class="btn-form purple ani small1">确认添加</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li :class="cur=='0'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Status:'',cur:'0'});">全部</a></li>
+			<li :class="cur=='1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Status:'1',cur:'1'});">在职</a></li>
+			<li :class="cur=='2'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Status:'-1',cur:'2'});">离职</a></li>
+		</ul>
+	</div>
+
+	<!-- 搜索表单 -->
+	<form name="form2" method="get"  @submit.prevent="submitSearch()"  action=""  style="display:block; padding:5px 0 20px;"> 
+		<input type="text" v-model="Keywords" class="Wdate" placeholder="门店/经纪人搜索" style="width:180px;" value=""> 
+		<input type="submit" value="搜索" class="global2_btn_orange" style="line-height:26px;">
+	</form>
+ 
+	<!-- 主体内容 -->
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr> 
+			<th width="60">&nbsp;</th>
+			<th>头像</th>
+			<th>任职门店</th>
+			<th>姓名</th>
+			<th>登陆账号</th>
+			<th>业务联系方式</th>
+			<th>身份</th>
+			<th>工作状态</th>
+			<th>加入时间</th>
+			<th>推荐</th>
+			<th>操作</th>	
+		</tr>
+		<tr is="item" v-for="(item,index) in displayedItems" :key="item.Loupanid" :item="item" :index="index"></tr>
+	</table> 
+	<div class="filter_bar">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label><a href="javascript:void(0);" @click.prevent="piliang('0')" class="global2_btn">删除</a>　温馨提示：店长不能删除，若要删除该经纪人请先给相应门店指派新的店长
+	</div>
+	<!-- 分页 -->
+	<div class="pageNavigation" id="pageNavigation"></div> 
+	 
+</div>
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+	<tr :id="'item'+item.Id" align="center">  
+		<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td>
+		<td>
+            <img class='ss-img' :src="'../'+item.Filepath" onerror="this.src='{$atplPath}images/house/defalut_face.gif'" alt="">
+        </td>
+		<td><a target='_blank' :href="'/house/mendiandetail_'+item.HouseMendian.Id">{{item.MendianName}}</a><a href="#" class="sys_btn_a" @click.prevent="setMendian(item.Userid,index)" v-if="!item.MendianName">选择一个门店加入</a></td>
+		<td>{{item.Truename}}</td>
+		<td></td> 
+		<td>{{item.Chrtel}}</td>
+        <td v-if='item.Type==0'>店长</td>
+		<td v-else-if='item.Type==1'>普通门店经纪人</td>
+		<td>
+			<span class='pub_1' v-if="item.Status==1">在职</span>
+			<span class='pub_3' v-else-if="item.Status==-1">离职</span>
+		</td> 
+
+        <td>{{item.Flushdate}}</td> 
+		<td><span class="open_close" :class="item.Tuijian?' on':''" @click.prevent="tuijian(item.Manid,!item.Tuijian,index)"></span></td>
+ 
+		<td align="center">
+			<a  target='_blank' :href="'../users.aspx?action=loginuser&ID='+item.Userid+'&url=/memberhouse/agentmain'" class="sys_btn_a">
+			    <i class="edit"></i>维护
+			</a>
+
+			<a href="#" @click.prevent.self="del([item.Manid],index)" class="sys_btn_a" v-show='item.Type==1'>
+				<i class="del"></i>删除
+            </a>
+            <a target='_blank' :href="'/house/agentdetail_'+item.Manid" _bacl class="sys_btn_a">
+			    <i class="view"></i>Ta的主页
+			</a> 
+		</td>
+	</tr>
+</script>
+
+
+<script src="{$atplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+
+<script>
+function returnFirstpage(){  //分页
+	window['keyvalues'] = $.extend(window['keyvalues'],{"pageid":"1"});
+	mylist&&mylist.getNewData();
+	$('#returnFirstPage1').hide();
+}
+function getMendianJSON(vueName,callback){//styleid  对应两个接口
+	var url= '/api/MenDian/GetMenDianList?PageSize=50&PageID=1';
+	$.ajax({'url':url,dataType:'json',success:function(data){
+		callback&&callback.call(this,data,vueName);
+	}});
+}
+function setQuyuSel_vue(data,vueName){
+	var i=0,len = data.length,obj = {};
+	for(;i<len;i++){
+		obj = {}
+		obj.Categoryid = data[i].Id;
+		obj.Chrcategory = data[i].MendianName;
+		mylist[vueName+'List'].push(obj);
+		
+		if(mylist[vueName]==='0'){
+			mylist[vueName+'Name'] = data[0].MendianName;
+			mylist[vueName] = data[0].Id;
+		}
+	}
+	return;
+}
+var Item_select = {//全部select插件
+	props: ['tag','forid','fortxt','fotaction','is2','is2name'],
+	methods: {
+		sel_select:function(data,forid,fortxt,fotaction,is2){
+			this.$parent[forid] = data.Categoryid;
+			this.$parent[fortxt] = data.Chrcategory;
+			this.$parent[fotaction] = false;
+		}
+	},
+	template: '<a href="#" @click.prevent.self="sel_select(tag,forid,fortxt,fotaction,is2)">{{tag.Chrcategory}}</a>'
+};
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			Hongbao_isopen:window['Mh163k_Plugin_Hongbao_isopen']==='1'
+		}
+	},
+	components: {
+	},
+	props: ['item','index'],
+	methods: {   
+		selectOne:function(index){
+			var that = this;
+			if(that.$parent.displayedItems[index].Type===0){
+				return;
+			}
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		},
+		setMendian:function(id,index){
+			this.$parent.agent_tips_window_id = id;
+			this.$parent.agent_tips_window_index = index;
+			this.$parent.openTipsWindow();
+		},
+		del:function(id_arr,index){// 删除
+			if(!window.confirm('您确定要删除该房源吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		},
+		tuijian:function(id,val,index){// 推荐
+			var that = this;
+			that.$parent.Tuijian(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'Tuijian', val);
+			});
+		},
+		xiajia:function(id_arr,isShelf,index){ // 上下架
+			var that = this;
+			that.$parent.Xiajia(id_arr,isShelf,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'IsShelf', isShelf);
+			});
+		},
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+		'item-select':Item_select
+	},
+	data: {
+		isSelectAll:false,
+		cur:'0',
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [],
+		ZhongJieList:[],
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0, 
+		ZhongJieNum:'', //楼盘状态
+		Keywords:'',//搜索关键字
+		agent_tips_window_id:'',
+		agent_tips_window_index:'',
+		MendianShow:false,
+		Mendian:'0',
+		MendianName:'请选择一个门店',
+		MendianList:[]
+	}, 
+	methods: {
+		bindMendian:function(){
+			var that = this;
+			var url = '/api/ZhongJie/AddUserToMenDian?userId='+that.agent_tips_window_id+'&mendianId='+that.Mendian;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.closeTipsWindow();
+				that.getNewData();
+				MSGwindowShow('house','0','加入门店成功！','','');
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		openTipsWindow:function(){
+			var that = this;
+			that.agent_tips_window = true;
+		},
+		closeTipsWindow:function(){
+			var that = this;
+			that.agent_tips_window = false;
+		},
+		selectAll:function(){
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				if(that.displayedItems[i].Type===0){
+					continue;
+				}
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		},
+		piliang:function(val){
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Manid);
+				
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='0'){
+				that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+			}
+		},
+		Del:function(id_arr,callback){ //删除某一项 
+			var that = this,url = '/api/ZhongJie/Delete?timer='+Date.parse(new Date());
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','删除成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+
+		Tuijian:function(id,val,callback){// 推荐
+			var that = this,url = '/api/ZhongJie/ZhongJieUpdateTuiJian?manId='+id+'&isTuijian='+val;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				//MSGwindowShow('house','0','操作成功了哦！','','');
+				callback&&callback.call(that);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+
+		Xiajia:function(id_arr,isShelf,callback){ // 上下架
+			var that = this,url = '/api/LouPan/LoupanUpdateShelfStatus?loupanId='+id_arr+'&IsShelf='+isShelf;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				//MSGwindowShow('house','0','操作成功了哦！','','');
+				callback&&callback.call(that);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		
+		submitSearch:function(){ // 搜索
+			var that = this;   
+			that.filterClick({Keywords:that.Keywords});
+			return false;
+		},
+
+		filterClick:function(obj){// 楼盘状态过滤
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+		setPageList:function(){// 设置分页具体展示
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+	 
+		getNewData:function(){
+			var that = this;
+			that.displayedItems = [];
+			that.ifNoMore = false;
+			that.getData();
+		},
+		getData: function () {  // 加载数据
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(Data.length===0){return false;}
+				for(var i=0;i<Data.length;i++){ 
+					var idate = '';
+					if(!Data[i].Flushdate){
+						idate = formatTime_s(new Date(Data[i].Dtappenddate));
+					}else{
+						idate = formatTime(new Date(Data[i].Flushdate));
+					}
+					Data[i].Flushdate = idate;
+					Data[i].showSuper = false;
+					Data[i].checked = false;
+				}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+
+				// 分页相关
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				history.pushState(null, '', '?p='+that.CurrentPage);
+				//如果不是第一页
+				if(that.CurrentPage!==1){
+					$('#returnFirstPage1')[0]&&$('#returnFirstPage1').show();
+				}
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	mounted:function(){
+		getMendianJSON('Mendian',setQuyuSel_vue);
+	},
+	created: function () {
+		var that = this;
+		that.getData();
+		//hat.getNum();
+		
+	}
+});
+$(function(){
+	var url_obj = $.url(window.location.href).param();
+	
+});
+</script>
+</body>
+</html>

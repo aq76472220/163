@@ -1,0 +1,230 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<div class="wrapper_house clearfix">
+	<div class="col_main"><div class="main_wrap" id="app">
+		<div class="inner_sub_box">
+			<div class="hd clearfix"><div class="luru"><a href="#" @click.prevent="add()">添加均价区间</a></div>均价区间管理</div>
+			<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+				<tr>
+					<th>区间名称</th>
+					<th>开始</th>
+					<th>结束</th>
+					<th>排序值</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+				<tr is="item" v-for="(item,index) in displayedItems" :length="displayedItems.length" :key="item.id" :item="item" :index="index"></tr>
+			</table>
+			<div class="agent_tips_window" style="display:block; height:450px; margin-top:-225px;" v-show="agent_tips_window">
+			<div class="hd"><a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a><span class="tit">添加编辑</span></div>
+			<div class="bd">
+				<ul class="ul-form clearfix">
+					<li>
+						<span class="txt">名称：</span>
+						<div class="con">
+							<input type="text" v-model="Chrcategory" placeholder="请输入" class="int inp-form-sz inp5">
+						</div>
+					</li>
+					<li>
+						<span class="txt">价格范围：</span>
+						<div class="con">
+							<div class="box"><input type="number" v-model="Startmoney" class="int inp-form-sz inp2"><span class="txt2">元</span></div> 至 <div class="box" style="margin-left:10px;"><input type="number" v-model="Endmoney" class="int inp-form-sz inp2"><span class="txt2">元</span></div>
+							<span class="zhu1 zhu2">如果表示一万以下，只要填写从0到10000，如果表示一万元以上，只要填写10000到0就可以了！</span>
+						</div>
+					</li>
+					<li>
+						<span class="txt">是否显示：</span>
+						<div class="con">
+							<span class="open_close" :class="Isopen==0?' on':''" @click.prevent="Isopen=Isopen==0?1:0"></span>
+						</div>
+					</li>
+				</ul>
+				<input type="button" @click="submitHandle()" value="确认提交" class="btn-form ani">
+			</div>
+		</div>
+		<div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+		
+		</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config.html"><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig.html"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig.html"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig.html"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig.html"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig.html"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig.html"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig.html"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig.html" class="on"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script type="text/x-template" id="page-template">
+<tr :id="'item'+item.Id" align="center">
+	<td>{{item.Chrcategory}}</td>
+	<td>{{item.Startmoney}}元</td>
+	<td>{{item.Endmoney}}元</td>
+	<td>{{item.Intorder}}</td>
+	<td><span style="color:#5cc55c;" v-if="item.Isopen==0">显示中</span><span style="color:#aaa;" v-if="item.Isopen==1">已隐藏</span></td>
+	<td align="center"><span class="sys_btn_a" v-show="index!=0" @click.prevent="setSort(item.Categoryid,true,index)"><i class="prev"></i></span> <span class="sys_btn_a" v-show="index!=length-1" @click.prevent="setSort(item.Categoryid,false,index)"><i class="next"></i></span> <a href="#" @click.prevent.self="edit(item.Categoryid,item.Chrcategory,item.Startmoney,item.Endmoney,item.Chrimage,item.Isopen,index)" class="sys_btn_a"><i class="edit"></i>编辑</a> <a href="#" @click.prevent.self="del(item.Categoryid,index)" class="sys_btn_a"><i class="del"></i>删除</a></td>
+</tr>
+</script>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+var Item = {
+	components: {
+	},
+	props: ['item','index','length'],
+	methods: {
+		edit:function(id,Chrcategory,Startmoney,Endmoney,Chrimage,Isopen,index){
+			var that = this;
+			that.$parent.url_action = 'UpdateHouseCategory';
+			that.$parent.Categoryid = id;
+			that.$parent.Chrcategory = Chrcategory;
+			that.$parent.Startmoney = Startmoney;
+			that.$parent.Endmoney = Endmoney;
+			that.$parent.Chrimage = Chrimage;
+			that.$parent.Isopen = Isopen;
+			that.$parent.openTipsWindow();
+		},
+		del:function(id,index){
+			if(!window.confirm('您确定要删除该区间吗？')){return false;}
+			var that = this,url = '/api/HouseCategory/DeleteHouseCategory?categoryId='+id;
+			
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		setSort:function(id,bool,index){
+			var that = this,url = '/api/HouseCategory/UpdateHouseCategorySort?categoryId='+id+'&direction='+bool;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var arr = that.$parent['displayedItems'];
+				if(!bool){
+					Vue.set(arr, index , arr.splice(index + 1, 1, arr[index])[0]);
+				}else{
+					Vue.set(arr, index - 1, arr.splice(index, 1, arr[index - 1])[0]);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		}
+	},
+	template: '#page-template'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item': Item
+	},
+	data: {
+		agent_tips_window:false,
+		displayedItems:[],
+		Styleid:'3',
+		Chrimage:'',
+		Categoryid:'',
+		Chrcategory:'',
+		Startmoney:'',
+		Endmoney:'',
+		Isopen:0,
+		url_action:'SubmitHouseCategory'
+	},
+	methods: {
+		add:function(){
+			var that = this;
+			that.url_action='SubmitHouseCategory';
+			that.Categoryid='';
+			that.Chrcategory = '';
+			that.Startmoney = '';
+			that.Endmoney = '';
+			that.Chrimage = '';
+			that.Isopen = 0;
+			
+			that.openTipsWindow();
+		},
+		closeTipsWindow:function(id){
+			var that = this;
+			console.info('哦哦哦哦哦');
+			that.agent_tips_window = false;
+		},
+		openTipsWindow:function(id){
+			var that = this;
+			that.agent_tips_window = true;
+		},
+		submitHandle:function(){
+			var that = this,url = '/api/HouseCategory/'+that.url_action;
+			if(that.Chrcategory === "") {
+				MSGwindowShow('house','0','请输入区间名称！','','');
+			}else if(that.Startmoney === "") {
+				MSGwindowShow('house','0','请输入区间开始价格！','','');
+			}else if(that.Endmoney===""){  
+				MSGwindowShow('house','0','请输入区间结束价格！','','');
+			}else{
+				var obj = {
+					Styleid:that.Styleid,
+					Isopen:that.Isopen,
+					Categoryid:that.Categoryid,
+					Chrimage:that.Chrimage,
+					Chrcategory:that.Chrcategory,
+					Startmoney:that.Startmoney,
+					Endmoney:that.Endmoney
+				};
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+						that.getData();
+						that.closeTipsWindow();
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		},
+		getData:function(){
+			var that = this,url= '/api/HouseCategory/SearchHouseCategory?category='+that.Styleid+'&isopen=';
+			axios.get(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data[that.Styleid];
+				if(!Data){return false;}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	created: function (){
+		var that = this;
+		that.getData();
+	}
+});
+</script>

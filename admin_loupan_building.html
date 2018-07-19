@@ -1,0 +1,529 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}js/cal/calendar.css" />
+
+<style>
+.darg_node { display:none; position: fixed; top: 50%; left: 50%; z-index: 999;box-shadow: 0 0 15px rgba(0,0,0,.3);}
+.darg_node img { vertical-align:top;}
+.darg_node .ft { background-color:#fff; text-align:right; padding:10px;}
+.darg_node .ft a { display:inline-block; border-radius:3px; color:#fff; padding:0 15px; line-height:36px; font-size:14px; margin-left:10px;}
+.darg_node .ft .submit { background-color:#36c;}
+.darg_node .ft .cancel { background-color:#ddd; color:#666;}
+.mapysB { position:absolute; left:0; top:0;}
+.mapysB a{position: relative; display: block;cursor: move;}
+.mapysB a .ban-state{display: inline-block; width:46px; height: 25px; background:#ff611b; text-align: center; line-height: 25px; color: #fff; border-radius:3px;}
+.mapysB a .ban{position: absolute; left:15px; top: 25px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 7px solid red;border-top-color: #ff611b;}
+
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<form id="myForm">
+<div class="wrapper_house clearfix" id="app">
+		<input type="hidden" name="Id" v-model="Id" />
+		<div class="inner_sub_box">
+			<div class="hd clearfix">沙盘鸟瞰图</div>
+			<div class="tips-h1"><div class="tip">添加沙盘需上传一张鸟瞰图</div></div>
+			<ul class="ul-form clearfix">
+				<li style="border-bottom: 0 none; padding-bottom: 0;">
+					<span class="txt">图片：</span>
+					<div class="con up_img">
+						<input type="hidden" v-model="airscape" />
+						<span class="po_re" v-show="airscape!=''"><img :src="'../'+airscape" /><span class="reup" @click="reupload('airscape')">重新上传</span></span>
+						<span class="" v-show="airscape==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=airscape&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+						<span class="zhu1 zhu2">最佳尺寸：1000像素x600像素</span>
+						<span class="zhu1" v-show="isok_airscape">请上传分享图片</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="inner_sub_box" style="margin-top:20px;">
+			<div class="hd clearfix">当前楼栋信息</div>
+			<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+				<tr>
+					<th>楼栋名称</th>
+					<th>梯户比</th>
+					<th>总户数</th>
+					<th>总层数</th>
+					<th>交房</th>
+					<th>开盘</th>
+					<th>销售状态</th>
+					<th>在售房源</th>
+					<th>操作</th>
+				</tr>
+				<tr is="item" v-for="(item,index) in displayedItems" :key="item.id" :item="item" :index="index"></tr>
+			</table>
+			<div style="text-align:center; margin-top:15px;"><button type="button" v-show="airscape!=''" @click="addLoudong()" class="btn-form purple ani add small1" style="margin:0 auto;">添加楼栋</button></div>
+		</div>
+		<div class="inner_sub_box" style="margin-top:20px;" v-show="isshowform">
+			<div class="hd clearfix">必须填写</div>
+			<input type="hidden" name="LoupanId" v-model="LoupanId">
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">楼栋标号：</span>
+					<div class="con">
+						<input type="text" name="Name" v-model="Name" placeholder="如：A栋、 1号楼" class="int inp-form-sz inp3">
+					</div>
+				</li>
+				<li>
+					<span class="txt">销售状态：</span>
+					<div class="con">
+						<input type="hidden" name="SaleStatus" v-model="SaleStatus">
+						<label class="open_close2" :class="SaleStatus==0?'on':''" @click="SaleStatus=0">待售</label>
+						<label class="open_close2" :class="SaleStatus==1?'on':''" @click="SaleStatus=1">在售</label>
+						<label class="open_close2" :class="SaleStatus==2?'on':''" @click="SaleStatus=2">售罄</label>
+					</div>
+				</li>
+				<li>
+					<span class="txt">标注位置：</span>
+					<div class="con">
+						<a href="#" id="biaozhu_loudong" class="a-map"></a>
+						<input type="hidden" id="darg_x" name="Left" v-model="Left"><input type="hidden" id="darg_y" name="Top" v-model="Top">
+					</div>
+					<div class="darg_node" id="darg_node">
+						<div id="darg" class="mapysB" style="position: absolute;"><a href="javascript:;"><span class="ban-state">标注</span><span class="ban"></span></a></div>
+						<img :src="'../'+airscape" id="darg_node_img" />
+						<div class="ft"><a href="#" class="submit">确定标注</a><a href="#" class="cancel">取消</a></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="inner_sub_box" style="margin-top:20px;" v-show="isshowform">
+			<div class="hd clearfix">以下项目非必须填写</div>
+			
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">总层数：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Ceng" v-model="Ceng" class="int inp-form-sz inp2"><span class="txt2">层</span></div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">总户数：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Hushu" v-model="Hushu" class="int inp-form-sz inp2"><span class="txt2">户</span></div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">单元数：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="DanYuan" v-model="DanYuan" class="int inp-form-sz inp2"><span class="txt2">个</span></div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">几梯几户：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Ti" v-model="Ti" class="int inp-form-sz inp2"><span class="txt2">梯</span></div><div class="box"><input type="number" name="Hu" v-model="Hu" class="int inp-form-sz inp2"><span class="txt2">户</span></div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">产权年限：</span>
+					<div class="con">
+						<input type="hidden" name="Nianxian" v-model="Nianxian">
+						<label class="open_close2" :class="Nianxian==70?'on':''" @click="Nianxian=70">70年</label>
+						<label class="open_close2" :class="Nianxian==50?'on':''" @click="Nianxian=50">50年</label>
+						<label class="open_close2" :class="Nianxian==40?'on':''" @click="Nianxian=40">40年</label>
+					</div>
+				</li>
+				<li>
+					<span class="txt">装修情况：</span>
+					<div class="con">
+						<item-radio v-for="(tag, index) in ZhuangxiuList" :key="tag.Categoryid" :tag="tag" :index="index" forname="Zhuangxiu"></item-radio>
+					</div>
+				</li>
+				<li>
+					<span class="txt">楼栋类型：</span>
+					<div class="con">
+						<item-radio v-for="(tag, index) in LeiXingList" :key="tag.Categoryid" :tag="tag" :index="index" forname="LeiXing"></item-radio>
+					</div>
+				</li>
+				<li>
+					<span class="txt">本栋户型：</span>
+					<div class="con">
+						<item-checkbox v-for="(tag, index) in HuXingList" :key="tag.Categoryid" :tag="tag" :index="index" forname="HuXing"></item-checkbox>
+						
+					</div>
+				</li>
+				<li>
+					<span class="txt">在售房源：</span>
+					<div class="con">
+						<div class="box"><input type="number" name="Yuan" v-model="Yuan" class="int inp-form-sz inp2"><span class="txt2">套</span></div>
+						
+					</div>
+				</li>
+				<li>
+					<span class="txt">开盘时间：</span>
+					<div class="con">
+						<input type="text" autocomplete="off" name="KaiPan" v-model="KaiPan" class="int inp-form-sz inp2" id='Wdate01'>
+					</div>
+				</li>
+				<li>
+					<span class="txt">交房时间：</span>
+					<div class="con">
+						<input type="text" autocomplete="off" name="JiaoFang" v-model="JiaoFang" class="int inp-form-sz inp2" id='Wdate02'>
+					</div>
+				</li>
+				
+			</ul>
+			
+			<input type="submit" value="确认提交" class="btn-form ani">
+		</div>
+		
+</div>
+</form>
+<script type="text/x-template" id="page-template">
+<tr align="center"> 
+	<td>{{item.Name}}</td>
+	<td>{{item.Hu}}户{{item.Ti}}梯</td>
+	<td>{{item.Hushu}}户</td>
+	<td>{{item.Ceng}}层</td>
+	<td>{{item.JiaoFang}}</td>
+	<td>{{item.KaiPan}}</td>
+	<td>{{item.SaleStatusName}}</td>
+	<td>{{item.Yuan}}套</td>
+	<td align="center"><a href="#" @click.prevent="editLoudong(item.Id,index,item)" class="sys_btn_a"><i class="edit"></i>编辑</a> <a href="#" @click.prevent="delLoudong(item.Id,index)" class="sys_btn_a"><i class="del"></i>删除</a></td>
+</tr>
+</script>
+<script src="{$atplPath}js/cal/cal_s.js"></script>
+<script src="{$atplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/darg.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+var Item = {
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		delLoudong:function(id,index){
+			if(!window.confirm('您确定要删除该楼栋信息吗？')){return false;}
+			var that = this,url= '/api/LouPan/LouPanBuildingDelete?id='+id;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		editLoudong:function(id,index,item){
+			var that = this;
+			that.$parent.Id = id;
+			that.$parent.isfabu = false;
+			
+			var item1 = item['HuxingDtos'],item2 = that.$parent.HuXingList;
+			item2.forEach(function(val){
+				Vue.set(val, 'checked', false);
+			});
+			for(var i=0;i<item1.length;i++){
+				for(var k=0;k<item2.length;k++){
+					if(item1[i].Detailsid === item2[k].Categoryid){
+						Vue.set(item2[k], 'checked', true);
+					}
+				}
+			}
+			var item4 = item['LeixingEntity'],item5 = that.$parent.LeiXingList;
+			item5.forEach(function(val){
+				Vue.set(val, 'checked', false);
+			});
+			for(var k=0;k<item5.length;k++){
+				if(item4.Leixingid === item5[k].Categoryid){
+					Vue.set(item5[k],'checked',true);
+				}
+			}
+			var item6 = item['Zhuangxiu'],item7 = that.$parent.ZhuangxiuList;
+			item7.forEach(function(val){
+				Vue.set(val, 'checked', false);
+			});
+			
+			for(var k=0;k<item7.length;k++){
+				if(item6 === item7[k].Categoryid){
+					Vue.set(item7[k],'checked',true);
+				}
+			}
+			
+			
+			
+			
+			for(var key in item){
+				that.$parent[key] = item[key];
+			}
+			that.$parent.isshowform=true;
+		}
+	},
+	template: '#page-template'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item-checkbox':Item_checkbox,
+		'item': Item,
+		'item-select':Item_select,
+		'item-radio':Item_radio
+	},
+	data: {
+		isshowform:false,
+		isfabu:true,
+		fabuUrl:'/api/LouPan/LouPanBuildingSubmit',
+		editUrl:'/api/LouPan/LouPanBuildingUpdate',
+		displayedItems:[],
+		LoupanId:'',
+		airscape:'',
+		isok_airscape:false,
+		//
+		Id:'',
+		Name:'',
+		SaleStatus:'',//0待售 1在售 2售罄
+		Left:'',
+		Top:'',
+		Ceng:'',
+		Hushu:'',
+		DanYuan:'',
+		Ti:'',
+		Hu:'',
+		Nianxian:'70',
+		Yuan:'',
+		KaiPan:'',
+		JiaoFang:'',
+		LeiXingList:[],
+		ZhuangxiuList:[],
+		HuXingList:[]
+		
+	},
+	methods: {
+		addLoudong:function(){
+			var that = this;
+			
+			var obj = {
+				Id:'',
+				Name:'',
+				SaleStatus:'',
+				Left:'',
+				Top:'',
+				Ceng:'',
+				Hushu:'',
+				DanYuan:'',
+				Ti:'',
+				Hu:'',
+				Nianxian:'70',
+				Yuan:'',
+				KaiPan:'',
+				JiaoFang:''
+			};
+			that.ZhuangxiuList.forEach(function(val,index){
+				var result = index===0?true:false;
+				Vue.set(val, 'checked', result);
+			});
+			that.LeiXingList.forEach(function(val,index){
+				var result = index===0?true:false;
+				Vue.set(val, 'checked', result);
+			});
+			that.HuXingList.forEach(function(val){
+				Vue.set(val, 'checked', false);
+			});
+			for(var key in obj){
+				that[key] = obj[key];
+			}
+			that.isshowform=true;
+		},
+		submitAirscape:function (){
+			if(this.airscape == ""){
+				this.isok_airscape = true;
+				return false;
+			}
+			var that = this,url = '/api/LouPan/LoupanUpdateAirscape?loupanId='+that.LoupanId+'&airscape='+that.airscape;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		reupload:function(forname){
+			var that = this;
+			that[forname]='';
+		},
+		getSingleLoupanBuildingInfo:function(id){
+			var that = this,url = '/api/LouPan/GetSingleLoupanBuildingInfo?id='+id;
+			//api/LouPan/LouPanBuildingUpdate  更新楼栋   api/LouPan/LouPanBuildingDelete?id={id} 删除楼栋
+			//  楼栋list
+		},
+		getLoupanInfo:function(){
+			var that = this,url = '/api/LouPan/GetLoupanInfo?loupanid='+that.LoupanId;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				if(!res.data.Airscape){
+					res.data.Airscape = '';
+				}
+				that.airscape = res.data.Airscape;
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		getData:function(id){
+			var that = this,url='';
+			url = '/api/LouPan/GetLoupanBuildingsInfo?loupanid='+that.LoupanId;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data;
+				if(!Data){return false;}
+				var i=0,len=Data.length;
+				
+				for(;i<len;i++){
+					switch(Data[i].SaleStatus){
+						case 0:
+						Data[i].SaleStatusName='待售';
+						break;
+						case 1:
+						Data[i].SaleStatusName='在售';
+						break;
+						case 2:
+						Data[i].SaleStatusName='售罄';
+						break;
+						default:
+						Data[i].SaleStatusName='待售';
+					}
+					Data[i].JiaoFang&&(Data[i].JiaoFang = formatTime_s(new Date(Data[i].JiaoFang)));
+					Data[i].KaiPan&&(Data[i].KaiPan = formatTime_s(new Date(Data[i].KaiPan)));
+				}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		setmobileSelect:function(){
+			var that=this;
+			getHouseCatJSON('1','12','LeiXing',setCheckbox_vue);
+			getHouseCatJSON('1','14','Zhuangxiu',setCheckbox_vue);
+			var url = '/api/LouPan/GetLoupanHuxingListInfo?loupanid='+that.LoupanId+'&top=50';
+			axios.get(url).then(function(res){//加载户型列表
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data;
+				if(!Data){return false;}
+				var i=0,len=Data.length,obj={},arr=[];
+				for(;i<len;i++){
+					obj = {Categoryid: Data[i].Detailsid, Chrcategory:Data[i].Shi+'室'+Data[i].Ting+'厅'+Data[i].Wei+'卫'};
+					that.HuXingList.push(obj);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		}
+	},
+	created: function (){
+		var that = this;
+		var url_obj = $.url(window.location.href).param();
+		if(!!url_obj['Loupanid'] && url_obj['Loupanid']!==''){
+			that.LoupanId = url_obj['Loupanid'];
+			that.getData();
+			that.getLoupanInfo();
+			that.setmobileSelect();
+		}
+		
+	}
+});
+function uploadsuccess(sid,surl,num){
+	mypage.isok_airscape=false;
+	mypage[num] = surl;
+	mypage.submitAirscape();
+}
+$(function(){
+	var oBox = document.getElementById("darg_node");
+	var oBar = document.getElementById("darg");
+	startDrag( oBox ,oBar);
+	$('#darg_node').darg_node();
+	$('#myForm').loadForm(function(myForm){
+		if(myForm[0].Name.value===''){
+			MSGwindowShow('house','0','请输入楼栋标号！','','');
+			return false;
+		}
+		if(myForm[0].Left.value==='' || myForm[0].Left.value==='0'){
+			MSGwindowShow('house','0','请标注楼栋位置！','','');
+			return false;
+		}
+		return true;
+	},function(myForm,data){
+		MSGwindowShow('house','1','提交成功！',window.location.href,'');
+	});
+	var d = new Date(),y = d.getFullYear();
+	//$('.Wdate').simpleDatepicker({ startdate: 1970, enddate: y+10 });
+
+	$('#Wdate01').simpleDatepicker({ startdate: 1970, enddate: y+10 },function(e){
+		mypage.KaiPan=e
+		
+	});
+
+	$('#Wdate02').simpleDatepicker({ startdate: 1970, enddate: y+10 },function(e){
+		mypage.JiaoFang=e 
+	});
+});
+
+$.fn.imagesLoaded=function(callback){var $this=$(this),$images=$this.find('img').add($this.filter('img')),len=$images.length,blank='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';function triggerCallback(){callback.call($this,$images)}function imgLoaded(event){if(--len<=0&&event.target.src!==blank){setTimeout(triggerCallback);$images.unbind('load error',imgLoaded)}}if(!len){triggerCallback()}$images.bind('load error',imgLoaded).each(function(){if(this.complete||typeof this.complete==="undefined"){var src=this.src;this.src=blank;this.src=src}});return $this};
+$.fn.darg_node = function(){
+	var darg_node = $('#darg_node'),darg_node_img = $('#darg_node_img'),i_submit = darg_node.find('.submit'),i_cancel = darg_node.find('.cancel');
+	var w_w = $(window).width(),w_h = $(window).innerHeight();
+	var darg = $('#darg'),darg_x = $('#darg_x'),darg_y = $('#darg_y');
+	darg_node_img.imagesLoaded(function(){
+		darg_node.css({'margin-left':-(w_w-darg_node.width())/2+'px','margin-top':-(w_h-darg_node.height())/2+'px'});
+	});
+	i_submit.click(function(e){
+		e.preventDefault();
+		darg_node.fadeOut();
+	});
+	i_cancel.click(function(e){
+		e.preventDefault();
+		darg_node.fadeOut();
+	});
+	$('#biaozhu_loudong').click(function(e){
+		e.preventDefault();
+		darg_node.fadeIn();
+		
+		if(darg_x.val()!==''){
+			darg.css({left:darg_x.val(),top:darg_y.val()});
+		}else{
+			darg.css({left:darg_node.width()/2,top:darg_node.height()/2});
+			
+		}
+	});
+}
+$.fn.loadForm = function(callbefore,callback,datajson){
+	var myForm = $(this),submit_btn = myForm.find('button[type="submit"]');
+	myForm.submit(function() {
+		
+		if(!!callbefore){
+			var result = callbefore.call(this,myForm);
+			if(!result){
+				return false;
+			}
+		}
+		submit_btn.addClass('disabled').prop('disabled',true);
+		var contentType = 'application/x-www-form-urlencoded';
+		var idata = myForm.serializeArray();
+		if(typeof datajson !=='undefined'){
+			idata = JSON.stringify(datajson);
+			contentType = 'application/json';
+		}
+		var url = mypage.isfabu?mypage.fabuUrl:mypage.editUrl;
+		
+		$.ajax({type:'POST',url:url,data:idata,dataType:'json',contentType:contentType,success:function(data){
+			submit_btn.removeClass('disabled').prop('disabled',false);
+			if(data.iserror===1){
+				MSGwindowShow('house','0','提交失败了哦！','','');
+				return false;
+			}
+			callback&&callback.call(this,myForm,data);
+		},error:function(){
+			MSGwindowShow('house','0','提交失败了哦！','','');
+			submit_btn.removeClass('disabled').prop('disabled',false);
+		}});
+		return false;
+	});
+}
+</script>

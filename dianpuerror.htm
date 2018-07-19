@@ -1,0 +1,77 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+    {
+	  setCookie("delurl",window.location.href);
+      location.href = "houseconfig.aspx?action=deljb&ID=" + id
+   }
+}
+function delAll(o,str,astr)
+{
+	if ( confirm("您确定要"+astr+"所有选中的信息吗？"))
+	{
+		setCookie("delurl",window.location.href);
+		document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+	}
+}
+function deljubao(o)
+{
+	if ( confirm("该操作将不可逆！\n您确定要清空所有数据吗？"))
+    {
+		setCookie("delurl",window.location.href);
+    	location.href = "houseconfig.aspx?action=deljb&styleid=1";
+   }
+}
+</script>
+<div class="wrapper">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li id="purl" class="{$colname}"><a href="?colname=" data-colname="">全部<em>{$num1}</em></a></li>
+			<li id="purl0" class="{$colname0}"><a href="?colname=0" data-colname="0">未查看</a></li>
+			<li id="purl1" class="{$colname1}"><a href="?colname=1" data-colname="1">已查看</a></li>
+			<div class="right" style="padding:0;">今日：{$num2}条　<a href="javascript:deljubao(this);" class="global2_btn_blue">清空全部举报</a></div>
+		</ul>
+	</div>
+	<form name="form2" id="form2" method="post" action="" style="display:block; padding:5px 0 20px;">
+	<div style="display:none;">按状态查找：<input type="radio" name="colname" id="colname_" value="" {$colname}>全部 <input type="radio" name="colname" id="colname_0" value="0" {$colname0}>未查看 <input type="radio" name="colname" id="colname_1" value="1" {$colname1}>已查看</div>
+	按举报房源查找：
+		<input type="text" name="keyword" value="{$keyword}"> <input type="submit" name="Submit3" id="Submit3" class="global2_btn" style="line-height:26px;" value="确定">
+	</form>
+	<form name="form" id="form" method="post" action="?action=deljb">
+	<input type="hidden" name="styleid" id="styleid" value="1">
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr>
+			<th>选择</th>
+			<th>举报房源</th>
+			<th>举报内容</th>
+			<th>房源性质</th>
+			<th>举报者IP</th>
+			<th>举报时间</th>
+			<th>状态</th>
+			<th>操作</th>
+		</tr>
+		<tag:Loop ListType="LISTJUBAOFANG" RecType="New" PageSize="50" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_dianpuerror_Tr.htm" />
+	</table>
+	<div style="margin-top:10px;">
+		<input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">全选　<a href="javascript:delAll(this,'2','设为已查看');" class="global2_btn_blue">设为已查看</a><a href="javascript:delAll(this,3,'删除');" class="global2_btn">删除选中</a>
+	</div>
+	</form>
+	<div style="padding:20px 0;">{$PageSplit}</div>
+</div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script>
+jQuery.fn.tab_change_iskill = function(){
+	var t=jQuery(this),list = t.find('a');
+	list.click(function(e){
+		e.preventDefault();
+		jQuery('#colname_'+jQuery(this).attr('data-colname')).trigger('click');
+		jQuery('#Submit3').click();
+	});
+}
+jQuery('#tab_change_iskill').tab_change_iskill();
+</script>
+</body>
+</html>

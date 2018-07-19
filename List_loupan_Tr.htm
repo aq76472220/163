@@ -1,0 +1,10 @@
+﻿<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td><input name="ID" type="checkbox" id="ID" value="{$ID}"></td>
+	<td><a href="{$fcurl}loupan_{$ID}.html" target=_blank>{$chrloupan}</a></td>
+	<td>{$chrcategory}</td>
+	<td>{$smallcategory}</td>
+	<td>{$xiashoutypeid}</td>
+	<td>{$iskill}</td>
+	<td>{$dtappenddate}</td>
+	<td><a href="hongbao_list.aspx?action=fahongbao&tableid=loupan&cid={$ID}&chrtitle={$chrloupan}" class="global2_btn_red">塞红包</a> <a href="?action=price&ID={$ID}" class="global2_btn_orange">走势</a> <a href="?action=e1&ID={$ID}" class="global2_btn_blue">房型图</a> <a href="?action=edit&ID={$ID}" class="global2_btn_blue">编辑</a> <a href="javascript:void(0);" onclick="return del('{$ID}');" class="global2_btn">删除</a></td>
+</tr>

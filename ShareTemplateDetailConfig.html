@@ -1,0 +1,183 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.fare_case { position:absolute; right:50px; top:35px;}
+.fare_case .title { margin-bottom:10px; font-size:14px; color:#666;}
+.fare_case .inner { width:200px; border:1px solid #eee; border-radius:3px; padding:9px;}
+.fare_case h3 { font-weight:normal; color:#404040; font-size:14px; line-height:20px; max-height:40px; overflow:hidden; margin:0;}
+.fare_case p { font-size:12px; color:#aaa; height: 54px; overflow: hidden; margin-top: 4px; line-height: 18px; padding-right: 60px;}
+.fare_case img { position:absolute; right:8px; bottom:8px; height:54px; width:54px;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<div class="wrapper_house clearfix">
+	<div class="col_main"><div class="main_wrap" id="app">
+		<div class="inner_sub_box">
+			<div class="hd clearfix">{{p_tit}}</div>
+			<ul class="ul-form clearfix">
+				
+				<li>
+					<span class="txt">唯一标识：</span>
+					<div class="con">
+						<input type="text" @blur="isok_Id=Id==''?true:false" v-model="Id" placeholder="请输入" class="int inp-form-sz inp3">
+						<span class="zhu1 zhu2">分享唯一标识，不能重名，如：index、chuzhu、shoulou</span>
+						<span class="zhu1" v-show="isok_Id">请输入唯一标识</span>
+					</div>
+				</li>
+				<li>
+					<span class="txt">图片：</span>
+					<div class="con up_img">
+						<input type="hidden" v-model="Module" />
+						
+						<input type="hidden" name="ImagePath" v-model="ImagePath" />
+						<span class="po_re" v-show="ImagePath!=''"><img :src="'../'+ImagePath" /><span class="reup" @click="reupload('ImagePath')">重新上传</span></span>
+						<span class="" v-show="ImagePath==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=ImagePath&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+						<span class="zhu1" v-show="isok_ImagePath">请上传分享图片</span>
+					</div>
+				</li>
+				<li>
+					<span class="txt">标题：</span>
+					<div class="con">
+						<input type="text" @blur="isok_Title=Title==''?true:false" v-model="Title" placeholder="请输入" class="int inp-form-sz inp3">
+						<span class="zhu1" v-show="isok_Title">请输入分享标题</span>
+					</div>
+				</li>
+				<li>
+					<span class="txt">摘要：</span>
+					<div class="con">
+						<input type="text" @blur="isok_Summary=Summary==''?true:false" v-model="Summary" placeholder="请输入" class="int inp-form-sz inp3">
+						<span class="zhu1" v-show="isok_Summary">请输入分享摘要</span>
+					</div>
+				</li>
+			</ul>
+			<input type="button" @click="submitHandle()" value="确认提交" class="btn-form ani">
+			<div class="fare_case">
+				<div class="title">分享效果预览：</div>
+				<div class="inner">
+					<h3 id="for_url_tit">{{Title}}</h3>
+					<p id="for_url_con">{{Summary}}</p>
+					<img :src="ImagePath" id="for_url_img" alt="">
+				</div>
+			</div>
+		</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config"><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig" class="on"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+window['Isfabu'] = true;
+var mypage = new Vue({
+	el: '#app',
+	components: {},
+	data: {
+		Id:'',
+		Module:'2',
+		Title:'',
+		Summary:'',
+		ImagePath:'',
+		p_tit:'添加分享',
+		isok_Id:false,
+		isok_Title:false,
+		isok_Summary:false,
+		isok_ImagePath:false,
+		url_action:'AddNewTemplate'
+	},
+	methods: {
+		reupload:function(forname){
+			var that = this;
+			that[forname]='';
+		},
+		submitHandle:function(){
+			var that = this,url = '/api/Share/'+that.url_action,flag=true,warn = "";
+			if(this.Id == "") {
+				that.isok_Id=true;
+			}else if(this.ImagePath == "") {
+				that.isok_ImagePath=true;
+			}else if(this.Summary == "") {
+				that.isok_Summary=true;
+			}else if(this.Title==""){  
+				that.isok_Title=true;
+			}else{
+				flag=false
+				var obj = {
+					Id: that.Id,
+					Module:that.Module,
+					Title: that.Title,
+					Summary: that.Summary,
+					ImagePath: that.ImagePath
+				};
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','1','提交成功了哦！','shareTemplateListConfig','');
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		},
+		getData:function(id){
+			var that = this,url='';
+			url = '/api/Share/GetTemplate?pageShareStyle='+id;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data;
+				for(var key in Data){
+					that[key] = Data[key];
+				}
+				if(!Data['ImagePath']){
+					that.ImagePath = '';
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		}
+	},
+	created: function (){
+		var that = this;
+		
+		var url_obj = $.url(window.location.href).param();
+		
+		if(!!url_obj['id'] && url_obj['id']!==''){
+			window['Isfabu'] = false;
+			that.url_action = 'UpdateTemplate';
+			that.getData(url_obj['id']);
+			that.Id = url_obj['id'];
+			that.p_tit = '编辑分享';
+		}
+	}
+});
+function uploadsuccess(sid,surl,num){
+	mypage.isok_ImagePath=false;
+	mypage[num] = surl;
+}
+</script>

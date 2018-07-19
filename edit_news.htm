@@ -1,0 +1,167 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" rev="stylesheet" href="{$atplPath}js/colorpicker/colorpicker.css" />
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/jquery.cookie.js"></script>
+<script charset="utf-8" src="/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="/kindeditor/lang/zh_CN.js"></script>
+<script>
+function checkform(o){
+	if(o.chrtitle.value==""){
+		alert("请输入房产资讯标题!");
+		o.chrtitle.focus();
+		return false;
+	}
+	if(o.qu_catgoryid.value==""  ){
+		alert("请选择房产资讯栏目!");
+		o.qu_catgoryid.focus();
+		return false;
+	}
+	if(o.intorder.value==""){
+		alert("请输入排序！");
+		o.intorder.focus();
+		return false;
+	}
+	if(!isInt(o.intorder.value)){
+		alert("排序只能为数字！");
+		o.intorder.select();
+		return false;
+	}
+	if(o.hits.value==""){
+		alert("请输入点击数！");
+		o.hits.focus();
+		return false;
+	}
+	if(!isInt(o.hits.value)){
+		alert("点击数只能为数字！");
+		o.hits.select();
+		return false;
+	}
+	
+}
+</script> 
+<Style>
+#keytishi { width:330px; height:auto;  position:absolute; display:none;} /*提示层样式*/
+.my_prop_img{ width:100%; margin:0; padding:0}
+.my_prop_imgitem{ width:125px;float:left;margin-right:25px;margin-top:5px;}
+</style>
+<form name="form1" method="post" action="?action=editSave" onsubmit="return checkform(this)">
+<input type=hidden name=gotourl value="{$gotourl}">
+<input type=hidden name=ID value="{$ID}">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">修改房产资讯</th>
+		<th style="text-align:right; padding-right:10px;"><a href="javscript:void(0);" onclick="return window.history.go(-1);" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">标题：</span>
+					<span class="d"><input name="chrtitle" id="chrtitle" value="{$chrtitle$}" class="s_ipt" type="text" style="width:500px;" /> <span id="cp" class="colorSelector" style="background-color:{$color$};"><input type="hidden" name="color" class="input" value="{$color$}"></span>　　<input name="isfont" type="radio"  value="0" {$isfont0}>不加粗 <input name="isfont" type="radio" value="1" {$isfont1} >加粗</span>
+				</li>
+				<li>
+					<span class="a">分类：</span>
+					<span class="b">{categoryid}</span>
+					<span class="a">关联楼盘：</span>
+					<span class="b">
+<input  name="xiaoqu" id="xiaoqu" class="s_ipt" type="text" onkeyup="getKeyWordLoupan();" onclick="getKeyWordLoupan();" autocomplete="off" onblur='if(ismouse=="0"){document.getElementById("keytishi").style.display = "none";}' value="{$chrloupan$}">　<em class="global_tip">请输入楼盘名称</em>
+<div id="keytishi" onmouseover="ismouse='1';" onmouseout="ismouse='0';"><iframe id="listComm" src=""  scrolling="no" width="330" frameborder="0" ></iframe></div>
+<input id="loupanid" name="loupanid" type="hidden"  value="{$loupanid$}"/>
+					</span>
+					
+				</li>
+				<li>
+					<span class="a">封面：</span>
+					<span class="d">
+<span id="str1">
+<img src="{$url0}" id="for_url_0" style=" display:block; width:200px; height:150px;"><a href="javscript:void(0);" class="global_btn" onclick="return hid1()">重新上传</a>
+</span>
+<span id="str2" style="display:none">
+<p class="global_tip">仅限JPG/PNG/GIF　最佳尺寸：200x150</p>
+<iframe name="ifm_upload" frameborder="0" width="100%" height="45" style="vertical-align:top;" scrolling="no" src="upload.aspx?type=0&table_id=house_news"></iframe>
+</span>
+<input type=hidden name="url0" id="url0" value="{$url0}">
+<input type="hidden" name="filewidth" value="200">
+<input type="hidden" name="fileheight" value="150">
+					</span>
+				</li>
+				<li>
+					<span class="a">网址跳转：</span>
+					<span class="d">
+<input type="radio" value="0" name="styleid" {$styleid1$} onclick="document.getElementById('xtr1').style.display='none';">不启用<input type="radio" value="1" name="styleid" {$styleid2$} onclick="document.getElementById('xtr1').style.display='';">启用<span id="xtr1" style="display:{$display$}">，跳转至：<input type="text" name="chrurl" class="s_ipt" value="{$chrurl$}"> <em class="global_tip">(直接跳转到指定的网址)</em></span>
+					</span>
+				</li>
+				<li>
+					<span class="a">关键词：</span>
+					<span class="d"><input name="keyword" value="{$keyword$}" class="s_ipt" style="width:500px;" type="text" />　<em class="global_tip">多个用,隔开</em></span>
+				</li>
+				<li>
+					<span class="a">作者：</span>
+					<span class="b"><input name="chrauthor" id="chrauthor" value="{$chrauthor$}" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+					<span class="a">来源：</span>
+					<span class="b"><input name="chrfrom" value="{$chrfrom$}" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li>
+					<span class="a">内容：</span>
+					<span class="d"><textarea cols="80" id="Chrcontent" name="Chrcontent" rows="10">{$chrcontent$}</textarea>
+	<script>
+		window['logincookieStr'] = $.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+		KindEditor.ready(function(K) {
+			var editor = K.create('textarea[name="Chrcontent"]', {
+				uploadJson : '/kindeditor/upload_json.ashx?' + window["logincookieStr"],
+				afterBlur: function(){this.sync();},
+				fileManagerJson : '/kindeditor/file_manager_json.ashx',
+
+				allowFileManager : true,width : '100%',height : '600px'
+			});
+		});
+	</script></span>
+				</li>
+				<li>
+					<span class="a">排序：</span>
+					<span class="b"><input value="{$intorder$}" id="intorder" name="intorder" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" />　<em class="global_tip">越大越靠前</em></span>
+					<span class="a">点击：</span>
+					<span class="b"><input name="hits" id="hits" value="{$hits$}" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li>
+					<span class="a">状态：</span>
+					<span class="b"><input name="iskill" type="radio"  value="0"  {$iskill1$}>等待审核 <input name="iskill" type="radio"  value="1"  {$iskill2$}>审核通过</span>
+					<span class="a">加入TOP1：</span>
+					<span class="b"><input type="radio" value="0" name="toutiao" {$toutiao0}>不加入 
+					<input  type="radio" value="1" name="toutiao" {$toutiao1}>加入　<em class="global_tip">将自动替换以前的</em></span>
+				</li>
+				
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+<script src="{$atplPath}js/colorpicker/colorpicker.2.0.js"></script>
+<script>
+function hid1(){
+	$('#str1').hide();
+	$('#str2').show();
+}
+function hid2(){
+	$('#str2').hide();
+	$('#str1').show();
+}
+function uploadsuccess(sid,surl,snum){
+	$('#for_url_'+sid).attr('src',surl);
+	hid2();
+}
+(function($){
+	if($('#url0').val() === ''){
+		hid1();
+	}
+	$('#cp').ColorPicker();
+})(jQuery);
+</script>
+</body>
+</html>

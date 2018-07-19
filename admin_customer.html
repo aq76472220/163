@@ -1,0 +1,290 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4_0 { color:#f93;}
+.pub_4_1 { display:none;}
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.dealType0 { color:#5cc55c;}
+.dealType1 { color:#ffbe78;}
+.dealType2 { color:#ff3259;}
+
+.redc{color:#fe6548!important;}
+.greenc{color:#5cc55c!important;}
+.bluec{color: #098de9!important}
+.yellowc{color:#f93!important;}
+.threec{color: #999!important}
+.ohidden{overflow: hidden!important;}
+
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+window['cookieName'] = 'myDelegateid';
+window['apiurl'] = '/api/HouseCustomer/GetCustomerInfoBySearch';
+window['keyvalues'] = {
+	'CollectType':'-1', 
+	'pageSize':'20',
+	'Keywords':'',
+    "PageID":window['pageid'],
+    'Top':''
+};
+</script> 
+<div class="wrapper" id="app">
+	<div class="tab_01" id="tab_change_iskill">  
+        <ul class="clearfix">
+            <li :class="CollectType=='-1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'-1'});">全部<em></em></a></li>
+            <li :class="CollectType=='0'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'0'});">关注<em></em></a></li>
+            <li :class="CollectType=='1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'1'});">收藏<em></em></a></li>
+            <li :class="CollectType=='2'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'2'});">开盘通知<em></em></a></li>
+            <li :class="CollectType=='3'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'3'});">降价通知<em></em></a></li>
+            <li :class="CollectType=='4'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({CollectType:'4'});">团购意向<em></em></a></li>
+            <!--  右边按钮 -->
+            <div class="right" style="padding:0;">
+                <a href="/api/HouseCustomer/ExportHouseCustomerByType" class="global2_btn_blue">导出数据</a>
+            </div>
+
+        </ul>
+
+
+    </div>
+ 
+
+    <!-- 搜索表单 -->
+	<form name="form2" method="get"  @submit.prevent="submitSearch()"  action=""  style="display:block; padding:5px 0 20px;"> 
+        <input type="text" v-model="Keywords" class="Wdate" style="width:260px;" placeholder="楼盘关键词搜索"  value=""> 
+        <input type="submit" value="搜索" class="global2_btn_orange" style="line-height:28px;">
+    </form>
+    
+
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+            <tr>
+                <th width="60">&nbsp;</th>
+                <th>客户信息</th>
+                <th>关联楼盘</th>
+                <th>IP地址</th>
+                <th>收集方式</th>
+                <th>提交时间</th>
+                <th>操作</th> 
+            </tr>
+            <tr is="item" v-for="(item,index) in displayedItems" :key="item.id" :item="item" :index="index"></tr> 
+    </table>
+
+	<div style="margin-top:15px; padding:10px; background-color:#fff;">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label><a href="javascript:void(0);" @click.prevent="piliang('1')" class="global2_btn">删除</a>
+    </div>
+
+    <!-- 分页 -->
+    <div class="pageNavigation" id="pageNavigation"></div> 
+</div>
+<script type="text/x-template" id="page-template">
+<tr :id="'item'+item.Id" align="center"> 
+	<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td> 
+	<td>
+        {{item.CustomerName}}
+        <span class="inline-block"><i class="ico_phone"></i>{{item.CustomerTel}}</span>
+        <!-- <span class="inline-block"><i class="ico_wechat"></i>{{item.WeChat}}</span> -->
+    </td> 
+    <td>{{item.LoupanName}}</td>
+    <td>{{item.CustomerIp}}</td>
+    <td>
+        <span v-if='item.CollectType==0'  class='bluec'>关注</span>
+        <span v-else-if='item.CollectType==1' class='bluec'>收藏</span>
+        <span v-else-if='item.CollectType==2' class='threec'>开盘通知</span>
+        <span v-else-if='item.CollectType==3' class='redc'>降价通知</span>
+        <span v-else-if='item.CollectType==4'  class='yellowc'>团购意向</span>
+        <span v-else-if='item.CollectType==5'  class='threec' >浏览历史</span> 
+    </td>
+    <td>{{item.Dtappenddate}}</td>  
+	<td align="center"><a href="#" @click.prevent.self="del([item.Id],index)" class="global2_btn">删除</a></td>
+</tr>
+</script>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+ 
+
+var Item = {
+	props: ['item','index'],
+	methods: {
+		selectOne:function(index){
+			var that = this;
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		}, 
+		del:function(id_arr,index){
+			if(!window.confirm('确定删除吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		}
+	},
+	template: '#page-template'
+};
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item
+	},
+	data: {
+        CollectType:'-1',
+        Keywords:'',
+		isSelectAll:false,
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [],
+		ZhongJieList:[],
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0
+	},
+	methods: {
+		Del:function(id_arr,callback){
+			var that = this,url = '/api/HouseCustomer/HouseCustomerAdminDelete?timer='+Date.parse(new Date());
+			
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','删除成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		}, 
+		selectAll:function(){
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		}, 
+		piliang:function(val){
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Id);
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+		},
+        
+        submitSearch:function(){ // 搜索
+			var that = this;   
+			that.filterClick({Keywords:that.Keywords});
+			return false;
+		},
+        
+        filterClick:function(obj){// 楼盘状态过滤
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+ 
+
+		setPageList:function(){
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+		getNext:function(){
+			var that = this;
+			window['keyvalues'].pageid = parseInt(window['keyvalues'].pageid)+1
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.getData();
+		},
+		getNewData:function(){
+			var that = this;
+			that.displayedItems = [];
+			that.ifNoMore = false;
+			that.getData();
+		},
+		getData: function () {
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(that.TotalPage===0){
+					return false;
+				}
+				history.pushState(null, '', '?p='+that.CurrentPage);
+				for(var i=0;i<Data.length;i++){ 
+					var idate = new Date(Data[i].CreateTime);
+					Data[i].Dtappenddate = formatTime(idate);
+					Data[i].checked = false;
+				}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				
+				
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+		getNum:function(){
+			var url = '/api/FangYuan/GetDelegateNum';
+			axios.get(url).then(function(res){
+				if(!!$.isEmptyObject(res.data)){return;}
+				for(var k in res.data){
+					$('#num_'+k).html(res.data[k]);
+				}
+			})
+		}
+	},
+	
+	created: function () {
+		var that = this;
+		that.getData();
+		that.getNum();
+	}
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+
+.t0{top:0px!important}
+.relative{position: relative!important}
+.fl{float: left;}
+.ohidden{overflow: hidden;}
+.mr10{margin-right:10px;}
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/XuQiu/SearchXuqiu'; //获取专题， 
+window['keyvalues'] = { //请求列表参数 
+	"PageSort":'', //房源排序
+	'IsKill':'-2', //求租求购审核状态，默认已审核
+    'PriceRange':'',//价格范围
+    'Id':'',//资讯类别 
+	'PageSize':'20',//每页条数
+	'Keywords':'',//关键字
+	"pageid":window['pageid'],// 当前分页页数
+	'Top':''//前top条
+};
+</script>
+<div class="wrapper" id="app">
+    
+    <div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+            <li :class="cur==''?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Id:'',IsKill:'',cur:''});">全部<em></em></a></li>
+            <li :class="cur=='1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Id:0,IsKill:'',cur:'1'});">求租<em></em></a></li>
+            <li :class="cur=='2'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Id:1,IsKill:'',cur:'2'});">求购<em></em></a></li> 
+            <li :class="cur=='3'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Id:'',IsKill:0,cur:'3'});">待审<em></em></a></li>
+            
+			<!--  右边按钮 -->
+			<div class="right" style="padding:0;">
+				<!-- <a href="###" class="global2_btn_blue global2_btn_add">添加求租求购信息</a> -->
+			</div>
+
+		</ul>
+	</div>
+
+	<!-- 搜索表单 -->
+	<form name="form2" method="get"  @submit.prevent="submitSearch()"  action=""  style="display:block; padding:5px 0 20px;">
+		<input type="text" v-model="Keywords" placeholder="电话/内容关键词搜索" class="Wdate" style="width:240px;" value=""> 
+		<input type="submit" value="搜索" class="global2_btn_orange" style="line-height:28px;">
+	</form>
+ 
+	<!-- 主体内容 -->
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr> 
+			<th width="60">&nbsp;</th>
+			<th>性质</th>
+			<th>标题</th>
+			<th>联系方式</th>
+            <th>发布人</th>
+            <th>发布人IP</th>
+            <th>发布时间</th>
+            <th>状态</th>
+            <th>审核</th> 
+			<th>操作</th>  
+		</tr>
+		<tr is="item" v-for="(item,index) in displayedItems" :key="item.Newsid" :item="item" :index="index"></tr>
+	</table>
+	
+	<!-- 批量操作html -->
+	<div class="filter_bar">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label><a href="javascript:void(0);" @click.prevent="piliang('0')" class="global2_btn">删除</a>
+	</div>
+    
+    <!-- 弹框 -->
+        <div class="agent_tips_window" style="display: none; width: 800px; margin-left: -400px; display:block; height:600px; margin-top:-300px;" v-show="agent_tips_window">
+            <div class="hd">
+                <a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a>
+                <span class="tit">添加编辑</span>
+            </div>
+
+            <div class="bd">
+                <ul class="ul-form clearfix">
+					<li class="ohidden">
+						<div class="fl  relative">
+							<span class="txt t0">性质：</span>
+							<div class="con">
+								<div class="fl mr10">
+									<input type="hidden" name=" " value="" v-model='Styleid'>
+									<label class="open_close2" :class="Styleid==0? 'on':''" @click='Styleid=0'>求租</label>
+									<label class="open_close2" :class="Styleid==1? 'on':''" @click='Styleid=1'>求购</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="fl relative">
+							<span class="txt t0"> 标题：</span>
+							<div class="con">
+								<input type="text" min="0" name="" class="int inp-form-sz inp7 tac" v-model='Chrtitle' placeholder="">
+							</div>
+						</div>
+					</li>
+
+				 
+					<li>
+						<span class="txt"> 内容：</span>
+						<div class="con">
+							<textarea class="int inp-form-sz" style="width:500px; height:100px;" v-model='Chrcontent' placeholder=""> </textarea> 
+						</div>
+					</li>
+
+					<li>
+						<span class="txt">联系方式：</span>
+						<div class="con"> 
+							<input type="text" min="0" name="" class="int inp-form-sz inp7 tac" v-model='Chrtel' placeholder="">
+						</div>
+					</li>
+
+                    <li>
+                        <span class="txt">内容审核：</span>
+                        <div class="con">
+                            <input type="hidden" name=" " value="" v-model='Iskill'>
+                            <label class="open_close2" :class="Iskill==0? 'on':''" @click='Iskill=0'>待审</label>
+                            <label class="open_close2" :class="Iskill==1? 'on':''" @click='Iskill=1'>审核通过</label>
+                            <label class="open_close2" :class="Iskill==-1? 'on':''" @click='Iskill=-1'>审核不通过</label>
+                        </div>
+                    </li>
+
+
+                    <li  class="ohidden">
+						
+						<div class="fl relative">
+							<span class="txt t0">显示排序：</span>
+							<div class="con">
+								<input type="number" min="0" name="" class="int inp-form-sz inp2 tac" v-model='Intorder' placeholder="数字越大越靠前">
+							</div>
+						</div>
+
+						<div class="fl relative">
+							<span class="txt t0">成交状态：</span>
+							<div class="con">
+								<input type="hidden" name=" " value=" " v-model='IsTrade'>
+								<label class="open_close2" :class="IsTrade==false? 'on':''" @click='IsTrade=false'>未成交</label>
+								<label class="open_close2" :class="IsTrade==true? 'on':''" @click='IsTrade=true'>已成交</label>
+							</div>
+						</div> 
+                    </li> 
+                </ul>
+                <input type="button" @click="submitHandle()" value="确认提交" class="btn-form ani">
+            </div>
+        </div>
+        <!-- 遮罩 -->
+        <div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+
+	<!-- 分页 -->
+	<div class="pageNavigation" id="pageNavigation"></div>  
+</div> 
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+	<tr align="center">  
+		<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td>
+        <td>
+            <span v-if='item.Styleid==0' class='pub_1'>求租</span>
+            <span v-else-if='item.Styleid==1' class='pub_4'>求购</span> 
+        </td>
+        <td>{{item.Chrtitle}}</td>
+        <td>{{item.Chrtel}}</td>
+        <td>{{item.UserName}}</td>
+        <td>{{item.Chrip}}</td>
+        <td>{{item.Flushdate}}</td> 
+
+        <td> 
+			<span class="open_close" :class="item.Istrade ? 'on':''" @click.prevent="chengjiao([item.Detailsid],!item.Istrade,index)"></span>
+        </td>
+
+        <td>  
+			<span class="open_close" :class="item.Iskill==1 ? 'on':''" @click.prevent="shenhe([item.Detailsid],item.Iskill,index)"></span>
+        </td>
+        
+        <td style='width:240px'>
+            <a href="#" @click.prevent.self="edit(item.Detailsid,item.Chrtitle,item.Styleid,item.Chrcontent,item.Chrtel,item.Iskill,item.Intorder,item.Istrade,index)" class="sys_btn_a"><i class="edit"></i>编辑</a>
+            <a href="#" @click.prevent.self="del([item.Detailsid],index)" class="sys_btn_a"><i class="del"></i>删除</a>
+        </td>  
+	</tr>
+</script>
+
+
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+function returnFirstpage(){  //分页
+	window['keyvalues'] = $.extend(window['keyvalues'],{"pageid":"1"});
+	mylist&&mylist.getNewData();
+	$('#returnFirstPage1').hide();
+}
+
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			Hongbao_isopen:window['Mh163k_Plugin_Hongbao_isopen']==='1'
+		}
+	},
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		chengjiao:function(id,val,index){// 成交
+			var that = this;
+			that.$parent.Chengjiao(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'Istrade', val);
+			});
+		},
+		shenhe:function(id,val,index){// 审核
+			var that = this;
+			if(val=='1'){
+				val = '-1'	
+			}else{
+				val = '1'
+			}
+			that.$parent.Shenhe(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'Iskill', val);
+			});
+		},
+        edit:function(Detailsid,Chrtitle,Styleid,Chrcontent,Chrtel,Iskill,Intorder,IsTrade,index){
+			var that = this; 
+			that.$parent.Detailsid = Detailsid;
+			that.$parent.Chrtitle = Chrtitle;
+			that.$parent.Styleid = Styleid;
+			that.$parent.Chrcontent = Chrcontent;
+			that.$parent.Chrtel = Chrtel;
+            that.$parent.Iskill = Iskill;
+            that.$parent.Intorder = Intorder;
+            that.$parent.IsTrade = IsTrade;
+			that.$parent.openTipsWindow();
+        },
+		selectOne:function(index){// 批量选择单个
+			var that = this;
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		},
+		del:function(id_arr,index){// 删除
+			if(!window.confirm('您确定要删除该资讯吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		},
+	 
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+	},
+	data: {
+		isSelectAll:false, //批量删除全选状态
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [], 
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0,
+        Keywords:'',//搜索关键字 
+		Detailsid:'',
+		Styleid:'',
+		Chrtitle:'',
+		Chrcontent:'',
+		Chrtel:'',
+        Iskill:'',
+        Intorder:'',
+        IsTrade:'',
+        cur:''
+	}, 
+  
+	methods: {
+        closeTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = false;
+        },
+        openTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = true;
+		},
+
+		Chengjiao:function(id,val,callback){// 成交
+			var that = this,url = '/api/XuQiu/XuQiuAdminUpdateTrade'; 
+			$.post(url,{XuQiuIds:id,IsTrade:val}).then(function(res){
+				MSGwindowShow('house','0','操作成功了哦！','','');
+				callback&&callback.call();
+			});
+			return false;
+		},
+		
+		Shenhe:function(id,val,callback){//审核
+			var that = this,url = '/api/XuQiu/XuQiuAdminUpdateKill'; 
+			$.post(url,{XuQiuIds:id,AuditStatusType:val}).then(function(res){
+				MSGwindowShow('house','0','操作成功了哦！','','');
+				callback&&callback.call();
+			});
+			return false;
+		},
+
+		selectAll:function(){ //批量删除全选
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		},
+		piliang:function(val){//批量操作
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Detailsid); //批量修改个Id
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='0'){
+				that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+			}
+		},
+
+		Del:function(id_arr,callback){ //删除某一项 
+			var that = this,url = '/api/XuQiu/XuQiuAdminDelete?timer='+Date.parse(new Date());
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','删除成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+		submitSearch:function(){ // 搜索
+			var that = this;   
+			that.filterClick({Keywords:that.Keywords});
+			return false;
+		},
+
+		filterClick:function(obj){// 楼盘状态过滤
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+
+        submitHandle:function(){ // 添加或者修改
+			var that = this,url = '/api/XuQiu/XuQiuAdminUpdate';
+			if(that.Intorder === "") {
+				MSGwindowShow('house','0','请输入排序数字','','');
+			}else{ 
+				var obj = {
+					Detailsid:that.Detailsid,
+					Chrtitle:that.Chrtitle,
+					Styleid:that.Styleid,
+					Chrcontent:that.Chrcontent,
+					Chrtel:that.Chrtel,
+                    Intorder:that.Intorder,
+                    Iskill:that.Iskill,
+                    IsTrade:that.IsTrade
+				};
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+						that.getData();
+						that.closeTipsWindow();
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		}, 
+
+ 
+	 
+		setPageList:function(){// 设置分页具体展示
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+	 
+		getNewData:function(){
+			var that = this; 
+			that.ifNoMore = false;
+			that.displayedItems = [];
+			that.getData();
+		},
+		getData: function () {  // 加载数据
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(Data.length===0){return false;}
+				for(var i=0;i<Data.length;i++){ 
+					var idate = '';
+					if(!Data[i].Flushdate){
+						idate = formatTime_s(new Date(Data[i].Dtappenddate));
+					}else{
+						idate = formatTime(new Date(Data[i].Flushdate));
+					}
+					Data[i].Flushdate = idate;
+					Data[i].showSuper = false;
+					Data[i].checked = false;
+				} 
+				
+				that.displayedItems = [];
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+
+				// 分页相关
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				history.pushState(null, '', '?p='+that.CurrentPage);
+				//如果不是第一页
+				if(that.CurrentPage!==1){
+					$('#returnFirstPage1')[0]&&$('#returnFirstPage1').show();
+				}
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	
+	created: function () {
+		var that = this;
+		that.getData(); 
+	}
+});
+ 
+</script>
+</body>
+</html>

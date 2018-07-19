@@ -1,0 +1,7 @@
+﻿ <tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="Number" align="center"><input type="hidden" name="id" value="{$ID}" />{$NID}</td>
+	<td><input type="text" name="chrlevel_{$ID}"  value="{$chrlevel}"/></td>
+	<td><input type="text" name="intnum_{$ID}"  value="{$intnum}" onKeyUp="if(isNaN(value))execCommand('undo')"/></td>
+	<td><input type="text" name="chrimage_{$ID}"  value="{$chrimage}"/></td>
+	<td><img src="../template/pc/main/default/images/house/{$chrimage}" /></td>
+</tr>

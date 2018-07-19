@@ -1,0 +1,255 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<div class="wrapper_house clearfix">
+	<div class="col_main"><div class="main_wrap" id="app">
+		<div class="inner_sub_box">
+		<div class="hd">特色标签</div>
+		<ul class="ul-form clearfix">
+			<li style="display:none;">
+				<div class="txt_2">快速批量添加</div>
+				<div class="con">
+					<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:15px;">
+						<tr>
+							<td><textarea class="int inp-form-sz inp-form-textarea" style="width:400px; height:200px;" placeholder="一行一个"></textarea></td>
+							<td valign="bottom" style="padding-left:15px;"><button type="submit" class="btn-form purple ani add small1">确认添加</button></td>
+						</tr>
+					</table>
+					添加为：<input type="hidden" name="Cengzhufangshi" value="整租">
+					<label class="open_close2 on">楼盘/小区标签</label>
+					<label class="open_close2">二手房标签</label>
+					<label class="open_close2">出租房标签</label>
+					<label class="open_close2">房型标签</label>
+				</div>
+			</li>
+			<li>
+				<div class="txt_2">小区标签</div>
+				<div class="con_2">
+					<item-tese v-for="(tag, index) in Tese31List" :key="tag.Categoryid" :tag="tag" :index="index" forname="Tese31" :length="Tese31List.length"></item-tese>
+					<div class="tag_selector tag_selector_add" @click="openTipsWindow('31')">
+						添加<span class="add"></span>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="txt_2">楼盘标签</div>
+				<div class="con_2">
+					<item-tese v-for="(tag, index) in Tese29List" :key="tag.Categoryid" :tag="tag" :index="index" forname="Tese29" :length="Tese29List.length"></item-tese>
+					<div class="tag_selector tag_selector_add" @click="openTipsWindow('29')">
+						添加<span class="add"></span>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="txt_2">二手房标签</div>
+				<div class="con_2">
+					<item-tese v-for="(tag, index) in Tese24List" :key="tag.Categoryid" :tag="tag" :index="index" forname="Tese24" :length="Tese24List.length"></item-tese>
+					<div class="tag_selector tag_selector_add" @click="openTipsWindow('24')">
+						添加<span class="add"></span>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="txt_2">出租房标签</div>
+				<div class="con_2">
+					<item-tese v-for="(tag, index) in Tese25List" :key="tag.Categoryid" :tag="tag" :index="index" forname="Tese25" :length="Tese25List.length"></item-tese>
+					<div class="tag_selector tag_selector_add" @click="openTipsWindow('25')">
+						添加<span class="add"></span>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="txt_2">商铺标签</div>
+				<div class="con_2">
+					<item-tese v-for="(tag, index) in Tese26List" :key="tag.Categoryid" :tag="tag" :index="index" forname="Tese26" :length="Tese26List.length"></item-tese>
+					<div class="tag_selector tag_selector_add" @click="openTipsWindow('26')">
+						添加<span class="add"></span>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="agent_tips_window" style="display:block;height: 310px; margin-top:-155px;" v-show="agent_tips_window">
+			<div class="hd"><a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a><span class="tit">快速批量添加</span></div>
+			<div class="bd">
+				<div class="ul-form clearfix">
+						<div style="padding:10px 0;">
+							添加为：<input type="hidden" name="add_id" v-model="add_id" />
+							<label class="open_close2" :class="add_id==31?'on':''" @click="add_id=31">小区标签</label>
+							<label class="open_close2" :class="add_id==29?'on':''" @click="add_id=29">楼盘标签</label>
+							<label class="open_close2" :class="add_id==24?'on':''" @click="add_id=24">二手房标签</label>
+							<label class="open_close2" :class="add_id==25?'on':''" @click="add_id=25">出租房标签</label>
+							<label class="open_close2" :class="add_id==26?'on':''" @click="add_id=26">商铺标签</label>
+						</div>
+							<table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:15px;">
+								<tr>
+									<td><textarea class="int inp-form-sz inp-form-textarea" style="width:600px; height:200px;" placeholder="一行一个" v-model="add_txt"></textarea></td>
+									<td valign="bottom" style="padding-left:15px;"><button type="button" @click="addTag()" class="btn-form purple ani add small1">确认添加</button></td>
+								</tr>
+							</table>
+				</div>
+			</div>
+		</div>
+		<div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+	</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config.html"><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig.html"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig.html"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig.html"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig.html" class="on"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig.html"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig.html"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig.html"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig.html"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+var Item_tese = {
+	props: ['tag','index','forname','length'],
+	methods: {
+		delTag:function(id,index,forname){
+			var that = this,url = '/api/Category/DeleteCategory?categoryId='+id;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent[forname+'List'].splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		setSort:function(id,bool,index,forname){
+			var that = this,url = '/api/Category/UpdateCategorySort?categoryId='+id+'&direction='+bool;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var arr = that.$parent[forname+'List'];
+				if(!bool){
+					Vue.set(arr, index , arr.splice(index + 1, 1, arr[index])[0]);
+				}else{
+					Vue.set(arr, index - 1, arr.splice(index, 1, arr[index - 1])[0]);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		}
+	},
+	template:'<div class="tag_selector"><span class="prev" v-show="index!=0" @click.prevent.self="setSort(tag.Categoryid,true,index,forname)"></span>{{tag.Chrcategory}}<span class="del" @click.prevent.self="delTag(tag.Categoryid,index,forname)"></span><span class="next" v-show="index!=length-1" @click.prevent.self="setSort(tag.Categoryid,false,index,forname)"></span></div>'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item-tese':Item_tese
+	},
+	data: {
+		add_id:'',
+		add_txt:'',
+		agent_tips_window:false,
+		Tese24:'',
+		Tese24List:[],
+		Tese25:'',
+		Tese25List:[],
+		Tese26:'',
+		Tese26List:[],
+		Tese29:'',
+		Tese29List:[],
+		Tese31:'',
+		Tese31List:[]
+	},
+	methods: {
+		
+		addTag:function(){
+			var that = this,url = '/api/Category/BatchSubmitCategory';
+			var arr = that.add_txt.split("\n");
+			var arr2 = [];
+			arr.forEach(function(item,index){
+				var obj = {
+					Chrcategory:item,
+					Styleid:that.add_id
+				};
+				arr2.push(obj);
+			});
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(arr2),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					that.add_txt = '';
+					that.getData();
+					that.closeTipsWindow();
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+		closeTipsWindow:function(id){
+			var that = this;
+			that.add_id = '';
+			that.agent_tips_window = false;
+		},
+		openTipsWindow:function(id){
+			var that = this;
+			that.add_id = id;
+			that.agent_tips_window = true;
+		},
+		getTagData:function(styleid,sid,forname){
+			var that = this,url='';
+			if(styleid === '0'){
+				url = '/api/HouseCategory/SearchHouseCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					
+				}});
+			}else{
+				url = '/api/Category/SearchCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					var i=0,len=data[sid].length,arr=[];
+					if(that[forname]!==''){
+						arr = that[forname];
+					}
+					that[forname+'List'] = [];
+					for(;i<len;i++){
+						for(var k = 0;k<arr.length;k++){
+							if(arr[k] == data[sid][i].Categoryid){
+								data[sid][i].checked=true;
+							}
+						}
+						that[forname+'List'].push(data[sid][i]);
+					}
+				}});
+			}
+		},
+		getData:function(){
+			var that = this;
+			that.getTagData('1','24','Tese24');
+			that.getTagData('1','25','Tese25');
+			that.getTagData('1','26','Tese26');
+			that.getTagData('1','29','Tese29');
+			that.getTagData('1','31','Tese31');
+		}
+	},
+	
+	created: function (){
+		var that = this;
+		that.getData();
+	}
+});
+</script>

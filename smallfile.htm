@@ -1,0 +1,13 @@
+﻿<div class="my_prop_imgitem" id="setfile{$num}" name="setfile{$num}">
+  <div id="pre_8_{$num}" name="pre_8_{$num}" style="height:120px; line-height:120px; border:1px solid #cccccc; "><img src="{$url}" width="120"  height="120" id="imgview_apf_id_8_{$num}" name="imgview_apf_id_8_{$num}" start="vertical-align:middle;"/></div>
+  <div id="div_apf_id_8_{$num}" name="div_apf_id_8_{$num}" style="text-align:center; line-height:20px; margin-top:8px;">
+  <span id="show_id_{$num}_1" name="show_id_{$num}_1">
+	
+	<iframe name="ifm_upload" frameborder="0" width="82" height="32" style="vertical-align:top;" scrolling=no src="{$SiteUrl}kindeditor/upload.aspx?c_name={$num}&table_id={$table_id}&action=house&isadmin=1"></iframe>
+	
+    </span><span id="show_id_{$num}_2"  name="show_id_{$num}_2" style="display:none;text-align:center;width:120px;"><a href="javascript:" onclick="delfilevalue2('{$ID}','{$num}','{$table_id}')">删除</a></span> </div>
+	<a href="#" onclick="return move_PrevNext(this,0,{$num},{$ID},'setfile','{$table_id}',8);" class="move_prev">前移</a>
+	<a href="#" onclick="return move_PrevNext(this,1,{$num},{$ID},'setfile','{$table_id}',8);" class="move_next">后移</a>
+	<script>var gg="{$urltt}";if(gg!=""){document.getElementById("show_id_{$num}_2").style.display="";document.getElementById("show_id_{$num}_1").style.display="none";}</script>
+</div>
+<input type=hidden name="url{$num}" id="url{$num}" value="{$urltt}">

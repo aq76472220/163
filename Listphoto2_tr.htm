@@ -1,0 +1,15 @@
+<div class="my_prop_imgitem" id="setfile{$NID}">
+  <div style="border:1px solid #cccccc; margin-bottom:5px;"><img src="{$filepath}" width="120"  height="120" style="vertical-align:middle;"/></div>
+  <input type="text" value="{$cname}" id="cname_{$detailsid}" class="i_img_alt" />
+  <p class="mar8"><input id="shi_{$detailsid}" style="width: 15px;" onkeyup="value=value.replace(/\D+/g,'')" value="{$shi}">室<input id="ting_{$detailsid}" style="width: 15px;" onkeyup="value=value.replace(/\D+/g,'')" value="{$ting}">厅<input id="wei_{$detailsid}" style="width: 15px;" onkeyup="value=value.replace(/\D+/g,'')" value="{$wei}">卫</p>
+	<p class="mar8"><input id="chrsize_{$detailsid}" style="width: 40px;" onkeyup="value=value.replace(/\D+/g,'')" value="{$chrsize}">平米</p>
+	<p><input type="button" value="确定" class="global_btn" onclick="editMark2(this,'{$detailsid}')" /></p>
+  <a href="javascript:" onclick="delfile(this,'{$detailsid}','5')" class="del">删除</a>
+	<a href="#" onclick="return move_PrevNext(this,0,{$NID},{$detailsid},'setfile','{$table_id}',8);" class="move_prev">前移</a>
+	<a href="#" onclick="return move_PrevNext(this,1,{$NID},{$detailsid},'setfile','{$table_id}',8);" class="move_next">后移</a>
+</div>
+
+
+
+		  
+		  

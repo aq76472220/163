@@ -1,0 +1,7 @@
+<div class="my_prop_imgitem" id="setfile{$NID}">
+  <div style="border:1px solid #cccccc; margin-bottom:5px;"><img src="{$filepath}" width="120"  height="120" style="vertical-align:middle;"/></div>
+  <input type="text" value="{$chrname}" onblur="editMark(this,'{$detailsid}')" class="i_img_alt" />
+  <a href="javascript:" onclick="delfile(this,'{$detailsid}','5')" class="del">删除</a>
+	<a href="#" onclick="return move_PrevNext(this,0,{$NID},{$detailsid},'setfile','{$table_id}',8);" class="move_prev">前移</a>
+	<a href="#" onclick="return move_PrevNext(this,1,{$NID},{$detailsid},'setfile','{$table_id}',8);" class="move_next">后移</a>
+</div>

@@ -1,0 +1,82 @@
+﻿<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+  <tr>
+    <td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+    <td width="100%" background="{$atplPath}Images/r_0.gif"><table cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+          <td width="60%">修改中介品牌推荐&nbsp;&nbsp;&nbsp; 有<font color="#FF0000">*</font>号的是必填项目</td>
+          <td width="40%" align="right"><input name="GoToGQList" type="submit" id="GoToGQList" value="返回至中介品牌推荐列表" onClick="javscript:window.history.go(-1);"></td>
+      </tr>
+    </table></td>
+    <td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="category"> <!--startprint-->
+   <table width="100%" border="1" cellspacing="1" cellpadding="4" class="toptable grid">
+
+
+  <form name="form1" method="post" action="?action=zjEditSave">
+    <tr > 
+      <td width="15%" height="25">中介品牌名称<font color="#FF0000">*</font>： 
+      </td>
+      <td width="76%" class="category"> <input name="title" type="text" size="30" value="{$title}"></td>
+    </tr>
+	<tr>
+	  <td>上传图片<font color="#FF0000">*</font><br />(宽*高=180*80)：
+	  <td class="category">
+	  <span id="str1">
+	  {$filepath1$}
+	  </span>
+	  <span id="str2" style="display:none">
+	  <iframe name="ifm_upload" frameborder=0 width=100% height=50 scrolling=no src="upload.aspx?type=1&action=img"></iframe>
+	  </span>
+	  <input type=hidden name="url1"  id="url1" value="{$url1}"></td>
+	</tr>
+	
+    <tr > 
+      <td width="15%" height="25">链接地址<font color="#FF0000">*</font>： 
+      </td>
+      <td width="76%" class="category"> <input name="chrurl" type="test" size="50" value="{$chrurl}">(以http://开头)</td>
+    </tr>
+	<tr > 
+      <td width="15%" height="25" >排序<font color="#FF0000">*</font>： 
+      </td>
+      <td width="76%"  class="category"> <input name="intorder" type="text" id="intorder" size="10" onKeyUp="if(isNaN(value))execCommand('undo')" value="{$intorder}"> (排序越大,越排在右边)</td>
+    </tr>
+    <tr > 
+      <td width="15%" height="25">打开方式<font color="#FF0000">*</font>： 
+      </td>
+      <td width="76%" class="category"> <input type="radio" name="styleid" value="0" {$checked1}>在新窗口打开 <input type="radio" name="styleid" value="1" {$checked2}>在原窗口打开</td>
+    </tr>
+<tr > 
+      <td width="15%" height="25">状态<font color="#FF0000">*</font>： 
+      </td>
+      <td width="76%" class="category"> <input type="radio" name="iskill" value="0"  {$iskill0}>显示 <input type="radio" name="iskill" value="1" {$iskill1}>隐藏</td>
+    </tr>
+   
+    <tr  > <td></td>
+      <td height="25"  class="category">
+		<INPUT TYPE="hidden" NAME="ID" value="{$ID}">
+		<input type="submit" name="Submit" value="确定提交"> &nbsp; 
+        <input name="Reset" type="reset" id="Reset" value="取消重写"></td>
+    </tr>
+  </form>
+</table>
+ <!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+  </body>
+</html>
+<script>
+function hid1()
+{
+	$("str1").style.display="none";
+	$("str2").style.display="block";
+}
+</script>

@@ -1,0 +1,61 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<form name="form1" method="post" action="?action=editSave" onsubmit="return checkaddxuqiu(this)" enctype="multipart/form-data">
+<input type="hidden" name="gotourl" value="{$gotourl}">
+<input type="hidden" name="id" value="{$id}">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">修改求租求购信息</th>
+		<th style="text-align:right; padding-right:10px;"><a href="javscript:void(0);" onclick="return window.history.go(-1);" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">信息标题：</span>
+					<span class="d"><input name="chrtitle" value="{$chrtitle}" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li class="w_auto_select">
+					<span class="a">需求区域：</span>
+					<span class="d">{$qu_classid}</span>
+				</li>
+				<li>
+					<span class="a">需求性质：</span>
+					<span class="d"><input type="radio" value="0" {$styleid0}   name="styleid">求租 <input type="radio" value="1"  {$styleid1}  name="styleid">求购</span>
+				</li>
+				<li>
+					<span class="a">要求简述：</span>
+					<span class="d"><textarea name="chrcontent" class="s_ipt" style="width:500px;height:60px">{$chrcontent}</textarea></span>
+				</li>
+				<li>
+					<span class="a">需求人称呼：</span>
+					<span class="d"><input name="chrman" value="{$chrman}" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">联系电话：</span>
+					<span class="d"><input name="chrtel" value="{$chrtel}" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">备注信息：</span>
+					<span class="d"><input name="chrmark" value="{$chrmark}" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">排序：</span>
+					<span class="d"><input name="intorder" value="{$intorder}" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" />　<em class="global_tip">数字越大越靠前</em></span>
+				</li>
+				<li>
+					<span class="a">状态：</span>
+					<span class="d"><input type="radio" name="iskill" value="0" {$iskill0} >等待审核 <input type="radio" name="iskill" value="1" {$iskill1}>正常 <input type="radio" name="iskill" value="2" {$iskill2}>下线</span>
+				</li>
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

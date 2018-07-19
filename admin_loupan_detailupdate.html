@@ -1,0 +1,358 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}js/cal/calendar.css" />
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/jquery.cookie.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+window['apiurl'] = '/api/LouPan/LouPanDetailedInfoUpdate'; //盘详细资料更新
+window['keyvalues'] = { //请求列表参数  
+	"Loupanid":url_obj.Loupanid, //项目介绍
+    'Chrmark':'',//项目介绍
+    'Zhangdi':'',//总占地面积
+    'Jianzhu':'',//总建筑面积  
+    'Zhuangxiu':'',//装修情况
+    'Wuyecompany':'',//物业公司
+    'Wuyeguanli':'',//物业管理费
+    'Lvhua':'',//绿化率
+    'Defang':'',//得房率
+    'Rongji':'',//容积率
+    'Chewei':'',//车位数
+    'Kaigongdate':'',//开工时间
+    'Jungongdate':'',//竣工时间
+    'Kaipandate':'',//预计开盘时间
+    'Jiaofangdate':'',//预计交房时间
+    'Shoulouaddress':'',//售楼处地址
+    'Jiaotong':'',//公交
+    'Yiyuan':'',//医院
+    'Peitao':'',//生活配套介绍
+    'ShoulouName':'',//售楼处名称
+    'ShoulouLogo':'',//售楼盘logo
+    'Dongshu':'',//楼盘栋数
+    'Hushu':'',//规划户数
+    'ZhuzhaiYears':'',//住宅年限
+    'GongyuYears':'',//公寓年限
+    'ShangyeYears':'',//商业年限
+    'XiezilouYears':'',//写字楼年限
+    'Youeryuan':'',//幼儿园
+    'Chuzhong':'',//初中
+    'Xiaoxue':''//小学
+
+}; 
+
+</script>
+
+<div class="wrapper_house clearfix" id='app'>
+	<div class="inner_sub_box">
+		<div class="hd">添加/编辑楼盘详细资料</div>
+		<div class="tips-h1"><div class="tip">温馨提示：任何项目都是非必填项，留空则网站前台不显示</div></div>
+
+		<form @submit.prevent="submitHandle()">
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">详细描述：</span>
+					<div class="con">
+						<script id="Chrmark" name="Chrmark" type="text/plain" style="width:800px;height:400px;"></script>
+					</div>
+				</li>
+				<li>
+					<span class="txt">装修标准：</span>
+					<div class="con">
+						<input type="hidden" name="Zhuangxiu" v-model="Zhuangxiu" />
+						<div class="sel_box" @mouseenter="ZhuangxiuShow=true" @mouseleave="ZhuangxiuShow=false">{{ZhuangxiuName}}<i class="ico"></i>
+							<div class="sel_po" v-show="!!ZhuangxiuShow">
+								<item-select v-for="tag in ZhuangxiuList" :key="tag.Categoryid" :tag="tag" forid="Zhuangxiu" fortxt="ZhuangxiuName" fotaction="ZhuangxiuShow" is2=""></item-select>
+							</div>
+						</div>
+					</div>
+				</li>
+				<li>
+					<span class="txt">售楼处地址：</span>
+					<div class="con">
+						<input type="text" placeholder="请输入" class="int inp-form-sz inp7" v-model='par.Shoulouaddress'>   
+					</div>
+                </li>
+                
+                <li>
+					<span class="txt mw180">产权年限：</span>
+					<div class="con bw80"> 
+						<div class="box"><input type="number" placeholder=" " class="int inp-form-sz inp2 tac"  v-model='par.ZhuzhaiYears'>
+							<span class="txt2">年</span>
+							<span class="txt3">住宅</span>
+						</div>
+
+						<div class="box"><input type="number" placeholder=" " class="int inp-form-sz inp2 tac"  v-model='par.XiezilouYears'>
+							<span class="txt2">年</span>
+							<span class="txt3">商业</span>
+                        </div>
+                                                
+                        <div class="box"><input type="number" placeholder=" " class="int inp-form-sz inp2 tac"  v-model='par.GongyuYears'>
+							<span class="txt2">年</span>
+							<span class="txt3">公寓</span>
+                        </div>
+                        
+                        <div class="box"><input type="number" placeholder=" " class="int inp-form-sz inp2 tac"  v-model='par.XiezilouYears'>
+							<span class="txt2">年</span>
+							<span class="txt3">写字楼</span>
+						</div>
+ 
+					</div>
+                </li>
+                
+                <li>
+					<span class="txt">规划户数：</span>
+					<div class="con">
+                        <div class="box"><input type="number" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model='par.Hushu'>
+							<span class="txt2">户</span> 
+						</div>  
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">容积率：</span>
+					<div class="con">
+						<input type="text" placeholder="请输入" class="int inp-form-sz inp2" v-model='par.Rongji'>   
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">物业费：</span>
+					<div class="con">
+                        <div class="box"><input type="text" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model='par.Wuyeguanli'>
+							<span class="txt2">元/平</span> 
+						</div>  
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">建筑面积：</span>
+					<div class="con">
+                        <div class="box"><input type="text" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model='par.Jianzhu'>
+							<span class="txt2">平米</span> 
+						</div>  
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">占地面积：</span>
+					<div class="con">
+                        <div class="box"><input type="text" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model='par.Zhangdi'>
+							<span class="txt2">平米</span> 
+						</div>  
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">车位状况：</span>
+					<div class="con">
+						<input type="text" name=" " placeholder="请输入" class="int inp-form-sz inp2" v-model='par.Chewei'>   
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">开盘时间：</span>
+					<div class="con">
+						<input type="text" name=" " id='Wdate01' placeholder="请输入" class="int inp-form-sz inp2" v-model='par.Kaipandate'>   
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">交房时间：</span>
+					<div class="con">
+						<input type="text" name=" " id='Wdate02' placeholder="请输入" class="int inp-form-sz inp2 Wdate" v-model='par.Jiaofangdate'>   
+					</div>
+                </li>
+
+                
+
+                <li>
+					<span class="txt">对口学区：</span>
+					<div class="con bw80"> 
+						<div class="box"><input type="text" v-model='par.Youeryuan' class="int inp-form-sz inp5"><span class="txt2">幼儿园</span></div>
+						<div class="box"><input type="text" v-model='par.Xiaoxue' class="int inp-form-sz inp5"><span class="txt2">小学</span></div>
+						<div class="box"><input type="text" v-model='par.Chuzhong' class="int inp-form-sz inp5"><span class="txt2">初中</span></div>
+					</div>
+                </li>
+				<li>
+					<span class="txt">交通路线：</span>
+					<div class="con">
+						<textarea class="int inp-form-sz inp-form-textarea" style="width:800px; height:240px;" placeholder="请输入" v-model='par.Jiaotong'></textarea>
+					</div>
+                </li>
+                <li>
+					<span class="txt">生活配套：</span>
+					<div class="con">
+                        <textarea class="int inp-form-sz inp-form-textarea" style="width:800px; height:240px;" placeholder="请输入" v-model='par.Peitao'></textarea> 
+					</div>
+                </li>
+
+                <li>
+					<span class="txt">医疗配套：</span>
+					<div class="con">
+                        <textarea class="int inp-form-sz inp-form-textarea" style="width:800px; height:240px;" placeholder="请输入" v-model='par.Yiyuan'></textarea>  
+					</div>
+                </li>
+  
+			</ul>
+			<input type="submit" value="确认提交" class="btn-form ani">
+		</form>
+	</div>
+ 
+</div>
+
+<script>
+window["ueuploadcfg"]={"table_id":'house',"filewidth":"900","filehight1":"180"};
+window['logincookieStr'] = $.cookie('{$logincookieName}')+'&'+$.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+if(!!window['logincookieStr']){
+	var arr_logincookieStr = window['logincookieStr'].split('&');
+	for(var iii = 0;iii<arr_logincookieStr.length;iii++){
+		window["ueuploadcfg"][arr_logincookieStr[iii].split('=')[0]] = arr_logincookieStr[iii].split('=')[1];
+	}
+}
+</script>
+<script src="{$atplPath}js/cal/cal_vue.js"></script>
+<script type="text/javascript" src="/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/ueditor/ueditor.all.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+<script>
+window['ueConfig']  = {toolbars: [
+	['fullscreen', 'undo', 'redo', '|',
+		'bold', 'italic', 'underline','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+		'simpleupload', 'insertimage']
+],wordCount:true,maximumWords:1000,autoHeightEnabled:false};
+var ueSize1 = '0';
+ueSize1 === '0'&&(window['ueConfig'].wordCount = false);
+window['ueConfig'].maximumWords = ueSize1;
+var mypage = new Vue({
+	el: '#app',
+	data:function (){
+		return {
+            par:{},
+			ZhuangxiuShow:false,
+			Zhuangxiu:'0',
+			ZhuangxiuName:'请选择',
+			ZhuangxiuList:[]
+		}
+	},
+	components: {
+		'item-select':Item_select
+	},
+	methods:{
+		submitHandle:function(){ // 添加或者修改
+			var that = this, url= window['apiurl'];
+			if(that.Title === "") {
+				MSGwindowShow('house','0','请输入标题','','');
+			}else if(that.Message === "") {
+				MSGwindowShow('house','0','请输入内容','','');
+			}else{ 
+				that.par.Zhuangxiu = that.Zhuangxiu;
+				
+				that.par.Chrmark = that.getUEContent();
+				
+				var obj =  that.par;
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','',''); 
+						 
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		},
+        _getLoupanInfo:function(){
+            var that = this,url= '/api/LouPan/GetLoupanInfo?loupanid='+url_obj.Loupanid;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){ 
+					return;
+				}
+				var Data = res.data;
+                that.Zhuangxiu = Data.Zhuangxiu;
+				getHouseCatJSON('1','14','Zhuangxiu',setQuyuSel_vue);
+                var par = {} 
+                par.Loupanid = Data.Loupanid;
+                par.Chrmark = Data.Chrmark;
+                par.Zhangdi = Data.Zhangdi;
+                par.Jianzhu = Data.Jianzhu;
+                par.Zhuangxiu = Data.Zhuangxiu;
+                par.Wuyecompany = Data.Wuyecompany;
+                par.Wuyeguanli = Data.Wuyeguanli;
+                par.Lvhua = Data.Lvhua;
+                par.Defang = Data.Defang;
+                par.Rongji = Data.Rongji;
+                par.Chewei = Data.Chewei;
+                par.Kaigongdate = Data.Kaigongdate;
+                par.Jungongdate = Data.Jungongdate;
+                par.Kaipandate = Data.Kaipandate;
+                par.Jiaofangdate = Data.Jiaofangdate;
+                par.Shoulouaddress = Data.Shoulouaddress;
+                par.Jiaotong = Data.Jiaotong;
+                par.Yiyuan = Data.Yiyuan;
+                par.Peitao = Data.Peitao;
+                par.ShoulouName = Data.ShoulouName;
+                par.ShoulouLogo = Data.ShoulouLogo;
+                par.Dongshu = Data.Dongshu;
+                par.Hushu = Data.Hushu;
+                par.ZhuzhaiYears = Data.ZhuzhaiYears;
+                par.GongyuYears = Data.GongyuYears;
+                par.ShangyeYears = Data.ShangyeYears;
+                par.XiezilouYears = Data.XiezilouYears;
+                par.Youeryuan = Data.Youeryuan;
+                par.Chuzhong = Data.Chuzhong;
+                par.Xiaoxue = Data.Xiaoxue;
+
+                that.par = par;
+				that.editor = UE.getEditor('Chrmark', window['ueConfig']);
+				that.editor.addListener("ready", function () {
+					that.editor.setContent(par.Chrmark);
+				});
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+        },
+		getUEContent: function () {
+			return this.editor.getContent()
+		}
+	},
+	mounted: function () {
+		var  that = this;
+		
+		
+    },
+	created:function(){
+		var that = this;
+       this._getLoupanInfo()
+	},
+});
+$(function(){
+	var d = new Date(),y = d.getFullYear();
+	$('#Wdate01').simpleDatepicker({ startdate: 1970, enddate: y+10 },function(e){
+		mypage.par.Kaipandate=e
+		
+	});
+
+	$('#Wdate02').simpleDatepicker({ startdate: 1970, enddate: y+10 },function(e){
+		mypage.par.Jiaofangdate=e
+		
+	});
+});
+</script>

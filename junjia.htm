@@ -1,0 +1,55 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<form name="form1" method="post" action="?action=pricesave&id={$ID}">
+<input type="hidden" name="oldmonth" value="{$oldmonth}" />
+<input type="hidden" name="oldyear" value="{$oldyear}" />
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">{$chrloupan}均价走势管理</th>
+		<th style="text-align:right; padding-right:10px;"><a href="javscript:void(0);" onclick="return window.history.go(-1);" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">添加数据：</span>
+					<span class="d"><select size="1" name="intyear" style="width:120px;">{$intyear}</select> 年 <select size="1" name="intmonth" style="width:120px;">{$intmonth}</select>
+                月　　　均价：<input type="text" name="price" class="s_ipt" value="{$nowprice}"> 元/平米　<input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style" border="0">
+	<tr align="center">
+		<td class="category">年月</td>
+		<td width="200" align="center" class="category">均价</td>
+		<td width="200" align="center" class="category">走势 </td>
+		<td width="200" align="center" class="category">操作</td>
+	</tr>
+	{$lists}
+</table>
+
+<table  width="100%" style="border-collapse: collapse" class="toptable grid" border="1" id="table2" >
+	<tr>
+	<td align="center" bgcolor="#ffffff"><img src="../image.aspx?action=price1&id={$ID}&w=1100&h=600&year=&month=&num="></td>
+	</tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

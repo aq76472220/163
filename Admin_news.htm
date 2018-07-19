@@ -1,0 +1,76 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+    {
+	    setCookie("delurl",window.location.href);
+        location.href = "zixun.aspx?action=del&ID=" + id
+    }
+}
+function delAll(o,str,astr)
+{
+	if ( confirm("您确定要"+astr+"所有选中的资讯吗？"))
+    {
+	    setCookie("delurl",window.location.href);
+	    document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+    }
+}
+function delAll11(o,str,astr)
+{
+	if ( confirm("您确定要"+astr+"所有未审核的资讯吗？"))
+    {
+	    setCookie("delurl",window.location.href);
+	    document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+    }
+}
+</script>
+<div class="wrapper">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li id="purl"><a href="?quanbu=">全部<em>{$total$}</em></a></li>
+			<li id="purl1"><a href="?quanbu=1">正常<em>{$num2$}</em></a></li>
+			<li id="purl0"><a href="?quanbu=0">未审<em>{$num1$}</em></a></li>
+			<div class="right" style="padding:0;"><a href="zixun.aspx?action=add" class="global2_btn_orange global2_btn_add">添加房产资讯</a></div>
+		</ul>
+	</div>
+	<form name="form2" method="post" action="" style="display:block; padding:5px 0 20px;">
+		按房产资讯标题查找：
+		<input name="KeyWord" type="text" id="KeyWord" value="{keyword}" size="20">　按类别查找：{category}
+		<div style="display:none;">按状态查找： <input type="radio" name="quanbu" value="" {quanbu0}/> 全部<input type="radio" name="quanbu" value="0" {quanbu1}/> 等待审核<input type="radio" name="quanbu" value="1" {quanbu2}/> 审核通过</div>
+		<input type="submit" name="Submit3" class="global2_btn" style="line-height:26px;" value="确定">
+	</form>
+	
+	<form name="form" id="form" method="post" action="?action=del">
+	<input type="hidden" name="styleid" id="styleid" value="1">
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr>
+			<th>选择</th>
+			<th>资讯标题</th>
+			<th>资讯栏目</th>
+			<th>发布时间</th>
+			<th>状态</th>
+			<th>操作</th>
+		</tr>
+		<tag:Loop ListType="Listnewshouse" RecType="New" PageSize="50" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_news_Tr.htm" />
+	</table>
+	<div style="margin-top:10px;">
+		<input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">全选　<a href="javascript:delAll(this,1,'审核通过');" class="global2_btn_blue">审核通过</a> <a href="javascript:delAll11(this,20,'审核通过全部');" class="global2_btn_orange">审核通过全部</a> <a href="javascript:delAll(this,2,'删除');" class="global2_btn">删除选中</a>　　　将选中的资讯转移到分类：{$zhuan$} <a href="javascript:delAll(this,30,'转移选中的新闻');" class="global2_btn_blue">确定转移</a>
+	</div>
+	</form>
+	<div style="padding:20px 0;">{$PageSplit}</div>
+</div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script>
+var current_host = window.location;
+var url_obj = $.url(current_host).param();
+if(!!url_obj['quanbu'] && url_obj['quanbu'] !== ''){
+	$('#purl'+url_obj['quanbu']).addClass('cur');
+}else{
+	$('#purl').addClass('cur');
+}
+</script>
+</body></html>

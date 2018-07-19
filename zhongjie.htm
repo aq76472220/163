@@ -1,0 +1,66 @@
+﻿<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+        {
+            location.href = "houseconfig.aspx?action=zjdel&ID=" + id
+        }
+}
+function delAll(o)
+{
+	if ( confirm("该操作将不可逆！\n您确定要删除所有选中的记录吗？"))
+        {
+            
+       document.getElementById("form").submit();
+        }
+}
+</script>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+<tr>
+<td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+<td width="100%" background="{$atplPath}Images/r_0.gif">
+  <table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td>&nbsp;中介品牌推荐管理(排序数字越大,越向右排)</td>
+	  <td align="right">&nbsp;<A href="?action=zjadd">添加中介品牌推荐</A></td>
+    </tr>
+  </table>
+</td>
+<td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+</tr>
+<tr>
+<td></td>
+<td>
+
+<form name="form" id="form" method="post" action="?action=zjdel">
+<table align="center" cellpadding="4" width="100%" cellspacing="1" class="toptable grid" border="1">
+			
+				<tr align="center">
+				<td width="25"  class="category">ID</td>
+				<td class="category">标题</td>
+				<td class="category">图片</td>
+				<td class="category">链接地址</td>
+				<td class="category">排序</td>
+				<td class="category">状态</td>
+				<td width="80" align="center" class="category">操作</td>
+				<td width="53"  class="category"><input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">
+            <strong><a href="javascript:delAll(this);">删？</a></strong></td>
+				</tr>
+				<tag:Loop ListType="Listhousezj" RecType="New" PageSize="16" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_zhongjie_Tr.htm" />
+			<tr > 
+       <td height="24" align="right" bgcolor="#FFFFFF" colspan=9>
+		{$PageSplit}
+	  </td>
+    </tr>	
+			
+</table></form>
+<!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+</body></html>

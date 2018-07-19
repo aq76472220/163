@@ -1,0 +1,48 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}js/shade/css/lightwindow.css" />
+<script type="text/javascript" src="{$atplPath}js/shade/javascript/prototype.js"></script>
+<script type="text/javascript" src="{$atplPath}js/shade/javascript/effects.js"></script>
+<script type="text/javascript" src="{$atplPath}js/shade/javascript/lightwindow.js"></script>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+  <tr>
+    <td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+    <td width="100%" background="{$atplPath}Images/r_0.gif"><table cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+         <td width="70%">店铺通栏默认背景管理，上传完毕请按'确认提交'按钮&nbsp;&nbsp;&nbsp; </td><td align=right></td>
+      </tr>
+    </table></td>
+    <td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="category"> <!--startprint-->
+   <table width="100%" border="1" cellspacing="1" cellpadding="4" class="toptable grid">
+  <form name="form1" method="post" action="?action=tsave" ID="Form1">
+
+    {$s$}
+
+
+	<tr  > 
+	<td></td>
+      <td height="25" colspan="2"  class="category">
+		<input type="submit" name="Submit" value="确定提交" ID="Submit1"> &nbsp; 
+        <input name="Reset" type="reset" id="Reset" value="取消重写"></td>
+    </tr>
+  </form>
+  </table>
+ <!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+<script>
+function hid1(tt)
+{
+	$("str1_"+tt).style.display="none";
+	$("str0_"+tt).style.display="block";
+}</script>
+  </body>
+</html>

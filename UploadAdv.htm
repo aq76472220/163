@@ -1,0 +1,5 @@
+﻿<tr >
+<td width=100 >图片{$number}</td>
+<td class='category'> <span id="str1_{$number}" ><img src="{$img}"  width="470" height="50" /><span onclick="hid1({$number})" style='cursor:hand'>重新上传</span></span><span id="str0_{$number}" style="display:none"><iframe name="ifm_upload" frameborder=0 width=100% height=50 scrolling=no src="Upload.aspx?number={$number}&action=index&type={$number}">
+</iframe></span><input type="hidden" name="url{$number}" id="url{$number}" value="{$img}" ><input type="hidden" name="oldImg{$number}" value="{$img}" ></td>
+</tr>

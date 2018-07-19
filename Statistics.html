@@ -1,0 +1,293 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.tj_box { background-color:#fff;}
+.tj_box .hd { padding:0 15px;font-size: 18px; color: #404040; line-height: 48px; background-color:#fdfdfd; border-bottom:1px solid #f9f9f9;}
+.tj_box .hd2 { position:relative; z-index:1; margin-top:20px; padding-left: 35px; color: #404040; font-size: 16px;}
+.tj_box .hd2 .danwei { display:inline-block; vertical-align:middle; margin-left:25px; font-size:12px; color:#; background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAIAAAB2/0i6AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Nzg5NDQ2N0Q4MTdFMTFFOEFDRERCMTJCRTZGN0U5RDUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Nzg5NDQ2N0U4MTdFMTFFOEFDRERCMTJCRTZGN0U5RDUiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo3ODk0NDY3QjgxN0UxMUU4QUNEREIxMkJFNkY3RTlENSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo3ODk0NDY3QzgxN0UxMUU4QUNEREIxMkJFNkY3RTlENSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PupMPUQAAAFkSURBVHjaNFFLTgJREOzuGdwqCcYEgkfgJxFuYOLWW6B3MPEKbo3Ge2iiLkAFEzTRlWxEPgsJS0Z4/dp6Q3yzmJp53V3VVazemJRI2JuPmPFF+p2srsbTu/nPTPUot3NSzG9m4ihckRcS82hiFjbvPIsQm+HSG8k4SQ5fP4idKGMceTax+1oly5nQhy5S5shMxSgK87wzCoNxLidTMm0VdjvNeq9ROy4W0HL+NXSxEbGQKgpBbRGX2k9gjI2V1Ch+a9TL3Sew9Zv7nBb9Mu0/vuQ2+KZSLXV70EoWQ5f5WEAF6dgZwNjT//EUsA8DCEoxmCMJkteVZrR+adhbHZBfqrnTwaDceb4YjhK3WpkDqHbaZ58DlBnsTX8GoBYMg0kwOTxg42iyWBz03zVaxoptAq0nfajtbUkwDArSdOCUslMTTqOyEAOEkug4cdej6e18lka13Srms4gKrRTUgmMd1Z8AAwDMZtpgOdEITgAAAABJRU5ErkJggg==") 0 4px no-repeat; padding-left:26px;}
+.tj_box .ft { position:absolute; right:0; top:0;}
+.tj_box .ft a { color:#a9a9a9; font-size:14px; display:inline-block; padding:0 15px 6px; position:relative; z-index:1;}
+.tj_box .ft a.on:after { display:block; position:absolute; width:24px; margin-left:-12px; left:50%; bottom:0; height:2px; background-color:#088de8; content:'';}
+.tj_box .ft a.on { color:#555;}
+.tj_box .charts { width: 100%; height: 500px;}
+.tablist { padding:20px 0;}
+.tablist ul {}
+.tablist li { float:left; width:14.2%; text-align:center; color:#aaa; font-size:14px;}
+.tablist li em { font-style:normal; font-weight:normal; color:#404040; font-size:18px; display:block;}
+
+</style>
+<div class="wrapper_house clearfix" id="app">
+	<div class="tj_box">
+		<div class="hd">信息统计</div>
+		<div class="tablist">
+			<ul class="clearfix">
+				<li><em>{{InfoSum.LouPanSum}}</em>楼盘数量(个)</li>
+				<li><em>{{InfoSum.XiaoQuSum}}</em>小区数量(个)</li>
+				<li><em>{{InfoSum.ErShouFangYuanSum}}</em>二手房源(套)</li>
+				<li><em>{{InfoSum.ChuZuFangYuanSum}}</em>出租房源(套)</li>
+				<li><em>{{InfoSum.ShangPuFangYuanSum}}</em>商铺房源(套)</li>
+				<li><em>{{InfoSum.QiuZuQiuGouSum}}</em>求租求购(套)</li>
+				<li><em>{{InfoSum.WeiTuoFangYuanSum}}</em>房源委托(套)</li>
+			</ul>
+		</div>
+		<div class="hd2">近12个月<span id="title_1">楼盘</span>新增数量趋势图<div class="danwei">数量</div>
+			<div class="ft changelist" id="change_1">
+				<a href="#" class="on" data-val="LouPanNew" data-action="1">楼盘数量</a>
+				<a href="#" data-val="XiaoQuNew" data-action="1">小区数量</a>
+				<a href="#" data-val="ErShouFangYuanNew" data-action="1">二手房</a>
+				<a href="#" data-val="ChuZuFangYuanNew" data-action="1">出租房</a>
+				<a href="#" data-val="ShangPuFangYuanNew" data-action="1">商铺</a>
+				<a href="#" data-val="QiuZuQiuGouNew" data-action="1">求租求购</a>
+				<a href="#" data-val="WeiTuoFangYuanNew" data-action="1">房源委托</a>
+			</div>
+		</div>
+		
+		<div class="charts" id="charts1"></div>
+	</div>
+	<div class="tj_box">
+		<div class="hd">中介统计</div>
+		<div class="tablist">
+			<ul class="clearfix">
+				<li><em>{{AgencySum.ZhongJieMenDianSum}}</em>中介门店(个)</li>
+				<li><em>{{AgencySum.AgentSum}}</em>经纪人(个)</li>
+			</ul>
+		</div>
+		<div class="hd2">近12个月<span id="title_2">中介门店</span>新增数量趋势图<div class="danwei">数量</div>
+			<div class="ft changelist" id="change_2">
+				<a href="#" class="on" data-val="ZhongJieMenDianNew" data-action="2">中介门店</a>
+				<a href="#" data-val="AgentNew" data-action="2">经纪人</a>
+			</div>
+		</div>
+		
+		<div class="charts" id="charts2"></div>
+	</div>
+	<div class="tj_box">
+		<div class="hd">财务统计</div>
+		<div class="tablist">
+			<ul class="clearfix">
+				<li><em>{{FinanceSum.ZuanShiMenDianSumProfit}}</em>钻石门店总收益(元)</li>
+				<li><em>{{FinanceSum.TopFangYuanSumProfit}}</em>置顶房源总收益(元)</li>
+				<li><em>{{FinanceSum.RefreshFangYuanSumProfit}}</em>刷新房源总收益(元)</li>
+				<li><em>{{FinanceSum.TopMenDianSumProfit}}</em>置顶门店总收益(元)</li>
+			</ul>
+		</div>
+		<div class="hd2">近12个月<span id="title_3">钻石门店</span>总收益趋势图<div class="danwei">元</div>
+			<div class="ft changelist" id="change_3">
+				<a href="#" class="on" data-val="ZuanShiMenDianSumProfit" data-action="3">钻石门店总收益</a>
+				<a href="#" data-val="TopFangYuanSumProfit" data-action="3">置顶房源总收益</a>
+				<a href="#" data-val="RefreshFangYuanSumProfit" data-action="3">刷新房源总收益</a>
+				<a href="#" data-val="TopMenDianSumProfit" data-action="3">置顶门店总收益</a>
+			</div>
+		</div>
+		<div class="charts" id="charts3"></div>
+	</div>
+</div>
+
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$Default_tplPath}js/echarts.common.min.js"></script>
+<script>
+
+
+ new Vue({
+	 el:'#app',
+	 data:{
+		InfoSum:{}, //信息总量统计
+		AgencySum:{}, //中介总量统计
+		FinanceSum:{} // 财务总量统计
+	 },
+	 methods:{
+		_getInfoSum:function(){//信息总量统计
+			var that = this;
+			var url = '/api/HouseStatistic/GetInfoSum';
+			$.get(url,function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					return;
+				}
+				if(res.length===0){
+					return false;
+				} 
+				that.InfoSum = res
+
+				console.log(that.InfoSum)
+
+			});
+	 	},
+		 _getAgencySum:function(){//信息总量统计
+			var that = this;
+			var url = '/api/HouseStatistic/GetAgencySum';
+			$.get(url,function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					return;
+				}
+				if(res.length===0){
+					return false;
+				} 
+				that.AgencySum = res 
+
+			});
+	 	},
+		 _getFinanceSum:function(){//财务总量统计
+			var that = this;
+			var url = '/api/HouseStatistic/GetFinanceSum?convertRatio=2';
+			$.get(url,function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					return;
+				}
+				if(res.length===0){
+					return false;
+				} 
+				that.FinanceSum = res 
+
+			});
+	 	},
+	 }, 
+	 created:function (){
+		var that = this;
+		that._getInfoSum();
+		that._getAgencySum();
+		that._getFinanceSum();
+	 }
+})
+
+
+$(function(){
+	$('.changelist').changelist();
+});
+$.fn.changelist = function(){
+	return this.each(function(){
+		var _t = $(this);
+		_t.on('click','a',function(e){
+			e.preventDefault();
+			_t.find('a').removeClass('on');
+			$(this).addClass('on');
+			var action = $(this).attr('data-action');
+			var val = $(this).attr('data-val');
+			$('#title_'+action).html($(this).html());
+			setData(action,val);
+		});
+	});
+}
+function formatNumber(n) {
+  n = n.toString()
+  return n[1] ? n : '0' + n
+}
+function formatTime(date) {
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  var hour = date.getHours()
+  var minute = date.getMinutes()
+  var second = date.getSeconds()
+  return [year, month, day].map(formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':')
+}
+function formatTime_s(date) {
+  var year = date.getFullYear()
+  var month = date.getMonth() + 1
+  var day = date.getDate()
+  var hour = date.getHours()
+  var minute = date.getMinutes()
+  var second = date.getSeconds()
+  return [year, month, day].map(formatNumber).join('-');
+}
+ 
+
+var option = {
+	tooltip: {show: true,trigger: 'axis'},
+	grid: {left: '100',right: '40'},
+	xAxis: {
+		type: 'category',
+		boundaryGap: false,
+		data: '',
+		axisLabel: {color: '#2b2b2b'},
+		axisLine: {lineStyle: {color: '#0087cc',width: 2}}
+	},
+	
+	series: [{
+		data: '',
+		name: '新增量',
+		type: 'line',
+		smooth: true,
+		itemStyle: {normal:{color:'#29c6c8',lineStyle:{color: '#29c6c8'}}},
+		areaStyle: {normal:{color:'#ace7e7'}},
+		item: {normal:{color:'#ace7e7'}},
+		markArea: {normal:{color:'#ace7e7'}}
+	}],
+	yAxis: {
+		type: 'value',
+		name: '新增量',
+		nameTextStyle: {color: '#999'},
+		axisLabel: {color: '#2b2b2b'},
+		axisLine: {lineStyle: {color: '#0087cc',width: 2}},
+		axisTick: {show: false},
+		splitLine: {show: false}
+	}
+};
+window['myChart1'] = echarts.init(document.getElementById('charts1'));
+window['myChart2'] = echarts.init(document.getElementById('charts2'));
+window['myChart3'] = echarts.init(document.getElementById('charts3'));
+window['Data_1'] = null;
+window['Data_2'] = null;
+window['Data_3'] = null;
+function setData(index,name){
+	var res = window['Data_'+index]
+	var i=0,len=res.length;
+	var myChart_data_x = [];
+	var myChart_data = [];
+	for(;i<len;i++){
+		var idate = new Date(res[i].StatisticMonth);
+		myChart_data_x.push(formatTime_s(idate));
+		myChart_data.push(res[i][name]);
+		console.info(res[i][name]);
+	}
+	
+	option.xAxis.data = myChart_data_x;
+	option.series[0].data = myChart_data;
+	window['myChart'+index].setOption(option);
+}
+function getfangyuan(){
+	var url = '/api/HouseStatistic/GetInfoStatistic?monthRange=12';
+	$.get(url,function(res){
+		if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+			return;
+		}
+		if(res.length===0){
+			return false;
+		}
+		window['Data_1'] = res;
+		setData('1','LouPanNew');
+	});
+}
+
+function getmendian(){
+	var url = '/api/HouseStatistic/GetAgencyStatistic?monthRange=12';
+	$.get(url,function(res){
+		if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+			return;
+		}
+		if(res.length===0){
+			return false;
+		}
+		window['Data_2'] = res;
+		setData('2','ZhongJieMenDianNew');
+	});
+}
+function getcaiwu(){
+	var url = '/api/HouseStatistic/GetFinanceStatistic?monthRange=12&convertRatio=2';
+	$.get(url,function(res){
+		if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+			return;
+		}
+		if(res.length===0){
+			return false;
+		}
+		window['Data_3'] = res;
+		setData('3','ZuanShiMenDianSumProfit');
+	});
+}
+getfangyuan();
+getmendian();
+getcaiwu();
+
+</script>

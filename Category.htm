@@ -1,0 +1,72 @@
+﻿<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+        {
+            location.href = "houseconfig.aspx?action=del&key={$key}&ID=" + id
+        }
+}
+function delAll(o)
+{
+	if ( confirm("该操作将不可逆！\n您确定要删除所有选中的信息吗？"))
+        {
+            document.getElementById("form").submit();
+        }
+}
+</script>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#C4D8ED">
+<tr>
+<td><img src="{$atplPath}Images/r_1.gif" alt="" /></td>
+<td width="100%" background="{$atplPath}Images/r_0.gif">
+  <table cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td>&nbsp;{$title}管理</td>
+	  <td align="right">&nbsp;<a href="houseconfig.aspx?action=Add&key={$key}" class="font">请点击这里添加{$title}</a></td>
+    </tr>
+  </table>
+</td>
+<td><img src="{$atplPath}Images/r_2.gif" alt="" /></td>
+</tr>
+<tr>
+<td></td>
+<td>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<form name="form2" method="post" action="" ID="Form1">
+<tr> 
+	<td height="25">
+		按名称查询：
+		<input name="KeyWord" type="text" id="KeyWord" size="20" value="{$KeyWord}">
+		<input type="submit" name="Submit3" value="Go" ID="Submit1"></td>
+</tr>
+</form>
+</table>
+<table align="center" cellpadding="4" width="100%" cellspacing="1" class="toptable grid" border="1">
+				<form name="form" method="post" action="?action=del&key={$key}" ID="form">
+				<tr align=center>
+				<td width="29" class="Category">ID</td>
+				<td class="Category">名称</td>
+				<td   class="Category">价格范围</td>
+				<td   class="Category">排序</td>
+				<td  class="Category">状态</td>
+				<td width="100" align="center" class="Category">操作</td>
+				<td width="53" align="center" class="Category"><input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">
+				<strong><a href="javascript:delAll(this);">删？</a></strong></td>
+				</tr>
+				<tag:Loop ListType="ListCategoryhouse" RecType="New" PageSize="16" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/ListCategory.htm" />
+				</form>
+				<tr > 
+       <td height="24" align="right" bgcolor="#FFFFFF" colspan=9>
+			{$PageSplit}
+	  </td>
+    </tr>
+</table>
+<!--endprint--></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><img src="{$atplPath}Images/r_4.gif" alt="" /></td>
+    <td></td>
+    <td><img src="{$atplPath}Images/r_3.gif" alt="" /></td>
+  </tr>
+</table>
+</body></html>

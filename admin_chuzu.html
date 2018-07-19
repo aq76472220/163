@@ -1,0 +1,622 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.table_style_2017 .open_close2 { margin-right:0;}
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4_0 { color:#f93;}
+.pub_4_1 { display:none;}
+.e1,.e2,.publishType { display:inline-block; vertical-align:middle; padding:0 3px; border-radius:2px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.isTrade1 { color:#5cc55c;}
+.publishType { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+.refresh_list_tit { color:#404040; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #eee; font-weight:bold; font-size:16px;}
+.refresh_list { height:120px; overflow-y:auto;}
+.refresh_list li { position:relative; line-height:36px; padding-left:20px;margin-left: 10px; border-left:1px solid #eee;}
+.refresh_list li s { display:block;width: 9px; height: 9px; border-radius: 5px; background-color:#eee; overflow:hidden; position:absolute; left:-5px; top:13px;}
+.refresh_list li span { display:block; position:absolute; right:10px; top:0;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/FangYuan/GetFangYuanPaged';
+window['keyvalues'] = {
+	"pageid":window['pageid'],
+	'houseType':'1',
+	'auditStatusType':'',
+	'isTrade':'',
+	'isTop':'',
+	'isTuijian':'',
+	'isRemote':'',
+	'isPanorama':'',
+	'isShelf':'',
+	'publishType':'',
+	'PageSort':'4',
+	'pageSize':'20',
+	'Keywords':''
+};
+</script>
+<div class="wrapper" id="app">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li :class="(auditStatusType==''&&isTrade==false)?'cur':''"><a href="#" @click.prevent="filterClick({auditStatusType:'',isTrade:false});">全部房源</a></li>
+			<li :class="auditStatusType=='1'?'cur':''"><a href="#" @click.prevent="filterClick({auditStatusType:'1',isTrade:false});">出售中<em>{{OnSale}}</em></a></li>
+			<li :class="auditStatusType=='0'?'cur':''"><a href="#" @click.prevent="filterClick({auditStatusType:'0',isTrade:false});">待审<em>{{ToBeApprove}}</em></a></li>
+			<li :class="auditStatusType=='-1'?'cur':''"><a href="#" @click.prevent="filterClick({auditStatusType:'-1',isTrade:false});">未通过</a></li>
+			<li :class="(auditStatusType==''&&isTrade==true)?'cur':''"><a href="#" @click.prevent="filterClick({auditStatusType:'',isTrade:true});">已成交<em>{{Traded}}</em></a></li>
+			<div class="right" style="padding:0;"></div>
+		</ul>
+	</div>
+	<form @submit.prevent="submitSearch()" class="filter_bar clearfix">
+		<div style="float:right;">
+		<input type="text" v-model="Keywords" style="width:240px;" placeholder="小区名/标题/门店/经纪人/房源编号" /> <input type="submit" value="确定" class="global2_btn_orange" style="line-height:28px;">
+		</div>
+		排序方式：<span class="shengjiang" :class="PageSort==5?'on current':PageSort==4?'current':''" @click.prevent="filterPaixu('PageSort','1');">发布时间</span><span class="shengjiang" :class="PageSort==3?'on current':PageSort==2?'current':''" @click.prevent="filterPaixu('PageSort','2');">刷新时间</span><span class="shengjiang" :class="PageSort==7?'on current':PageSort==8?'current':''" @click.prevent="filterPaixu('PageSort','3');">房源浏览数</span>　<span class="open_close3" :class="isShelf===false?'on':''" @click.prevent="filterBoolean('isShelf',false);">已下架</span><span class="open_close3" :class="isTop===true?'on':''" @click.prevent="filterBoolean('isTop',true);">置顶</span><span class="open_close3" :class="isTuijian===true?'on':''" @click.prevent="filterBoolean('isTuijian',true);">推荐</span><span class="open_close3" :class="isRemote===true?'on':''" @click.prevent="filterBoolean('isRemote',true);">有视频</span><span class="open_close3" :class="isPanorama===true?'on':''" @click.prevent="filterBoolean('isPanorama',true);">有全景</span>　性质：<span class="open_close2" :class="publishType===''?'on':''" @click.prevent="filterRadio('publishType','');">不限</span><span class="open_close2" :class="publishType==='1'?'on':''" @click.prevent="filterRadio('publishType','1');">个人房源</span><span class="open_close2" :class="publishType==='2'?'on':''" @click.prevent="filterRadio('publishType','2');">中介房源</span>
+	</form>
+	
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+		<tr>
+			<th width="60">&nbsp;</th>
+			<th>房源编号</th>
+			<th width="400">标题</th>
+			<th>性质</th>
+			<th>发布人</th>
+			<th>IP</th>
+			<th>发布时间</th>
+			<th>刷新时间</th>
+			<th>成交状态</th>
+			<th>浏览数</th>
+			<th>状态</th>
+			<th>操作</th>
+		</tr>
+		<tr is="item" v-for="(item,index) in displayedItems" :key="item.id" :item="item" :index="index"></tr>
+	</table>
+	<div class="filter_bar">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label><a href="javascript:void(0);" @click.prevent="piliang('5')" class="global2_btn_blue">通过审核</a> <a href="javascript:void(0);" @click.prevent="piliang('6')" class="global2_btn_blue">拒绝审核</a> <a href="javascript:void(0);" @click.prevent="piliang('0')" class="global2_btn">未成交</a> <a href="javascript:void(0);"  @click.prevent="piliang('1')" class="global2_btn">已成交</a> <a href="javascript:void(0);"  @click.prevent="piliang('2')" class="global2_btn">下架</a> <a href="javascript:void(0);"  @click.prevent="piliang('3')" class="global2_btn">上架</a> <a href="javascript:void(0);" @click.prevent="piliang('4')" class="global2_btn">删除</a>
+	</div>
+	
+	<div class="pageNavigation" id="pageNavigation"></div>
+	<div class="agent_tips_window" style="display:block; height:490px; margin-top:-245px;" v-show="agent_tips_window">
+		<div class="hd"><a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a><span class="tit">超级管理</span></div>
+		<div class="bd">
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt">转移管理人：</span>
+					<div class="con"><input type="text" placeholder="请输入会员名" v-model="supper.UserName" @change="checkUser(event)" class="int inp-form-sz inp5"> <span v-if="supper.isNameNo" style="color:#999;">该用户不存在</span></div>
+				</li>
+				<li>
+					<span class="txt">置顶：</span>
+					<div class="con"><span v-if="!supper.IsTop">未置顶</span><span v-if="supper.IsTop"><em style="color:#ff6144; font-weight:normal; font-style:normal;">正在置顶中</em>　{{supper.TopDate}}截止</span></div>
+				</li>
+			</ul>
+			<input type="button" @click="SuperUpdate()" value="确认提交" class="btn-form ani">
+			<p class="refresh_list_tit" v-if="supper.HouseRefreshList.length!==0">刷新记录</p>
+			<ul class="refresh_list">
+				<li v-for="item in supper.HouseRefreshList" v-if="supper.HouseRefreshList.length!==0"><s></s>{{item.RefreshTime}}<span v-if="item.RefreshType==0">智能刷新</span><span v-if="item.RefreshType==1">手动刷新</span></li>
+			</ul>
+		</div>
+	</div>
+	<div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+</div>
+<script type="text/x-template" id="page-template">
+<tr :id="'item'+item.Id" align="center"> 
+	<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td>
+	<td>{{item.Fid}}</td>
+	<td align="left">
+	<a :href="item.ahref" target="_blank"><em class="e1" :class="'display'+item.IsTop">顶</em><em class="e2" :class="'display'+item.IsFlush">智</em>{{item.Chrtitle}}<span class="ico_jian" v-if="item.Indexjingxuan"></span></a>
+		<p>{{item.QuyuName}}-{{item.DiduanName}} <span class="xie">/</span> {{item.XiaoquName}} <span class="xie">/</span> {{item.Chrsize}}㎡ <span class="xie">/</span> {{item.ZhuangxiuName}} <span class="xie">/</span> {{item.Price}}{{item.danwei}}</p>
+	</td>
+	<td><span v-if="item.PublishType==1">个人</span><span v-if="item.PublishType==2">中介</span></td>
+	<td>{{item.MaintainName}}</td>
+	
+	<td>{{item.Chrip}}</td>
+	<td>{{item.Dtappenddate}}</td>
+	<td>{{item.Flushdate}}</td>
+	<td><span class="isTrade1" v-if="item.IsTrade==1">已成交</span><span v-if="item.IsTrade==0">未成交</span></td>
+	<td>{{item.Views}}</td>
+	<td>
+	<span class="switch_wrap">审核 <span class="open_close" :class="item.Iskill==1?' on':''" @click.prevent="iskill([item.Id],item.Iskill,index)"></span></span>
+	<span class="switch_wrap">成交 <span class="open_close" :class="item.IsTrade?' on':''" @click.prevent="chengjiao([item.Id],!item.IsTrade,index)"></span></span>
+	<span class="switch_wrap">推荐 <span class="open_close" :class="item.Indexjingxuan?' on':''" @click.prevent="tuijian(item.Id,!item.Indexjingxuan,index)"></span></span>
+	<span class="switch_wrap">上架 <span class="open_close" :class="item.IsShelf?' on':''" @click.prevent="xiajia([item.Id],!item.IsShelf,index)"></span></span>
+	</td>
+	<td align="center"><a :href="'../hongbao_list.aspx?action=fahongbao&tableid=house&cid='+item.Id+'&chrtitle='+item.Chrtitle" class="sys_btn_a"><i class="hongbao"></i>塞红包</a> <a href="#" @click.prevent="bindTipsWindow(item.Id)" class="sys_btn_a"><i class="manage"></i>超级管理</a> <a :href="'../users.aspx?action=loginuser&ID=95&url=/memberhouse/agentpublish?sid='+item.Id" target="_blank" class="sys_btn_a"><i class="edit"></i>编辑</a> <a href="#" @click.prevent="del([item.Id],index)" class="sys_btn_a"><i class="del"></i>删除</a></td>
+</tr>
+</script>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+var Item = {
+	data:function (){
+		return {
+			Hongbao_isopen:window['Mh163k_Plugin_Hongbao_isopen']==='1'
+		}
+	},
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		selectOne:function(index){
+			var that = this;
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		},
+		bindSuper:function(index){
+			var that = this,arr = that.$parent.displayedItems,i=0,len = arr.length;
+			for(;i<len;i++){
+				if(i===index){continue;}
+				arr[i].showSuper = false;
+			}
+			Vue.set(arr[index],'showSuper',!arr[index].showSuper);
+			
+		},
+		setCookieID:function(sid){
+			$.cookie(window['cookieName'],sid,{path:'/',expires:10});
+			return true;
+		},
+		iskill:function(id_arr,val,index){
+			
+			var that = this;
+			that.$parent.Iskill(id_arr,val,function(re_val){
+				console.info(re_val);
+				Vue.set(that.$parent['displayedItems'][index], 'Iskill', re_val);
+			});
+		},
+		del:function(id_arr,index){
+			if(!window.confirm('您确定要删除该房源吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		},
+		chengjiao:function(id_arr,val,index){
+			var that = this;
+			that.$parent.Chengjiao(id_arr,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'IsTrade', val);
+			});
+		},
+		xiajia:function(id_arr,isShelf,index){
+			var that = this;
+			that.$parent.Xiajia(id_arr,isShelf,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'IsShelf', isShelf);
+			});
+		},
+		tuijian:function(id,val,index){
+			var that = this;
+			that.$parent.Tuijian(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'Indexjingxuan', val);
+			});
+		},
+		bindTipsWindow:function(id){
+			this.$parent.agent_tips_window_id = id;
+			this.$parent.openTipsWindow();
+		}
+	},
+	template: '#page-template'
+};
+var Item2 = {
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		setTipsWindow:function(toAgentId){
+			if(!window.confirm('您确定要执行该操作吗？')){return false;}
+			var that = this;
+			var action = that.$parent.agent_tips_window_action;
+			var houseid = that.$parent.agent_tips_window_id;
+			var url = '/api/FangYuan/'+action+'?toAgentId='+toAgentId+'&houseid='+houseid;
+			
+			axios.post(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				MSGwindowShow('house','0','操作成功了哦！','','');
+				that.$parent.closeTipsWindow();
+				that.$parent.getNewData();
+			}).catch(function(err){that.ifLoadding = false;alert('抱歉，加载失败了！');console.log(err);});
+			return false;
+		}
+	},
+	template: '<li :data-val="item.Manid" class="item" @click="setTipsWindow(item.Manid)">{{item.Truename}}</li>'
+};
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item
+	},
+	data: {
+		PageSort:'4',
+		isSelectAll:false,
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [],
+		ZhongJieList:[],
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0,
+		ToBeApprove:0,
+		OnSale:0,
+		Traded:0,
+		//filter
+		auditStatusType:'',
+		isTrade:'',
+		isTop:'',
+		isTuijian:'',
+		isRemote:'',
+		isPanorama:'',
+		isShelf:'',
+		publishType:'',
+		Keywords:'',
+		//超级管理
+		supper:{
+			isNameNo:false,
+			UserName:'',
+			IsShelf:'',
+			IsTop:'',
+			IsTrade:'',
+			Iskill:'',
+			TopDate:'',
+			HouseRefreshList:[]
+		}
+	},
+	methods: {
+		checkUser:function(event){
+			var that = this,url = '/api/User/CheckRegUser?chrName='+event.target.value;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				if(!res.data){
+					Vue.set(that.supper,'isNameNo',true);
+					Vue.set(that.supper,'UserName','');
+				}else{
+					Vue.set(that.supper,'isNameNo',false);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+		openTipsWindow:function(){
+			var that = this;
+			that.agent_tips_window = true;
+			that.supper.HouseRefreshList = [];
+			axios.get('/api/FangYuan/GetFangYuanImportantInfo?houseId='+that.agent_tips_window_id).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				res.data.TopDate = formatTime(new Date(res.data.TopDate));
+				if(!!res.data.HouseRefreshList[0]){
+					res.data.HouseRefreshList.forEach(function(val){
+						val.RefreshTime = formatTime(new Date(val.RefreshTime));
+					});
+				}else{
+					res.data.HouseRefreshList = [];
+				}
+				for(var key in res.data){
+					Vue.set(that.supper,key,res.data[key]);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		closeTipsWindow:function(){
+			var that = this;
+			that.agent_tips_window = false;
+		},
+		SuperUpdate:function(){
+			var that = this,url ='/api/FangYuan/FangYuanSuperUpdate';
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(that.supper),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','提交成功了！','','');
+					that.closeTipsWindow();
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+		Del:function(id_arr,callback){
+			var that = this,url = '/api/fangyuan/FangYuanAdminDelete?timer='+Date.parse(new Date());
+			
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					//MSGwindowShow('house','0','删除成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+		Chengjiao:function(id_arr,val,callback){
+			var that = this,url = '/api/fangyuan/FangYuanAdminUpdateTrade?timer='+Date.parse(new Date());
+			$.post(url,{ HouseIds: id_arr,IsTrade:val }).then(function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				callback&&callback.call(that);
+			});
+		},
+		Iskill:function(id_arr,val,callback){
+			if(val==0||val==-1){val=1;}else{
+				val=-1;
+			}
+			var that = this,url = '/api/FangYuan/FangYuanAdminUpdateKill?timer='+Date.parse(new Date());
+			$.post(url,{ HouseIds: id_arr,AuditStatusType:val }).then(function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				callback&&callback.call(that,val);
+			});
+		},
+		Xiajia:function(id_arr,isShelf,callback){
+			var that = this,url = '/api/fangyuan/FangYuanUpdateShelf?timer='+Date.parse(new Date());
+			
+			$.post(url,{ HouseIds: id_arr,IsShelf:isShelf }).then(function(res){
+				if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				callback&&callback.call(that);
+			});
+		},
+		Tuijian:function(id,val,callback){
+			var that = this,url = '/api/FangYuan/FangYuanAdminUpdateTuiJian?houseid='+id+'&isTuijian='+val;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				callback&&callback.call(that);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		selectAll:function(){
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		},
+		
+		piliang:function(val){
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Id);
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='0'){
+				that.Chengjiao(arr,false,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='1'){
+				that.Chengjiao(arr,true,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='2'){
+				that.Xiajia(arr,false,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='3'){
+				that.Xiajia(arr,true,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='4'){
+				that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='5'){
+				that.Iskill(arr,-1,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val==='6'){
+				that.Iskill(arr,1,function(){that.isSelectAll = false;that.getNewData();});
+			}
+		},
+		getMyMenDianZhongJieList:function(){
+			var that = this,url = '/api/ZhongJie/GetMyMenDianZhongJieList?workingStatus=1&timer='+Date.parse(new Date());
+			axios.get(url).then(function(res){
+				var Data = res.data;
+				if(Data.length===0){return false;}
+				var i=0,len=Data.length;
+				for(;i<len;i++){
+					that.ZhongJieList.push(Data[i]);
+				}
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+		setPageList:function(){
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+		getNext:function(){
+			var that = this;
+			window['keyvalues'].pageid = parseInt(window['keyvalues'].pageid)+1
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.getData();
+		},
+		getNewData:function(){
+			var that = this;
+			that.displayedItems = [];
+			that.ifNoMore = false;
+			that.getData();
+		},
+		getNum:function(){
+			var that = this,url = '/api/FangYuan/GetFangYuanNum?houseType=1';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data;
+				that.ToBeApprove = Data.ToBeApprove;
+				that.Traded = Data.Traded;
+				that.OnSale = Data.OnSale;
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+		getData: function () {
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(!Data){return false;}
+				for(var i=0;i<Data.length;i++){
+					
+					switch(Data[i].Iskill){
+						case 0:
+						  Data[i].IskillName = '待审核';
+						  break;
+						case 1:
+						  Data[i].IskillName = '已审核';
+						  break;
+						default:
+						  Data[i].danwei = '';
+					}
+					switch(Data[i].DealType){
+						case 1:
+						  Data[i].danwei = '元/月';
+						  break;
+						default:
+						  Data[i].danwei = '万';
+					}
+					switch(Data[i].HouseType){
+						case 0:
+						  Data[i].ahref = '/house/shouloudetail_'+Data[i].Id;
+						  break;
+						case 1:
+						  Data[i].ahref = '/house/chuzhudetail_'+Data[i].Id;
+						  break;
+						case 2:
+						  Data[i].ahref = '/house/shangpudetail_'+Data[i].Id;
+						  break;
+						default:
+						  Data[i].ahref = '#';
+					}
+					if(Data[i].Price===0){
+						Data[i].Price='面议';
+						Data[i].danwei='';
+					}
+					if(Data[i].Filepath==='' || !Data[i].Filepath){
+						Data[i].Filepath='{$Default_tplPath}images/notfindimg_house_wap.png';
+					}
+					if(!!Data[i].IsPublic){
+						Data[i].IsPublic = '公有';
+					}else{
+						Data[i].IsPublic = '私有'
+					}
+					var idate = '';
+					if(!Data[i].Flushdate){
+						idate = formatTime(new Date(Data[i].Dtappenddate));
+					}else{
+						idate = formatTime(new Date(Data[i].Flushdate));
+					}
+					Data[i].Dtappenddate = formatTime(new Date(Data[i].Dtappenddate));
+					Data[i].Flushdate = idate;
+					Data[i].showSuper = false;
+					Data[i].checked = false;
+				}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				(that.TotalPage!==0) && (history.pushState(null, '', '?p='+that.CurrentPage));
+				
+				
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+		filterPaixu:function(forname,action){
+			var that = this,val='';
+			if(action === '1'){
+				//console.info(that[forname]);
+				val = that[forname]==='4'?'5':'4';
+			}else if(action === '2'){
+				val = that[forname]==='2'?'3':'2';
+			}else if(action === '3'){
+				val = that[forname]==='8'?'7':'8';
+			}else{}
+			that[forname] = val;
+			window['keyvalues'][forname] = that[forname];
+			that.getNewData();
+		},
+		filterRadio:function(forname,val){
+			var that = this;
+			that[forname] = val;
+			window['keyvalues'][forname] = that[forname];
+			that.getNewData();
+		},
+		filterBoolean:function(forname,val){
+			var that = this;
+			if(that[forname]===''){
+				that[forname] = val;
+			}else{
+				that[forname] = '';
+			}
+			window['keyvalues'][forname] = that[forname];
+			that.getNewData();
+		},
+		filterClick:function(obj){
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+		submitSearch:function(){
+			var that = this;
+			that.filterClick({Keywords:that.Keywords});
+			return false;
+		}
+	},
+	
+	created: function () {
+		var that = this;
+		that.getData();
+		that.getNum();
+	}
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+select{padding: 5px 15px;}
+.ml0{margin-left: 0px!important}
+
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/FangYuan/GetFangYuanAveragePrice'; //请求查找获取房源均价
+window['keyvalues'] = { //请求列表参数  
+	'top':'0', //top=0获取全部 
+};
+
+</script>
+
+
+<div class="wrapper_house clearfix">
+        <div class="col_main">
+                <div class="main_wrap" id="app">
+                <div class="inner_sub_box">
+                    <div class="hd clearfix"><div class="luru"><a href="#" @click.prevent="add()">添加房价区间</a></div>房价管理</div>
+                    <table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+                        <tr>
+                            <th>年份</th>
+                            <th>月份</th>
+                            <th>均价</th>
+                            <th>走势</th>
+                            <th>操作</th> 
+                        </tr>
+                        <tr is="item" v-for="(item,index) in displayedItems" :length="displayedItems.length" :key="item.Detailsid" :item="item" :index="index"></tr>
+                    </table>
+
+                    <!-- 弹框 -->
+                    <div class="agent_tips_window" style="width: 500px; margin-left: -250px; display:block; height:440px; margin-top:-220px;" v-show="agent_tips_window">
+                        <div class="hd">
+                            <a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a>
+                            <span class="tit">添加编辑</span>
+                        </div>
+                   
+                        <div class="bd">
+                            <ul class="ul-form clearfix">
+                                <li>
+                                    <span class="txt">年份：</span>
+                                    <div class="con">
+                                        <select name="" id="" v-model='Intyear'>
+                                            <option value="">请输入年份</option>
+                                            <option :value="n" v-for='n in Intyears'>{{n}}</option>
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <span class="txt">月份：</span>
+                                    <div class="con">
+                                        <select name="" id="" v-model='Intmonth'>
+                                            <option value="">请输入月份</option>
+                                            <option :value="n" v-for="n in 12">{{n}}</option>
+                                        </select>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <span class="txt">均价：</span>
+                                    <div class="con">
+                                        <div class="box">  
+                                            <input type="number" placeholder="请输入均价" v-model="Price" class="int inp-form-sz inp2"> 
+                                        </div> 
+                                    </div>
+                                </li> 
+                            </ul>
+                            <input type="button" @click="submitHandle()" value="确认提交" class="btn-form ani">
+                        </div>
+                </div>
+                <!-- 遮罩 -->
+                <div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+                
+                </div>
+            </div>
+        </div>
+
+        <div class="col_sub">
+            <div class="sub_nav">
+                <ul>
+                    <li><a href="config.html"><s></s>基本配置<i></i></a></li>
+                    <li><a href="roleconfig.html"><s></s>权限配置<i></i></a></li>
+                    <li><a href="basedataconfig.html"><s></s>基础数据<i></i></a></li>
+                    <li><a href="jifenconfig.html"><s></s>积分配置<i></i></a></li>
+                    <li><a href="teseconfig.html"><s></s>特色标签<i></i></a></li>
+                    <li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+                    <li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+                    <li><a href="priceconfig.html"  class="on"><s></s>房价趋势<i></i></a></li>
+                    <li><a href="rentpriceconfig.html"><s></s>租金区间<i></i></a></li>
+                    <li><a href="totalpriceconfig.html"><s></s>售价区间<i></i></a></li>
+                    <li><a href="averagepriceconfig.html"><s></s>均价区间<i></i></a></li>
+                </ul>
+            </div>
+        </div>
+ 
+    </div>
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+	<tr align="center">  
+        <td>{{item.Intyear}}</td>
+        <td>{{item.Intmonth}}</td>
+        <td>{{item.Price}}</td>
+        <td>{{item.Zoushi}}%</td>
+        <td style='width:240px'>
+            <a href="#" @click.prevent.self="edit(item.Detailsid,item.Intyear,item.Intmonth,item.Price,index)" class="sys_btn_a"><i class="edit"></i>编辑</a>
+            <a href="#" @click.prevent.self="del(item.Detailsid,index)" class="sys_btn_a"><i class="del"></i>删除</a>
+        </td>  
+	</tr>
+</script>
+
+
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+
+
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			 
+		}
+    },
+    props: ['item','index','length'],
+	components: {
+	}, 
+	methods: { 
+        edit:function(Detailsid,Intyear,Intmonth,Price,index){
+			var that = this; 
+            that.$parent.Detailsid = Detailsid;
+            that.$parent.Intyear = Intyear; 
+            that.$parent.Intmonth = Intmonth; 
+            that.$parent.Price = Price; 
+			that.$parent.openTipsWindow();
+        },
+        
+        del:function(id,index){
+			if(!window.confirm('您确定要删除该区间吗？')){return false;}
+			var that = this,url = '/api/FangYuan/HouseJunJiaDelete?junjiaId='+id;
+			
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+	 
+	 
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+	},
+	data: {
+        agent_tips_window:false,
+        displayedItems:[],  
+        Intyear:'',
+        Intyears:[],
+        Intmonth:'',
+        Price:''
+	},  
+	methods: {
+        add:function(){
+            var that = this;
+            that.Intyear = ''; 
+            that.Intmonth = ''; 
+            that.Price = ''; 
+			that.openTipsWindow();
+		},
+		closeTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = false;
+        },
+        openTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = true;
+        },
+        submitHandle:function(){ // 添加或者修改
+			var that = this,url = '/api/FangYuan/HouseJunJiaEdit';
+			if(that.Intyear === "") {
+				MSGwindowShow('house','0','请选择年份','','');
+			}else if(that.Intmonth === "") {
+				MSGwindowShow('house','0','请选择月份','','');
+			}else if(that.Price === "") {
+				MSGwindowShow('house','0','请输入价格','','');
+			}else{ 
+				var obj = {
+					Intyear:that.Intyear,
+                    Intmonth:that.Intmonth,
+                    Price:that.Price
+				};
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+						that.getData();
+						that.closeTipsWindow();
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		}, 
+  
+		getData:function(){
+			var that = this,url= '/api/FangYuan/GetFangYuanAveragePrice';
+			axios.get(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data;
+                if(Data.length==0){return false;}
+                that.displayedItems = Data
+				//Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	
+	created: function () {
+        var that = this;
+        //获取当前年份
+        var date=new Date;
+        var year=date.getFullYear(); 
+        for(var i=0; i<10; i++){
+            that.Intyears.push(year-i)
+        }
+
+		that.getData();  
+	}
+});
+ 
+</script>
+</body>
+</html>

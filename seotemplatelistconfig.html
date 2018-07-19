@@ -1,0 +1,102 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<div class="wrapper_house clearfix">
+	<div class="col_main"><div class="main_wrap" id="app">
+		<div class="inner_sub_box">
+			<div class="hd clearfix"><div class="luru"><a href="seotemplatedetailconfig">添加优化项目</a></div>SEO优化</div>
+			<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+				<tr>
+					<th>唯一标识</th>
+					<th width="300">标题</th>
+					<th>摘要</th>
+					<th>操作</th>
+				</tr>
+				<tr is="item" v-for="(item,index) in displayedItems" :key="item.id" :item="item" :index="index"></tr>
+			</table>
+		
+		
+		</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config"><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig" class="on"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<script type="text/x-template" id="page-template">
+<tr :id="'item'+item.Id" align="center"> 
+	<td>{{item.Id}}</td>
+	<td align="left">{{item.Title}}</td>
+	<td>{{item.Summary}}</td>
+	<td align="center"><a :href="'seotemplatedetailconfig?id='+item.Id" class="sys_btn_a"><i class="edit"></i>编辑</a> <a href="#" @click.prevent.self="del(item.Id,index)" class="sys_btn_a"><i class="del"></i>删除</a></td>
+</tr>
+</script>
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+var Item = {
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		del:function(id,index){
+			if(!window.confirm('您确定要删除该分享吗？')){return false;}
+			var that = this,url = '/api/Seo/DeleteTemplate?pageShareId='+id;
+			
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		}
+	},
+	template: '#page-template'
+};
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item': Item
+	},
+	data: {
+		displayedItems:[]
+	},
+	methods: {
+		getData:function(styleid,sid,forname){
+			var that = this,url= '/api/Seo/GetAllTemplates?module=2';
+			axios.get(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data;
+				if(!Data){return false;}
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	created: function (){
+		var that = this;
+		that.getData();
+	}
+});
+</script>

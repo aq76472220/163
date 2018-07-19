@@ -1,0 +1,284 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+select{padding: 5px 15px;}
+.ml0{margin-left: 0px!important}
+ul,li{padding: 0; margin: 0; list-style: none;}
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+
+.mt20{margin-top: 20px!important}
+.mb20{margin-bottom: 20px!important}
+.ss-stit{padding: 30px 0 20px 0; font-size: 16px; color: #666}
+.relative{position: relative}
+.absolute{position: absolute;}
+.ss-dt-ul-item{font-size: 14px; color: #9a9a9a; padding: 20px 190px 20px 130px; height: 24px; line-height: 24px; background: #fdfdfd; border: 1px solid #f3f3f3; margin: 10px 0;}
+.ss-dt-ul-item .ss-time{height: 24px; line-height: 24px; padding: 5px 16px;border-right: 1px solid #f3f3f3;top: 50%;left: 0px; margin-top: -17px; }
+.ss-dt-ul-item .ss-btn{height: 24px; padding: 5px 16px; margin-top: -17px; top: 50%; border-left: 1px solid #f3f3f3; right: 0;}
+.ss-textarea {padding: 0 10px!important;}
+.ss-textarea textarea{width: 100%; height: 200px; padding: 0 10px!important; margin: 0 -10px!important}
+.ss-gb-btn{border-radius: 2px;padding: 0 12px;font-size: 14px;cursor: pointer;outline: 0;height: 40px; line-height: 40px; width: 100px; text-align: center; background: #96a4c7; color: #fff; text-decoration: none;display: inline-block;vertical-align: middle;}
+
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/LouPan/GetLouPanSalesdynamicsesList'; //请求查找楼盘动态信息更新
+window['keyvalues'] = { //请求列表参数  
+	"LoupanId":url_obj.Loupanid, //楼盘id
+    'top':'0'
+};
+
+</script>
+
+
+<div class="wrapper_house clearfix">
+        <div class="col_main">
+                <div class="main_wrap ml0" id="app">
+                <div class="inner_sub_box">
+                    <div class="hd clearfix">楼盘动态信息管理</div>
+                    <!-- <table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0" style="margin-top:15px;">
+                        <tr>
+                            <th>标题</th>
+                            <th>时间</th>
+                            <th>销售动态信息</th> 
+                            <th>操作</th> 
+                        </tr>
+                        <tr is="item" v-for="(item,index) in displayedItems" :length="displayedItems.length" :key="item.Detailsid" :item="item" :index="index"></tr>
+					</table> -->
+
+					<form action=""> 
+						<div class='ss-stit'>录入最新的楼盘动态</div> 
+						<div class="ss-textarea">
+							<textarea class="int inp-form-sz"   placeholder="请输入" v-model='addMessage'></textarea>
+						</div> 
+						<div  class="ss-gb-btn mt20 mb20" @click='add()'>发布</div> 
+					</form>
+
+					<ul is="item" class="ss-dt-ul" v-for="(item,index) in displayedItems" :length="displayedItems.length" :key="item.Detailsid" :item="item" :index="index"></ul>
+
+                    <!-- 弹框 -->
+                    <div class="agent_tips_window" style="width: 440px; margin-left: -220px; display:block; height:300px; margin-top:-150px;" v-show="agent_tips_window">
+                        <div class="hd">
+                            <a href="#" @click.prevent="closeTipsWindow()" class="close">关闭</a>
+                            <span class="tit">添加编辑</span>
+                        </div>
+                   
+                        <div class="bd">
+                            <ul class="ul-form clearfix"> 
+ 
+                                <li>
+                                    <span class="txt">销售动态信息：</span>
+                                    <div class="con">
+                                        <div class="box">  
+                                            <textarea class="int inp-form-sz" placeholder="请输入内容" v-model="Message"  style="width:270px; height:100px;" placeholder=""></textarea>
+                                        </div> 
+                                    </div>
+                                </li> 
+
+                            </ul>
+                            <input type="button" @click="submitHandle('Message')" value="确认提交" class="btn-form ani">
+                        </div>
+                </div>
+                <!-- 遮罩 -->
+                <div class="mask" style="display:block;" v-if="agent_tips_window"></div>
+                
+                </div>
+            </div>
+        </div>
+ 
+    </div>
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+	<!-- <tr align="center">  
+        <td>{{item.Title}}</td>
+        <td>{{item.Flushdate}}</td>
+        <td>{{item.Message}}</td>
+
+        <td style='width:240px'>
+            <a href="#" @click.prevent.self="edit(item.Id,item.Title,item.Message,index)" class="sys_btn_a"><i class="edit"></i>编辑</a>
+            <a href="#" @click.prevent.self="del(item.Id,index)" class="sys_btn_a"><i class="del"></i>删除</a>
+        </td>  
+	</tr> -->
+
+	<li class='ss-dt-ul-item relative'>
+		<div class='absolute ss-time'>{{item.Flushdate}}</div>
+		<div class='ss-con'>{{item.Message}}</div>
+		<div class='absolute ss-btn'>
+			<a href="#" @click.prevent.self="edit(item.Id,item.Title,item.Message,index)" class="sys_btn_a"><i class="edit"></i>编辑</a>
+			<a href="#" @click.prevent.self="del(item.Id,index)" class="sys_btn_a"><i class="del"></i>删除</a>
+		</div>
+		
+	</li>
+</script>
+
+
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+
+
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			 
+		}
+    },
+    props: ['item','index','length'],
+	components: {
+	}, 
+	methods: { 
+        edit:function(Id,Title,Message,index){
+			var that = this; 
+            that.$parent.Id = Id;
+            that.$parent.Title = Title; 
+            that.$parent.Message = Message;
+            that.$parent.add_update_url='LoupanSalesdynamicsUpdate'
+			that.$parent.openTipsWindow();
+        },
+        
+        del:function(id,index){
+			if(!window.confirm('您确定要删除吗？')){return false;}
+			var that = this,url = '/api/LouPan/LoupanSalesdynamicsDelete?id='+id;
+			
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				that.$parent.displayedItems.splice(index,1);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		}, 
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+	},
+	data: {
+        agent_tips_window:false,
+        displayedItems:[], 
+        Id:'',
+        Title:'',
+        Message:'', 
+		addMessage:'',
+        add_update_url:""
+         
+	},  
+	methods: {
+        add:function(){
+            var that = this;
+            // that.Id = ''; 
+            // that.Title = ''; 
+            // that.addMessage = '';
+            that.add_update_url='LouPanSalesdynamicsSubmit'
+			that.submitHandle('addMessage');
+		},
+		
+		closeTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = false;
+        },
+        openTipsWindow:function(id){
+			var that = this; 
+			that.agent_tips_window = true;
+        }, 
+
+        submitHandle:function(meg){ // 添加或者修改
+			var that = this,url = '/api/LouPan/'+that.add_update_url;
+			if(that[meg] === "") {
+				MSGwindowShow('house','0','请输入内容','','');
+			}else{
+				
+				if(that.add_update_url=='LouPanSalesdynamicsSubmit'){
+					var obj = { 
+						Message:that[meg],
+						Loupanid:url_obj.Loupanid
+					};
+				}else{
+					var obj = {
+						Id:that.Id, 
+						Message:that[meg], 
+						Loupanid:url_obj.Loupanid
+					};
+				}
+
+				
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+					data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+						that.getData(); 
+						that.closeTipsWindow();
+						that.addMessage=''
+						
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		}, 
+  
+		getData:function(){
+			var that = this,url= window['apiurl'];
+			axios.get(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){ 
+					return;
+				}
+				var Data = res.data;
+                if(Data.length==0){return false;}
+                for(var i=0;i<Data.length;i++){   
+					Data[i].Flushdate = formatTime_s(new Date(Data[i].Date));
+				} 
+
+                that.displayedItems = Data
+				//Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	
+	created: function () {
+        var that = this;  
+		that.getData();  
+	}
+});
+ 
+</script>
+</body>
+</html>

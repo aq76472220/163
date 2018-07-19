@@ -1,0 +1,115 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" /><style>
+td{ font-size:9.5pt}
+</style>
+<form name="form1" method="post" action="?action=savesave">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">房产频道参数配置</th>
+		<th style="text-align:right; padding-right:10px;">&nbsp;</th>
+	</tr>
+	<tr>
+		<td style=" text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">删除房源：</span>
+					<span class="d"><input type="radio" name="housedelete" value="0" {$housedelete0} />允许 <input type="radio" name="housedelete" value="1" {$housedelete1} />不允许　<em class="global_tip">允许会员删除自己发布的房源</em></span>
+				</li>
+				<li>
+					<span class="a">发布房源数量：</span>
+					<span class="d">一般会员：<input name="jingjirennum" type="text" id="jingjirennum" size="8" value="{$jingjirennum}" onkeypress="return event.keyCode>=48&&event.keyCode<=57||event.keyCode==46" onpaste="return !clipboardData.getData('text').match(/\D/)" ondragenter="return false">　未认证经纪人：<input name="jingjirenputong" type="text" id="jingjirenputong" size="8" value="{$jingjirenputong}" onkeypress="return event.keyCode>=48&&event.keyCode<=57||event.keyCode==46" onpaste="return !clipboardData.getData('text').match(/\D/)" ondragenter="return false">　已认证经纪人：<input name="jingjirenrenzheng" type="text" id="jingjirenrenzheng" size="8" value="{$jingjirenrenzheng}" onkeypress="return event.keyCode>=48&&event.keyCode<=57||event.keyCode==46" onpaste="return !clipboardData.getData('text').match(/\D/)" ondragenter="return false"></span>
+				</li>
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style" border="0">
+        <tr align="center">
+          <td class="category" width="60%">参数</td>
+          <td width="200" align="center" class="category">操作</td>
+        </tr>
+       <tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">区域</td>
+	<td class="category">
+	<a href="Category.aspx?key=0" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">地段</td>
+	<td class="category">
+	<a href="CategoryC.aspx?key=0" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">楼市均价</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=price" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">售价范围区间</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=show&key=1" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">租金范围区间</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=show&key=2" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">楼盘均价区间</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=show&key=3" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">房屋类型</td>
+	<td class="category">
+	<a href="Category.aspx?key=12" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">装修情况</td>
+	<td class="category">
+	<a href="Category.aspx?key=14" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">房屋配置</td>
+	<td class="category">
+	<a href="Category.aspx?key=15" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">基础设施</td>
+	<td class="category">
+	<a href="Category.aspx?key=16" class="global2_btn_blue">设置</a></td>
+</tr>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">小区/房屋特色</td>
+	<td class="category">
+	<a href="Category.aspx?key=13" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">经纪人级别与图标</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=dengji" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">店铺通栏默认背景</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=tonglang" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">资讯栏目名称</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=lanmu" class="global2_btn_blue">设置</a></td>
+</tr>
+<tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td class="category" align="center">中介品牌推荐</td>
+	<td class="category">
+	<a href="houseconfig.aspx?action=zj" class="global2_btn_blue">设置</a></td>
+</tr>
+      </table>
+</body>
+</html>

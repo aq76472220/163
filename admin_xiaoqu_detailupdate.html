@@ -1,0 +1,191 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<form id="myForm">
+<div class="wrapper_house clearfix" id="app">
+	<div class="inner_sub_box">
+		<div class="hd">小区资料完善</div>
+		<input type="hidden" name="Loupanid" v-model="Loupanid" />
+		<ul class="ul-form clearfix">
+			<li class="display0">
+				<span class="txt">小区地址：</span>
+				<div class="con">
+					<input type="text" name="Chraddress" v-model="Chraddress" placeholder="请输入" class="int inp-form-sz inp5">  
+				</div>
+			</li>
+			<li>
+				<span class="txt">物业公司：</span>
+				<div class="con">
+					<input type="text" name="Wuyecompany" v-model="Wuyecompany" placeholder="请输入" class="int inp-form-sz inp5">  
+				</div>
+			</li>
+			<li>
+				<span class="txt">物业费：</span>
+				<div class="con">
+					<input type="text" name="Wuyeguanli" v-model="Wuyeguanli" placeholder="请输入" class="int inp-form-sz inp5">  
+				</div>
+			</li>
+			<li>
+				<span class="txt">学区配套：</span>
+				<div class="con"> 
+					<div class="box"><input type="text"   placeholder="请输入" name="Youeryuan" class="int inp-form-sz inp5" v-model="Youeryuan">
+						<span class="txt2">幼儿园</span>
+					</div>
+					<div class="box"><input type="text"  placeholder="请输入" name="Xiaoxue" class="int inp-form-sz inp5" v-model="Xiaoxue">
+						<span class="txt2">小学</span>
+					</div>
+					<div class="box"><input type="text"  placeholder="请输入" name="Chuzhong" class="int inp-form-sz inp5" v-model="Chuzhong">
+						<span class="txt2">初中</span>
+					</div>
+				</div>
+			</li>
+			<li>
+				<span class="txt">特色标签：</span>
+				<div class="con">
+					<label class="lab2" :class="Tese_allin?'on':''" @click="selectAllTag('Tese',false)">全选</label>
+					<item-tese v-for="(tag, index) in TeseList" :key="tag.Categoryid" :tag="tag" :index="index" :Ccid="-1" forname="Tese"></item-tese>
+				</div>
+			</li>
+			<li>
+				<span class="txt">显示排序：</span>
+				<div class="con">
+					<input type="text" name="Intorder" v-model="Intorder" placeholder="请输入" class="int inp-form-sz inp2">
+					<span class="zhu1 zhu2">数字越大越靠前</span>  
+				</div>
+			</li>
+		</ul>
+		<input type="submit" value="确认提交" class="btn-form ani">
+		
+	</div>
+ 
+</div>
+</form>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+<script>
+window['CITY'] = '{$city}';
+var mypage = new Vue({
+	el: '#app',
+	components: {
+		'item-s': Item_s,
+		'item-tag':Item_tag,
+		'item-tese':Item_tese,
+		'item-select':Item_select
+	},
+	data: {
+		Loupanid:'',
+		Chraddress:'',
+		Wuyecompany:'',
+		Wuyeguanli:'',
+		Youeryuan:'',
+		Xiaoxue:'',
+		Chuzhong:'',
+		Intorder:'0',
+		//标签选择
+		Tese:'',
+		Tese_allin:false,
+		TeseList:[]
+		
+	},
+	methods:{
+		reupload:function(forname){
+			var that = this;
+			that[forname]='';
+		},
+		getData:function(sid){
+			var that = this;
+			var url = '/api/XiaoQu/GetXiaoQuInfoByStatus?xiaoQuid='+that.Loupanid+'&timer='+Date.parse(new Date());
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					return;
+				}
+				var Data = res.data;
+				
+				for(var k in Data){
+					that[k] = Data[k];
+				}
+				that.setmobileSelect();
+			}).catch(function(err){that.ifLoadding = false;alert('抱歉，加载失败了！');});
+		},
+		getTagData:function(styleid,sid,forname){
+			var that = this,url='';
+			if(styleid === '0'){
+				url = '/api/HouseCategory/SearchHouseCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					
+				}});
+			}else{
+				url = '/api/Category/SearchCategory';
+				$.ajax({'url':url,dataType:'json',data:{'Category':sid,'timer':Math.random()},success:function(data){
+					var i=0,len=data[sid].length,arr=[];
+					if(that[forname]!==''){
+						arr = that[forname];
+					}
+					for(;i<len;i++){
+						for(var k = 0;k<arr.length;k++){
+							if(arr[k] == data[sid][i].Categoryid){
+								data[sid][i].checked=true;
+							}
+						}
+						that[forname+'List'].push(data[sid][i]);
+					}
+				}});
+			}
+		},
+		setmobileSelect:function(){
+			var that=this;
+			
+			
+			that.getTagData('1','29','Tese');
+		},
+		selectAllTag:function(forname){
+			var that = this;
+			var arr = that[forname+'List'];
+			that[forname+'_allin'] = !that[forname+'_allin'];
+			for(var i=0;i<arr.length;i++){
+				Vue.set(arr[i], 'checked', that[forname+'_allin']);
+			}
+		}
+	},
+	created:function(){
+		var that = this;
+		var url_obj = $.url(window.location.href).param();
+		if(!!url_obj['Loupanid'] && url_obj['Loupanid']!==''){
+			that.Loupanid = url_obj['Loupanid'];
+			that.getData();
+		}else{
+			MSGwindowShow('house','1','页面加载错误，缺少小区ID！','xiaoqu','');
+		}
+		
+		$('#myForm').loadForm('/api/XiaoQu/XiaoQuDetailedInfoUpdate',function(myForm){
+			/*if(myForm[0].Chrloupan.value===''){
+				MSGwindowShow('house','0','请输入楼盘名称！','','');
+				return false;
+			}
+			if(myForm[0].Quyuid.value==='0'||myForm[0].Quyuid.value===''){
+				MSGwindowShow('house','0','请选择'+mypage.loupantit+'所在的区域！','','');
+				return false;
+			}
+			if(myForm[0].Chraddress.value===''){
+				MSGwindowShow('house','0','请输入'+mypage.loupantit+'详细地址！','','');
+				return false;
+			}
+			if(myForm[0].Loupan_x.value==='0'){
+				MSGwindowShow('house','0','请给'+mypage.loupantit+'标注一下地理位置哦！','','');
+				return false;
+			}*/
+			return true;
+		},function(myForm,data){
+			MSGwindowShow('house','1','提交成功！','xiaoqu','');
+			
+		});
+	},
+});
+function uploadsuccess(sid,surl,num){
+	mypage[num] = surl;
+}
+</script>

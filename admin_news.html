@@ -1,0 +1,371 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/News/SearchNews'; //查找资讯 获取包括发布和下线， 
+window['keyvalues'] = { //请求列表参数 
+	"PageSort":'', //页面排序方式
+	'PriceRange':'', //价格范围
+	'Id':'',//资讯类别,默认null获取全部，id类别通过房产分类获取
+	'Isshelf':'', //是否上线，默认上线，
+	'PageSize':'20',//每页条数
+	'Keywords':'',//关键字
+	"pageid":window['pageid'],// 当前分页页数
+	'Top':''//前top条
+};
+</script>
+<div class="wrapper" id="app">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li :class="cur==''?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({Id:'',cur:''});">全部<em>{{classifyNum[0]}}</em></a></li>
+			<li :class="cur==index+1?'cur':''" v-for='(item,index) in classifyName' :key='index'><a href="javascript:void(0);" @click.prevent="filterClick({Id:classifyName[index].Categoryid,cur:index+1});">{{item.Chrcategory}}<em>{{classifyNum[index+1]}}</em></a></li>
+
+			<!--  右边按钮 -->
+			<div class="right" style="padding:0;">
+				<a href="newsSubmit.html" class="global2_btn_blue global2_btn_add">添加文章</a>
+			</div>
+
+		</ul>
+	</div>
+
+	<!-- 搜索表单 -->
+	<form name="form2" method="get"  @submit.prevent="submitSearch()"  action=""  style="display:block; padding:5px 0 20px;">
+		<input type="text" v-model="Keywords" class="Wdate" style="width:260px;" placeholder="文章标题/关联小区" value=""> 
+		<input type="submit" value="搜索" class="global2_btn_orange" style="line-height:28px;">
+	</form>
+ 
+	<!-- 主体内容 -->
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr> 
+			<th width="60">&nbsp;</th>
+			<th>标题</th>
+			<th>分类</th>
+			<th>关联楼盘</th>
+			<th>添加人</th>
+			<th>添加时间</th>
+			<th>状态</th>
+			<th>浏览次数</th>
+			<th>操作</th> 	
+		</tr>
+		<tr is="item" v-for="(item,index) in displayedItems" :key="item.Newsid" :item="item" :index="index"></tr>
+	</table> 
+	<!-- 批量操作html -->
+	<div class="filter_bar">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label>
+		<a href="javascript:void(0);" @click.prevent="piliang('1')" class="global2_btn_blue">发布</a>
+		<a href="javascript:void(0);" @click.prevent="piliang('2')" class="global2_btn_blue">下线</a>
+		<a href="javascript:void(0);" @click.prevent="piliang('0')" class="global2_btn">删除</a>
+	</div>
+
+	<!-- 分页 -->
+	<div class="pageNavigation" id="pageNavigation"></div> 
+	 
+</div>
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+	<tr align="center">  
+		<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td>
+        <td><a target='_blank' :href="'/house/newsdetail_'+item.Newsid">{{item.Chrtitle}}</a></td>
+        <td>{{item.CategoryName}}</td>
+        <td>{{item.LoupanName}}</td>
+        <td>{{item.UserName}}</td>
+        <td>{{item.Flushdate}}</td>
+        <td> 
+			<span class="switch_wrap">发布 <span class="open_close" :class="item.IsShelf?' on':''" @click.prevent="fabu([item.Newsid],!item.IsShelf,index)"></span></span>
+        </td>
+        <td>{{item.Hits}}</td>
+        <td style='width:240px'>
+            <a :href="'newsSubmit.html?Newsid='+item.Newsid"  class="sys_btn_a"><i class="edit"></i>编辑</a>
+            <a href="#" @click.prevent.self="del([item.Newsid],index)" class="sys_btn_a"><i class="del"></i>删除</a>
+        </td>  
+	</tr>
+</script>
+
+
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+function returnFirstpage(){  //分页
+	window['keyvalues'] = $.extend(window['keyvalues'],{"pageid":"1"});
+	mylist&&mylist.getNewData();
+	$('#returnFirstPage1').hide();
+}
+
+
+
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			Hongbao_isopen:window['Mh163k_Plugin_Hongbao_isopen']==='1'
+		}
+	},
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		selectOne:function(index){// 批量选择单个
+			var that = this;
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		}, 
+		del:function(id_arr,index){// 删除
+			if(!window.confirm('您确定要删除该资讯吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		}, 
+		fabu:function(id,val,index){// 发布
+			var that = this;
+			that.$parent.Fabu(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'IsShelf', val);
+			});
+		}
+	 
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+	},
+	data: {
+		isSelectAll:false, //批量删除全选状态
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [],
+		ZhongJieList:[],
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0, 
+		Keywords:'',//搜索关键字 
+        classifyNum:[],
+        classifyName:[],
+        cur:''
+	}, 
+  
+	methods: {
+
+		selectAll:function(){ //批量删除全选
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		},
+		piliang:function(val){//批量操作
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Newsid); //批量修改个Id
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='0'){
+				that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+			}else if(val=='1'){
+				that.Fabu(arr,true, function(){that.isSelectAll = false;that.getNewData();})
+			}else if(val=='2'){
+				that.Fabu(arr,false, function(){that.isSelectAll = false;that.getNewData();})
+			}
+		},
+
+		Del:function(id_arr,callback){ //删除某一项 
+			var that = this,url = '/api/News/NewsAdminDelete?timer='+Date.parse(new Date());
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','删除成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		}, 
+
+		Fabu:function(id,val,callback){// 推荐
+			var that = this,url = '/api/News/NewsAdminUpdateShelf';
+			var obj = {
+				NewsIds:id,
+				IsShelf:val
+			} 
+
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(obj),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','操作成功！','','');
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+		
+		submitSearch:function(){ // 搜索
+			var that = this;   
+			that.filterClick({Keywords:that.Keywords});
+			return false;
+		},
+
+		filterClick:function(obj){// 楼盘状态过滤
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+
+		_classifyNum:function(){// 获取楼盘状态的数量
+			var that = this,url = '/api/News/GetNewsNumByType';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){ 
+					return;
+				}
+				var Data = res.data; 
+				for (var key in Data){
+					that.classifyNum.push(Data[key])
+				} 
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+
+        _classifyName:function(){// 获取楼盘状态的名称
+			var that = this,url = '/api/HouseCategory/SearchHouseCategory?category=0';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){ 
+					return;
+				}
+				var Data = res.data;   
+                Data['0'].forEach(function(item){
+                    that.classifyName.push({Categoryid:item.Categoryid,Chrcategory:item.Chrcategory})
+                }) 
+
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}, 
+	 
+		setPageList:function(){// 设置分页具体展示
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+	 
+		getNewData:function(){
+			var that = this; 
+			that.ifNoMore = false;
+			that.displayedItems = [];
+			that.getData();
+		},
+		getData: function () {  // 加载数据
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(Data.length===0){return false;}
+				for(var i=0;i<Data.length;i++){ 
+					var idate = '';
+					if(!Data[i].Flushdate){
+						idate = formatTime_s(new Date(Data[i].Dtappenddate));
+					}else{
+						idate = formatTime(new Date(Data[i].Flushdate));
+					}
+					Data[i].Flushdate = idate;
+					Data[i].showSuper = false;
+					Data[i].checked = false;
+				} 
+				
+				that.displayedItems = [];
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+
+				// 分页相关
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				history.pushState(null, '', '?p='+that.CurrentPage);
+				//如果不是第一页
+				if(that.CurrentPage!==1){
+					$('#returnFirstPage1')[0]&&$('#returnFirstPage1').show();
+				}
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	
+	created: function () {
+		var that = this;
+		that.getData();
+		that._classifyNum(); 
+        that._classifyName();
+	}
+});
+$(function(){
+	var url_obj = $.url(window.location.href).param();
+	
+});
+</script>
+</body>
+</html>

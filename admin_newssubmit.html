@@ -1,0 +1,301 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<style>
+    .ml0{margin-left: 0px!important;}
+    select{background: none!important; border: 1px solid #eee!important;color: #666!important; background: #fafafa!important; padding: 6px 03px!important;}
+</style>
+
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/jquery.cookie.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+
+<script> 
+
+
+window['apiurl'] = '/api/News/'; //创建资讯信息 
+window['keyvalues'] = { //请求列表参数 
+	"Chrtitle":'', //标题
+	'Categoryid':'', //房产资讯分类
+	'Chrfrom':'',//文章来源
+    'Chrurl':'',           //文章编辑
+	'Chrimage':'', //封面 默认值('')
+    'Loupanid':'',//关联楼盘 默认值(0)
+    'Chrcontent':'', //内容
+    'IsShelf':'', //发布/下线 默认值(0)
+    'Intorder':''//排序值 默认值(0)
+};
+
+</script>
+
+<div class="wrapper_house clearfix"  id="app">
+	<div class="col_main">
+        <div class="main_wrap ml0" @submit.prevent="submitHandle()">
+            <div class="inner_sub_box">
+                <div class="hd">添加文章</div> 
+                <form action="">
+                    <ul class="ul-form clearfix">
+                        <li>
+                            <div class="txt">文章标题：</div>
+                            <div class="con">
+                                <input type="text"  placeholder="" name="" class="int inp-form-sz inp3 tac" v-model='Chrtitle'>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">文章分类：</div>
+                            <div class="con"> 
+                                <select name="" v-model='Categoryid'>
+                                    <option value="">请选择文章分类</option>
+                                    <option value="" v-for='item in classifyName' :value='item.Categoryid' :key='item.Categoryid'>{{item.Chrcategory}}</option>
+                                </select>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">文章来源：</div>
+                            <div class="con">
+                                <input type="text" placeholder="" name="" class="int inp-form-sz inp3 tac" v-model='Chrfrom'> 
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">文章编辑：</div>
+                            <div class="con">
+                                <input type="text" placeholder="" name="" class="int inp-form-sz inp3 tac"  v-model='Chrurl'>
+                                <span class="zhu1 zhu2">默认填充当前网站名</span>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">封面图片：</div>
+                            <div class="con up_img">
+                                <input type="hidden" name="" v-model="Chrimage" />
+                                <span class="po_re" v-show="Chrimage!=''"><img :src="'../'+Chrimage" /><span class="reup" @click="reupload('Chrimage')">重新上传</span></span>
+                                <span class="" v-show="Chrimage==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=Chrimage&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">关联楼盘：</div>
+                            <div class="con">
+                                <select name="" id="">
+                                    <option value="">1</option>
+                                </select>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">文章内容：</div>
+                            <div class="con">
+                                <script id="Chrcontent" name="Chrcontent" type="text/plain" style="width:800px;height:400px;"></script>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">显示状态：</div>
+                            <div class="con bw80">   
+                                <input type="hidden" name=" " v-model='IsShelf'>
+                                <label class='open_close2' :class="IsShelf?'on':''" @click='IsShelf=true'>发布</label>
+                                <label class='open_close2' :class="!IsShelf?'on':''" @click='IsShelf=false'>下线</label> 
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">显示排序：</div>
+                            <div class="con">
+                                <input type="number" min="0"  placeholder="" name="" class="int inp-form-sz inp2 tac" v-model='Intorder'>
+                                <span class="zhu1 zhu2">数字越大显示越靠前</span>
+                            </div>
+                        </li> 
+                    </ul>
+                    <input type="submit" value="确认提交" class="btn-form ani">
+                </form> 
+            </div>
+        </div>
+    </div> 
+</div>
+
+<script>
+    // 富文本相关
+    window["ueuploadcfg"]={"table_id":'house',"filewidth":"900","filehight1":"180"};
+    window['logincookieStr'] = $.cookie('{$logincookieName}')+'&'+$.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+    if(!!window['logincookieStr']){
+        var arr_logincookieStr = window['logincookieStr'].split('&');
+        for(var iii = 0;iii<arr_logincookieStr.length;iii++){
+            window["ueuploadcfg"][arr_logincookieStr[iii].split('=')[0]] = arr_logincookieStr[iii].split('=')[1];
+        }
+    }
+    // 富文本相关
+</script>
+
+<script type="text/javascript" src="/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/ueditor/ueditor.all.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+
+<script>
+
+// 富文本相关
+window['ueConfig']  = {toolbars: [
+	['fullscreen', 'undo', 'redo', '|','bold', 'italic', 'underline','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|','simpleupload', 'insertimage']
+],wordCount:true,maximumWords:1000,autoHeightEnabled:false};
+var ueSize1 = '0';
+ueSize1 === '0'&&(window['ueConfig'].wordCount = false);
+window['ueConfig'].maximumWords = ueSize1;
+// 富文本相关
+
+window['Isfabu'] = true;
+var mypage = new Vue({
+	el: '#app',
+    components: { 
+		'item-select':Item_select
+	},
+	data:function (){
+		return { 
+            classifyName:[], //分类集合 
+
+            Newsid:'', // 资讯id
+            Chrtitle:'', //标题
+            Categoryid:'', //房产资讯分类
+            Chrfrom:'',//文章来源
+            Chrurl:'http://www.163k.cn',//文章编辑
+            Chrimage:'', //封面 默认值('')
+            Loupanid:'',//关联楼盘 默认值(0)
+            Chrcontent:'', //内容
+            IsShelf:true, //发布/下线 默认值(0)
+            Intorder:'0',//排序值 默认值(0)
+            url_action:'NewsAdminSubmit'
+		}
+	},
+	methods:{
+        reupload:function(forname){ // 图片上传
+			var that = this;
+			that[forname]='';
+		},
+        getUEContent: function () { // 富文本框
+			return this.editor.getContent()
+		},
+        
+        submitHandle:function(){ // 添加或者修改   
+			var that = this,url = window['apiurl']+that.url_action;
+            that.Chrcontent = that.getUEContent();
+			if(that.Chrtitle === "") {
+				MSGwindowShow('house','0','请输入文章标题','','');
+			}else if(that.Categoryid==''){
+                MSGwindowShow('house','0','请选择房产资讯分类','','');
+            }else if(that.Chrfrom==''){
+                MSGwindowShow('house','0','请选选择文章来源','','');
+            }else if(that.Chrurl==''){
+                MSGwindowShow('house','0','请输入文章编辑地址','','');
+            }else if(that.Chrimage==''){
+                MSGwindowShow('house','0','请选择一个封面','','');
+            }else if(that.Chrcontent==''){
+                MSGwindowShow('house','0','请输入内容','','');
+            }else{ 
+                
+				var obj =  {
+                    Newsid:that.Newsid,
+                    Chrtitle:that.Chrtitle,
+                    Categoryid:that.Categoryid,
+                    Chrfrom:that.Chrfrom, 
+                    Chrurl:that.Chrurl,
+                    Chrimage:that.Chrimage,
+                    Loupanid:that.Loupanid,
+                    Chrcontent:that.Chrcontent,
+                    IsShelf:that.IsShelf,
+                    Chrtitle:that.Chrtitle,  
+                };
+
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+                    data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		}, 
+        getData:function(Newsid){ // 如果是编辑获取资讯内容
+			var that = this,url='';
+			url = '/api/News/GetNewsInfoByNewsId?newsId='+Newsid;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data; 
+				for(var key in Data){
+					that[key] = Data[key];
+				}  
+
+                that.editor = UE.getEditor('Chrcontent', window['ueConfig']);
+                that.editor.addListener("ready", function () {
+                    that.editor.setContent(that.Chrcontent);
+                });
+                        
+ 
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+        _classifyName:function(){// 获取楼盘状态的名称
+			var that = this,url = '/api/HouseCategory/SearchHouseCategory?category=0';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){ 
+					return;
+				}
+				var Data = res.data;   
+                Data['0'].forEach(function(item){
+                    that.classifyName.push({Categoryid:item.Categoryid,Chrcategory:item.Chrcategory})
+                }) 
+
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+	},
+	created:function(){
+        var that = this;  
+        
+        
+ 
+        that._classifyName(); 
+        //编辑文章
+        var url_obj = $.url(window.location.href).param(); 
+		if(!!url_obj['Newsid'] && url_obj['Newsid']!==''){
+			window['Isfabu'] = false;
+			that.url_action = 'NewsAdminUpdate'; 
+			that.getData(url_obj['Newsid']);
+			that.Id = url_obj['Newsid'];
+		}else{
+            that.editor = UE.getEditor('Chrcontent', window['ueConfig']);
+            that.editor.addListener("ready", function () {
+                that.editor.setContent(that.Chrcontent);
+            });
+        }
+        
+        //富文本框 
+        // that.editor = UE.getEditor('Chrcontent', window['ueConfig']);
+        // that.editor.addListener("ready", function () {
+        //     that.editor.setContent(that.Chrcontent);
+        // });
+        //getHouseCatJSON('1','12','Leixing',setQuyuSel_vue);
+		 
+	},
+})
+
+//上传图片
+function uploadsuccess(sid,surl,num){
+	mypage[num] = surl;
+}
+</script>

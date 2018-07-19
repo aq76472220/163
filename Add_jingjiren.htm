@@ -1,0 +1,147 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/jquery.cookie.js"></script>
+<script charset="utf-8" src="/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="/kindeditor/lang/zh_CN.js"></script>
+<script type="text/javascript">
+window['logincookieStr'] = $.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+</script>
+<form name="form1" method="post" action="?action=AddSave" onsubmit="return checkaddjingjiren(this)" enctype="multipart/form-data">
+<input type="hidden" name="gotourl" value="{$gotourl}">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">添加经纪人</th>
+		<th style="text-align:right; padding-right:10px;"><a href="jingjiren.aspx" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left; padding-top:0;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li class="geduan" style="background-color:#f9f9f9;">基本信息</li>
+				
+				<li>
+					<span class="a">会员名：</span>
+					<span class="d"><input class="s_ipt" type="text" name="userid" value="" onblur="if(this.value!=''){getdata('request.aspx?action=checkjingjiren&tt={$userid}&userid='+encMe(this.value),'tishi');}else{tishi.innerHTML='（一个会员只能一个经纪人）';}">　<em class="global_tip" id="tishi">一个会员只能一个经纪人</em></span>
+				</li>
+				<li>
+					<span class="a">经纪人姓名：</span>
+					<span class="d"><input name="truename" value="" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li class="w_auto_select">
+					<span class="a">服务区域：</span>
+					<span class="d">{$qu_classid}</span>
+				</li>
+				<li>
+					<span class="a">公司/门店：</span>
+					<span class="d"><input name="chrcompany" value="" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li>
+					<span class="a">个人头像：</span>
+					<span class="d">
+<input type="hidden" name="filewidth" value="130">
+<input type="hidden" name="fileheight" value="160">
+<input type="hidden" name="smallfilewidth" value="130">
+<input type="hidden" name="smallfileheight" value="160">
+<input type="file" name="file1" size="60">　<em class="global_tip">限制50K以内，JPG/GIF，最佳尺寸：130x160</em>
+					</span>
+				</li>
+				<li>
+					<span class="a">公司LOGO：</span>
+					<span class="d">
+						<input type="file" name="file2" size="60">　<em class="global_tip">限制50K以内，JPG/GIF，最佳尺寸：130x90</em>
+					</span>
+				</li>
+				<li>
+					<span class="a">通栏背景：</span>
+					<span class="d">
+						<input type="radio" value="1" checked="checked" name="R">使用默认：<input type="radio" value="1" checked="checked" name="R1">默认1&nbsp;
+		<input type="radio" value="2" name="R1">默认2&nbsp;
+		<input type="radio" value="3" name="R1">默认3&nbsp;
+		<input type="radio" value="4" name="R1">默认4&nbsp;
+		<input type="radio" value="5" name="R1">默认5<BR>
+		<input type="radio" value="2" name="R">自定义：<input type="file" name="file3" class="s_ipt"> <em class="global_tip">仅限认证经纪人</em>
+					</span>
+				</li>
+				<li>
+					<span class="a">通栏显示名字：</span>
+					<span class="d"><input type="radio" name="ifshow" value="0" checked="checked">显示 <input type="radio" name="ifshow" value="1">不显示</span>
+				</li>
+				<li>
+					<span class="a">手机：</span>
+					<span class="b"><input name="chrtel" value="" class="s_ipt" type="text" /></span>
+					<span class="a">QQ：</span>
+					<span class="b"><input name="chrqq" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li class="geduan">独立域名　<span style="font-size:12px; color:#666;">请确保配置了服务器相关设置且服务为开启状态</span></li>
+				<li>
+					<span class="a">是否启用：</span>
+					<span class="d"><input name="yumingkill" type="radio" value="0" checked="checked">不启用（暂停） <input name="yumingkill" type="radio" value="1" >启用(正常) <input name="yumingkill" type="radio" value="2">禁止使用</span>
+				</li>
+				<li>
+					<span class="a">独立域名：</span>
+					<span class="d http"><span class="http_in">{$SiteQiyeUrlSchemet}</span><input name="yumingname" id="yumingname" value="" onblur="checkyuming(this.value,'yumingshow','0',1)" class="s_ipt" type="text" />　<em class="global_tip" id="yumingshow"></em></span>
+				</li>
+				<li>
+					<span class="a">备案号：</span>
+					<span class="d"><input name="yumingbeian" id="yumingbeian" value="" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li class="geduan">简介信息</li>
+				<li>
+					<span class="a">个人介绍：</span>
+					<span class="d">
+					<p style="margin-bottom:15px;"><input type="checkbox" name="gereniskill" value="1" class="text" >启用 <em class="global_tip">仅限认证经纪人</em></p>
+					<textarea cols="80" id="gerencontent" name="gerencontent" rows="10"></textarea>
+	<script>
+		KindEditor.ready(function(K) {
+			var editor = K.create('textarea[name="gerencontent"]', {
+				uploadJson : '/kindeditor/upload_json.ashx?' + window["logincookieStr"],
+				afterBlur: function(){this.sync();},
+				fileManagerJson : '/kindeditor/file_manager_json.ashx',
+
+				allowFileManager : true,width : '100%',height : '300px'
+			});
+		});
+	</script></span>
+				</li>
+				<li>
+					<span class="a">门店介绍：</span>
+					<span class="d">
+					<p style="margin-bottom:15px;"><input type="checkbox" name="mendianiskill" value="1" class="text" > 启用<em class="global_tip">仅限认证经纪人</em></p>
+					<textarea cols="80" id="mendiancontent" name="mendiancontent" rows="10"></textarea>
+	<script>
+		KindEditor.ready(function(K) {
+			var editor = K.create('textarea[name="mendiancontent"]', {
+				uploadJson : '/kindeditor/upload_json.ashx?' + window["logincookieStr"],
+				afterBlur: function(){this.sync();},
+				fileManagerJson : '/kindeditor/file_manager_json.ashx',
+
+				allowFileManager : true,width : '100%',height : '300px'
+			});
+		});
+	</script></span>
+				</li>
+				<li class="geduan">属性设置</li>
+				<li>
+					<span class="a">排序：</span>
+					<span class="b"><input name="intorder" value="{$intorder}" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" />　<em class="global_tip">数字越大越靠前</em></span>
+					<span class="a">点击：</span>
+					<span class="b"><input name="views" value="1" onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt" type="text" />　<em class="global_tip">会在该数字基础上累加</em></span>
+				</li>
+				<li>
+					<span class="a">属性：</span>
+					<span class="b"><input type="checkbox" name="tuijian" value="1">推荐</span>
+					<span class="a">认证：</span>
+					<span class="b"><input type="radio" name="iskill" value="0">申请认证 <input type="radio" name="iskill" value="1" checked="checked">已认证 <input type="radio" name="iskill" value="2">非认证</span>
+				</li>
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>

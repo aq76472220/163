@@ -1,0 +1,447 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+<style>
+.table_style_2017 .open_close2 { margin-right:0;}
+.pub { padding:0 3px;}
+.pub_1 { color:#5cc55c;}
+.pub_2 { color:#fe6548;}
+.pub_3 { color:#999;}
+.pub_4 { color:#f93;}
+.pub_5 { color:#0b8ce8;}
+
+.ss-img{display: block; height: 80px}
+
+.e1,.e2 { display:inline-block; vertical-align:middle; padding:0 4px; border-radius:3px; color:#fff; margin-right:5px; font-size:12px; line-height:18px; font-style:normal;}
+.e1 { background-color:#fe6548;}
+.e2 { background-color:#5cc55c;}
+.display_false_true,.displayfalse { display:none;}
+</style>
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+
+ 
+
+window['cookieName'] = 'myChuzhuid';
+window['apiurl'] = '/api/XiaoQu/SearchXiaoqu'; //请求查找小区列表接口
+window['keyvalues'] = { //请求列表参数 
+	"IsKill":'-2', //小区审核状态
+	'PriceRange':'', //价格范围
+	'Leixing':'',//类型
+	'Region':'',// 区域 
+	'Section':'',// 地段
+	'PageSort':'',//页面排序方式
+	'X1':'',//楼盘/小区坐标X1
+	'Y1':'',//楼盘/小区坐标Y1
+	'X2':'',//楼盘/小区坐标X2
+	'Y2':'',//楼盘/小区坐标Y2
+	'PageSize':'20',//每页条数
+	'Keywords':'',//关键字
+	"pageid":window['pageid'],// 当前分页页数
+	'Top':''//前top条
+};
+</script>
+<div class="wrapper" id="app">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li :class="IsKill=='-2'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({IsKill:'-2'});">全部<em>{{XiaoQuCount.Default}}</em></a></li>
+			<li :class="IsKill=='-1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({IsKill:'-1'});">拒绝<em>{{XiaoQuCount.Refuse}}</em></a></li>
+			<li :class="IsKill=='0'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({IsKill:'0'});">待审核<em>{{XiaoQuCount.TobeAgree}}</em></a></li>
+			<li :class="IsKill=='1'?'cur':''"><a href="javascript:void(0);" @click.prevent="filterClick({IsKill:'1'});">同意<em>{{XiaoQuCount.Agree}}</em></a></li>
+			
+			<!--  右边按钮 -->
+			<div class="right" style="padding:0;">
+				<a href="xiaoqubatchsubmit" class="global2_btn_blue global2_btn_add">批量添加小区</a> <a href="xiaoqubatchsubmit" class="global2_btn_blue global2_btn_yun">从云端导入小区数据</a> <a href="#" class="global2_btn global2_btn_delall" @click.prevent="delall()">删除全部小区</a>
+			</div>
+
+		</ul>
+	</div>
+
+	<!-- 搜索表单 -->
+	<form name="form2" method="get"  @submit.prevent="submitSearch()"  action=""  style="display:block; padding:5px 0 20px;">
+		<select v-model="RegionSelected"> 
+			<option v-for="(item,index) in RegionList" :key="item.Chrcategory" :item="item" :index="index" :value="item.Categoryid" >{{item.Chrcategory}}</option>
+		</select>
+
+		<select v-model="SectionSelected"> 
+			<option v-for="(item,index) in  SectionList" :key="item.Chrcategory" :item="item" :index="index" :value="item.Categoryid">{{item.Chrcategory}}</option>
+		</select>　
+		
+		<input type="text" v-model="Keywords" class="Wdate" placeholder="小区关键词搜索" style="width:180px;" value=""> 
+		<input type="submit" value="搜索" class="global2_btn_orange" style="line-height:28px;">
+	</form>
+   
+	<!-- 主体内容 -->
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr> 
+			<th width="60">&nbsp;</th>
+			<th>小区名称</th>
+			<th>封面</th>
+			<th>位置</th>
+			<th>房屋类型</th>
+			<th>地图位置</th>
+			<th>建筑年代</th>
+			<th>参考均价</th>
+			<th>开发商</th>
+			<th>创建人</th>
+			<th>创建时间</th>
+			<th>内容管理</th>
+			<th>状态</th>
+			<th>操作</th>
+		</tr>
+		<tr is="item" v-for="(item,index) in displayedItems" :key="item.Loupanid" :item="item" :index="index"></tr>
+	</table> 
+	<div class="filter_bar">
+		<label class="open_close2" @click="selectAll()" :class="isSelectAll?'on':''">全选　</label><a href="javascript:void(0);" @click.prevent="piliang('0')" class="global2_btn">删除</a>
+	</div>
+	<!-- 分页 -->
+	<div class="pageNavigation" id="pageNavigation"></div> 
+	 
+</div>
+
+<!-- 分页模板 -->
+<script type="text/x-template" id="page-template">
+<tr :id="'item'+item.Userid" align="center">  
+	<td><label class="open_close2" @click="selectOne(index)" :class="item.checked?'on':''"></label></td>
+	<td><a :href="'xiaoqudetail_'+item.Loupanid" v-if="item.Iskill==1">{{item.Chrloupan}}</a><span v-if="item.Iskill!=1">{{item.Chrloupan}}</span> <span class='ico_jian' v-show='item.Tuijian'></span></td>
+	<td><img class='ss-img' :src="'../'+item.Filepath" onerror="this.src='{$atplPath}images/house/notfindimg_house.png'" alt=""></td>
+	<td>{{item.QuyuName}}-{{item.DiduanName}}</td>
+	<td>
+		<span v-for='item02 in item.LeixingEntities' :key='index'>{{item02.LeixingName}} </span>
+	</td>
+	<td><span v-if="item.X==0||item.X==''">未标注</span><span style="color:#5cc55c;" v-else>已标注</span></td>
+	<td>{{item.Niandai}}年</td>
+	<td>
+		<span v-if='item.Avgprice>0'> {{item.Avgprice}}元/平方</span>
+		<span v-else>不详</span>
+	</td>
+	<td>{{item.Chrsupply}}</td>
+	<td>{{item.UserName}}</td>
+	<td>{{item.Flushdate}}</td> 
+	<td align="center">
+		<a :href="'xiaoqusubmit?Loupanid='+item.Loupanid" class="sys_btn_a">基本资料</a>
+		<a :href="'xiaoqudetailupdate?Loupanid='+item.Loupanid" class="sys_btn_a">详细资料</a>
+		<a :href="'xiaoqupic?Loupanid='+item.Loupanid" class="sys_btn_a">相册</a>
+		<a :href="'xiaoquhuxing?Loupanid='+item.Loupanid" class="sys_btn_a">房型图</a> 
+	</td>
+	<td>
+		<span class="switch_wrap">推荐 <span class="open_close" :class="item.Tuijian?' on':''" @click.prevent="tuijian(item.Loupanid,!item.Tuijian,index)"></span></span>
+		<span class="switch_wrap">审核 <span class="open_close" :class="item.Iskill==1?' on':''" @click.prevent="shenhe(item.Loupanid,item.Iskill,index)"></span></span>
+	</td>
+	<td align="center"> 
+		<a href="#" @click.prevent="del([item.Loupanid],index)" class="sys_btn_a">
+			<i class="del"></i>删除
+		</a>
+	</td>
+</tr>
+</script>
+
+
+<script src="{$Default_tplPath}js/jquery.cookie.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/house_admin_2018.js"></script>
+<script>
+function returnFirstpage(){  //分页
+	window['keyvalues'] = $.extend(window['keyvalues'],{"pageid":"1"});
+	mylist&&mylist.getNewData();
+	$('#returnFirstPage1').hide();
+}
+
+
+
+
+var Item = { // 内容模板
+	data:function (){
+		return {
+			Hongbao_isopen:window['Mh163k_Plugin_Hongbao_isopen']==='1'
+		}
+	},
+	components: {
+	},
+	props: ['item','index'],
+	methods: {
+		selectOne:function(index){
+			var that = this;
+			Vue.set(that.$parent.displayedItems[index],'checked',!that.$parent.displayedItems[index].checked);
+		},
+		del:function(id_arr,index){// 删除
+			if(!window.confirm('您确定要删除该房源吗？')){return false;}
+			var that = this;
+			that.$parent.Del(id_arr,function(){
+				that.$parent.displayedItems.splice(index,1);
+			});
+		},
+		tuijian:function(id,val,index){// 推荐
+			var that = this;
+			that.$parent.Tuijian(id,val,function(){
+				Vue.set(that.$parent['displayedItems'][index], 'Tuijian', val);
+			});
+		},
+		shenhe:function(id,val,index){// 推荐
+			var that = this;
+			that.$parent.Iskill(id,val,function(val){
+				Vue.set(that.$parent['displayedItems'][index], 'Iskill', val);
+			});
+		},
+	},
+	template: '#page-template'
+};
+ 
+var mylist = new Vue({
+	el: '#app',
+	components: {
+		'item': Item, 
+	},
+	data: {
+		isSelectAll:false,
+		agent_tips_window:false,
+		agent_tips_window_id:0,
+		agent_tips_window_action:'',
+		agent_tips_window_isloaded:false,
+		ifFixedFilter2:false,
+		ifLoadding:false,
+		ifNoMore:false,
+		displayedItems: [],
+		ZhongJieList:[],
+		CurrentPage:1,
+		TotalPage: 0,
+		TotalRecord:0,
+		IsKill:'-2', //小区审核状态
+		XiaoQuCount:{}, //小区状态
+		Keywords:'',//搜索关键字
+		SectionRegionList:[],//区域地段列表
+		SectionList:[{'Chrcategory':"请选择地段",'Categoryid':''}],//地段列表
+		SectionSelected:'',//选中地段
+		RegionList:[{'Chrcategory':"请选择区域",'Categoryid':''}],//区域列表
+		RegionSelected:''//区域地段
+	}, 
+	watch: {
+    	// 区域改变时候触发搜索
+		RegionSelected: function (newVal, oldVal) { 
+			var that = this;
+			that.SectionList = [{'Chrcategory':"请输入地段",'Categoryid':''}];
+			that.SectionSelected=''; 
+			if(newVal !==oldVal && newVal !== '' ){ 
+				var idx; 
+				that.RegionRegionList.forEach(function(item,index){
+					if(item.Categoryid == newVal){
+						idx = index;
+						return
+					}; 
+				});   
+				var SectionList = that.SectionList.concat(that.RegionRegionList[idx].Entities) 
+				that.SectionList = SectionList 
+			}
+
+			that.submitSearch();
+		},
+
+		 SectionSelected: function (newVal, oldVal) { // 地段改变时候触发搜索
+			var that = this;
+			if(newVal !==oldVal  ){
+				that.submitSearch();
+			}
+		}
+	},
+
+	methods: {
+		delall:function(){
+			if(!window.confirm('请谨慎操作，将删除全部小区数据，您确定吗？')){return false;}
+			alert('待完善');
+		},
+		Del:function(id_arr,callback){ //删除某一项 
+			var that = this,url = '/api/XiaoQu/XiaoQuDelete?timer='+Date.parse(new Date());
+			$.ajax({
+				url:url,
+				type:"POST",
+				dataType:"json",
+				contentType:"application/json;charset=utf-8",
+				data: JSON.stringify(id_arr),
+				success:function(res){
+					if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					callback&&callback.call(that);
+				},
+				error:function(message){  
+					MSGwindowShow('house','0','操作失败了！','','');
+				}
+			});
+		},
+
+		Tuijian:function(id,val,callback){// 推荐
+			var that = this,url = '/api/XiaoQu/XiaoQuUpdateTuiJianStatus?xiaoquId='+id+'&isTuijian='+val;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				//MSGwindowShow('house','0','操作成功了哦！','','');
+				callback&&callback.call(that);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		Iskill:function(id,val,callback){// 推荐
+			if(val==0||val==-1){val=1;}else{
+				val=-1;
+			}
+			var that = this,url = '/api/XiaoQu/XiaoQuUpdateKillStatus?xiaoquId='+id+'&iskill='+val;
+			axios.post(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				callback&&callback.call(that,val);
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+			return false;
+		},
+		selectAll:function(){
+			var that = this,i=0,len = that.displayedItems.length;
+			that.isSelectAll = !that.isSelectAll;
+			for(;i<len;i++){
+				Vue.set(that.displayedItems[i],'checked',that.isSelectAll);
+			}
+		},
+		
+		piliang:function(val){
+			var that = this,arr = [],i=0,len = that.displayedItems.length;
+			for(;i<len;i++){
+				if(!that.displayedItems[i].checked){continue;}
+				arr.push(that.displayedItems[i].Loupanid);
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='0'){
+				that.Del(arr,function(){that.isSelectAll = false;that.getNewData();});
+			}
+		},
+		
+		submitSearch:function(){ // 搜索
+			var that = this;   
+			that.filterClick({Keywords:that.Keywords,Section:that.SectionSelected,Region:that.RegionSelected});
+			return false;
+		},
+
+		filterClick:function(obj){// 楼盘状态过滤
+			var that = this,key;
+			window['keyvalues'] = $.extend(window['keyvalues'],obj,{"pageid":"1"});
+			for(key in obj){
+				that[key] = obj[key];
+			}
+			that.getNewData();
+		},
+
+		getNum:function(){// 获取楼盘状态的数量
+			var that = this,url = '/api/XiaoQu/GetXiaoquCountByAuditStatus';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data; 
+				that.XiaoQuCount = Data;
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		},
+
+		getRegionRegion:function(){ //获取区域和地段
+			var that = this,url = '/api/Category/SearchCategory?category=0';
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data[0]; 
+				that.RegionRegionList = Data; 
+				var  RegionList = that.RegionList; 
+				Data.forEach(function(item, index){
+					RegionList.push({'Categoryid':item.Categoryid,'Chrcategory':item.Chrcategory})
+				}); 
+				that.RegionList = RegionList  
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+
+		},
+	 
+		setPageList:function(){// 设置分页具体展示
+			var that = this;
+			var result =  makePageListMenu(that.TotalPage,that.CurrentPage);
+			$('#pageNavigation').html(result);
+		},
+	 
+		getNewData:function(){
+			var that = this; 
+			that.ifNoMore = false;
+			that.displayedItems = [];
+			that.getData();
+		},
+		getData: function () {  // 加载数据
+			var that = this;
+			that.CurrentPage = parseInt(window['keyvalues'].pageid);
+			that.ifLoadding = true;
+			axios.get(window['apiurl'],{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					that.ifNoMore = true;
+					that.ifLoadding = false;
+					return;
+				}
+				var Data = res.data.Data;
+				that.TotalPage = parseInt(res.data.TotalPage)
+				that.TotalRecord = parseInt(res.data.TotalRecord);
+				that.setPageList();
+				if(Data.length===0){return false;}
+				for(var i=0;i<Data.length;i++){ 
+					var idate = '';
+					if(!Data[i].Flushdate){
+						idate = formatTime_s(new Date(Data[i].Dtappenddate));
+					}else{
+						idate = formatTime(new Date(Data[i].Flushdate));
+					}
+					Data[i].Flushdate = idate;
+					Data[i].showSuper = false;
+					Data[i].checked = false;
+				}
+
+				that.displayedItems = [];
+				Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+				that.ifLoadding = false;
+				(that.TotalPage===0) && (that.ifNoMore = true);
+
+				// 分页相关
+				(that.TotalPage===that.CurrentPage || that.TotalPage<that.CurrentPage) && (that.ifNoMore = true,that.CurrentPage=that.TotalPage);
+				history.pushState(null, '', '?p='+that.CurrentPage);
+				//如果不是第一页
+				if(that.CurrentPage!==1){
+					$('#returnFirstPage1')[0]&&$('#returnFirstPage1').show();
+				}
+			}).catch(function(err){that.ifLoadding = false;MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	},
+	
+	created: function () {
+		var that = this;
+		that.getData();
+		that.getNum();
+		that.getRegionRegion();
+	}
+});
+$(function(){
+	var url_obj = $.url(window.location.href).param();
+	
+});
+</script>
+</body>
+</html>

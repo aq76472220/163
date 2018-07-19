@@ -1,0 +1,115 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<style>
+	.ml0{margin-left: 0px!important;}
+	.mw180{min-width: 180px!important;}
+	.bw80{width: 80%!important;}
+	.pr30{padding-right: 30px!important;}
+	.ml190{margin-left: 190px!important;} 
+</style>
+
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+<script>
+
+var url_obj = $.url(window.location.href).param();
+window['pageid']='1';
+if(!!url_obj['p'] && url_obj['p']!==''){
+	if(!isNaN(url_obj['p'])){
+		window['pageid'] = url_obj['p'];
+	}
+}
+ 
+
+</script>
+
+ 
+<div class="wrapper_house clearfix" id="app">
+	<div class="col_main">
+			<div class="main_wrap ml0">
+			<div class="inner_sub_box">
+			<div class="hd">楼盘全景</div>
+			<div class="tips-h1"><div class="tip">提示：若本楼盘有VR全景，请在下面输入全景的调用网址，留空则在网站中不显示</div></div>
+				
+			<form action="" method="get"  @submit.prevent="submitHandle()">
+				<ul class="ul-form clearfix">  
+					<li>
+						<span class="txt">VR看房：</span>
+						<div class="con">
+							<input type="text" name="Biaoyu" v-model="panorama" placeholder=" " class="int inp-form-sz inp3">  
+							<span class="zhu1 zhu2">请输入全景文件URL</span>
+						</div>
+					</li> 
+				</ul>
+				<input type="submit" value="确认提交" class="btn-form ani">
+			</form>
+
+		</div>
+		</div>
+	</div> 
+</div> 
+
+ 
+<script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={$ggmapkey}"></script>
+<script type="text/javascript" src="//developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+<script>
+ 
+	 
+new Vue({
+	el: '#app',
+	data: {
+		panorama:''
+	},  
+	methods: { 
+		submitHandle:function(){ // 添加或者修改
+			var that = this,url = '/api/LouPan/LoupanUpdatePanorama?Loupanid='+url_obj.Loupanid+'&panorama='+that.panorama;
+			if(that.panorama === "") {
+				MSGwindowShow('house','0','请输入全景的调用网址','','');
+			}else{
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8", 
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		},
+		_getLoupanInfo:function(){
+			var that = this,url= '/api/LouPan/GetLoupanInfo?LoupanId='+url_obj.Loupanid;
+			axios.get(url,{params:window['keyvalues']}).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					return;
+				}
+				var Data = res.data;
+                if(Data.length==0){return false;}
+				that.panorama=Data.Chrvideo
+
+
+				//Data.length>0 ?(that.displayedItems = that.displayedItems.concat(Data)):'';
+			}).catch(function(err){MSGwindowShow('house','0','加载失败了！','','');console.log(err);});
+		}
+	}, 
+	created: function () {
+		var that = this;  
+		that._getLoupanInfo();  
+	}
+});
+	 
+	</script>

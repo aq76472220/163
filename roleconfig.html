@@ -1,0 +1,205 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<style>
+.ul-form li .con { margin-left:210px;}
+	.mw180{min-width: 200px!important;}
+	.pr30{padding-right: 30px!important;}
+	.ml190{margin-left: 190px!important;} 
+</style>
+<div class="wrapper_house clearfix" id='app'>
+	<div class="col_main"><div class="main_wrap">
+		<div class="inner_sub_box">
+		<div class="hd">权限配置</div>
+
+		<form action=""  @submit.prevent="submitHandle()" >
+			<ul class="ul-form clearfix">
+				<li>
+					<span class="txt mw180">个人房源发布权限：</span>
+					<div class="con bw80"> 
+						<div class="box">
+							<input type="number" min="1"  placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model.number='PersonalPublishDayLimit'>
+							<span class="txt2">条</span>
+							<span class="txt3">每天</span>
+						</div>
+
+						<div class="box">
+							<input type="number" min="1"  placeholder="请输入" name="" class="int inp-form-sz inp2 tac"  v-model.number='PersonalPublishTotalLimit'>
+							<span class="txt2">条</span>
+							<span class="txt3">总数</span>
+						</div> 
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">个人房源是否需要审核：</span>
+					<div class="con bw80">  
+							<input type="hidden" name="PersonalHouseIsKill" v-model= 'PersonalHouseIsKill'>
+							<label class="open_close2" :class="PersonalHouseIsKill == true ?  'on' : ''" @click = 'PersonalHouseIsKill=true'>不需要审核</label>
+							<label class="open_close2" :class="PersonalHouseIsKill == false ?  'on' : ''" @click = 'PersonalHouseIsKill=false'>需要审核</label>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">普通门店发布房源总上限：</span>
+					<div class="con bw80"> 
+						<div class="box"><input type="number" min="1" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model.number='MenDianPublishDayLimit'>
+							<span class="txt2">条</span>
+							<span class="txt3">每天</span>
+						</div>
+
+						<div class="box"><input type="number" min="1" placeholder="请输入" name="" class="int inp-form-sz inp2 tac" v-model.number='MenDianPublishTotalLimit'>
+							<span class="txt2">条</span>
+							<span class="txt3">每天</span>
+						</div>
+
+						<span class="zhu1 zhu2">钻石门店无上限，钻石门店到期后将无法新增</span>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">普通门店经纪人数量上限：</span>
+					<div class="con bw80">  
+
+						<div class="box"><input type="number" min="1" placeholder="请输入" name="" class="int inp-form-sz inp2 pr30" v-model.number='MenDianAgentLimit'>
+							<span class="txt2">人</span> 
+						</div>
+
+						<span class="zhu1 zhu2">钻石门店无上限，钻石门店到期后将无法新增</span>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">求租求购信息：</span>
+					<div class="con bw80">   
+						<input type="hidden" name="XuQiuIsKill" v-model= 'XuQiuIsKill'>
+						<label class="open_close2" :class="XuQiuIsKill == true ?  'on' : ''" @click = 'XuQiuIsKill=true'>要审核</label>
+						<label class="open_close2" :class="XuQiuIsKill == false ?  'on' : ''" @click = 'XuQiuIsKill=false'>不需要审核</label>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">个人房源成交后：</span>
+					<div class="con bw80"> 
+						<input type="hidden" name="PersonalTradeHideInfomation" v-model= 'PersonalTradeHideInfomation'>
+						<label class="open_close3" :class="PersonalTradeHideInfomation == true ?  'on' : ''" @click = 'PersonalTradeHideInfomation=!PersonalTradeHideInfomation'>隐藏掉房源的联系方式资料</label>
+					</div>
+				</li>
+
+				<li>
+					<span class="txt mw180">委托房源联系资料查看权限：</span>
+					<div class="con bw80">  
+
+						<input type="hidden" name="DelegateMenDianView" v-model= 'DelegateMenDianView'>
+						<label class="open_close2" :class="DelegateMenDianView == true ?  'on' : ''" @click = 'DelegateMenDianView=true'>普通门店可查看</label>
+						<label class="open_close2" :class="DelegateMenDianView == false ?  'on' : ''" @click = 'DelegateMenDianView=false'>钻石会员门店可查看</label>
+					
+						
+					</div>
+				</li>
+
+			</ul>
+			<input type="submit" value="确认提交" class="btn-form ani ml190">
+		</form>
+	</div>
+	</div></div>
+	<div class="col_sub">
+		<div class="sub_nav">
+			<ul>
+				<li><a href="config.html" ><s></s>基本配置<i></i></a></li>
+				<li><a href="roleconfig.html" class="on"><s></s>权限配置<i></i></a></li>
+				<li><a href="basedataconfig.html"><s></s>基础数据<i></i></a></li>
+				<li><a href="jifenconfig.html"><s></s>积分配置<i></i></a></li>
+				<li><a href="teseconfig.html"><s></s>特色标签<i></i></a></li>
+				<li><a href="shareTemplateListConfig"><s></s>分享样式<i></i></a></li>
+				<li><a href="seotemplatelistconfig"><s></s>SEO优化<i></i></a></li>
+				<li><a href="priceconfig.html"><s></s>房价趋势<i></i></a></li>
+				<li><a href="rentpriceconfig.html"><s></s>租金区间<i></i></a></li>
+				<li><a href="totalpriceconfig.html"><s></s>售价区间<i></i></a></li>
+				<li><a href="averagepriceconfig.html"><s></s>均价区间<i></i></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+
+<script> 
+new Vue({
+	el: '#app',
+	data:function (){
+		return {
+			PersonalPublishDayLimit:'', //个人房源发布上限(每日)
+			PersonalPublishTotalLimit:'', //个人房源发布上限(总数)
+			PersonalHouseIsKill:true,//个人房源是否需要审核
+			MenDianPublishDayLimit: '',//普通门店发布房源上限(每日)
+			MenDianPublishTotalLimit:'',//普通门店房源发布上限(总数)
+			MenDianAgentLimit:'',//普通门店经纪人数量上限
+			XuQiuIsKill:true,//求租求购信息是否需要审核
+			PersonalTradeHideInfomation:true,//个人房源成交后是否隐藏房东联系方式
+			DelegateMenDianView:true,//委托房源资料普通门店是否可查看
+			jifenname:'',
+			daijinname:''
+		}
+	},
+	methods:{
+		submitHandle:function(){ // 提交表单
+			var url ='/api/HouseConfig/Update';
+			var that = this;
+			
+			var warn = "";//弹框时提示的内容  
+			var flag = true;//判断信息输入是否完整   
+			if(this.PersonalPublishDayLimit==""){  
+				warn = "个人房源发布上限每天条数不能为空";  
+			} else if (this.PersonalPublishTotalLimit == "") {
+				warn = "个人房源发布上限总条数不能为空";
+			}else if (this.MenDianPublishDayLimit == "") {
+				warn = "普通门店发布房源上限每天条数不能为空";
+			}else if (this.MenDianPublishTotalLimit == "") {
+				warn = "普通门店发布房源上限总条数不能为空";
+			}else if (this.MenDianAgentLimit == "") {
+				warn = "普通门店经纪人数量上限不能为空";
+			}else {
+				flag=false;//若必要信息都填写，则不用弹框， 
+				axios.post(url,{
+					PersonalPublishDayLimit:that.PersonalPublishDayLimit, //个人房源发布上限(每日)
+					PersonalPublishTotalLimit:that.PersonalPublishTotalLimit, //个人房源发布上限(总数)
+					PersonalHouseIsKill:that.PersonalHouseIsKill,//个人房源是否需要审核
+					MenDianPublishDayLimit: that.MenDianPublishDayLimit,//普通门店发布房源上限(每日)
+					MenDianPublishTotalLimit:that.MenDianPublishTotalLimit,//普通门店房源发布上限(总数)
+					MenDianAgentLimit:that.MenDianAgentLimit,//普通门店经纪人数量上限
+					XuQiuIsKill:that.XuQiuIsKill,//求租求购信息是否需要审核
+					PersonalTradeHideInfomation:that.PersonalTradeHideInfomation,//个人房源成交后是否隐藏房东联系方式
+					DelegateMenDianView:that.DelegateMenDianView//委托房源资料普通门店是否可查看
+				}).then(function(res){
+					if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+						MSGwindowShow('house','0','操作失败了！','','');
+						return;
+					}
+					MSGwindowShow('house','0','操作成功了哦！','','');   
+				}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);}); 
+			}; 
+			if(flag==true){ 
+				MSGwindowShow('house','0',warn,'',''); 
+			} 
+		},
+		_getConfig:function(){ // 获取金币代金币名称
+			var that = this;
+			axios.get('/api/SiteConfig/GetConfig').then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				//MSGwindowShow('house','0','操作成功了哦！','',''); 
+				that.jifenname=res.data.jifenname;
+				that.daijinname=res.data.daijinname
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);}); 
+		}
+	},
+	created:function(){
+		var that = this;
+		that._getConfig()
+	},
+}) 
+</script>

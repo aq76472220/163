@@ -1,0 +1,191 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link href="{$Default_tplPath}js/qiniu/pickfiles.css" type="text/css" rel="stylesheet" />
+<script src="{$atplPath}js/CJL.0.1.min.js"></script>
+<script src="{$atplPath}js/ImagePreview.js"></script>
+<script charset="utf-8" src="/kindeditor/kindeditor.js"></script>
+<script charset="utf-8" src="/kindeditor/lang/zh_CN.js"></script>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/jquery.cookie.js"></script>
+<script>
+var siteUrl = '{$SiteUrl}';
+window['SiteUrl'] = '{$SiteUrl}';
+window['Default_tplPath'] = '{$Default_tplPath}';
+var ismouse="0";
+window['logincookieStr'] = $.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+</script>
+<Style>
+#keytishi { width:330px; height:auto;  position:absolute; display:none;} /*提示层样式*/
+</style>
+<form name="form1" method="post" action="?action=AddSave" onsubmit="return checkaddshoulou(this)" enctype="multipart/form-data">
+<input type="hidden" name="gotourl" value="{$gotourl}">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">添加出售房源</th>
+		<th style="text-align:right; padding-right:10px;"><a href="shoulou.aspx" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">编号：</span>
+					<span class="d"><input name="chrlive" value="{$chrlive}" maxlength="11" value="" class="s_ipt" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />　<em class="global_tip">最长11位，只能输入数字</em></span>
+				</li>
+				<li>
+					<span class="a">标题：</span>
+					<span class="d"><input name="chrtitle" value="" class="s_ipt" style="width:500px;" type="text" />　<em class="global_tip">描述生动准确能更快把房子卖出去，限6-30个字</em></span>
+				</li>
+				<li>
+					<span class="a">小区：</span>
+					<span class="d">
+						<input id="CommId" name="CommId" type="hidden"  value="0" />
+						<input type="radio" value="1" checked name="R1">从小区中选择：<input id="xiaoqu" title="请输入小区名称" name="xiaoqu" style="width: 200px;" class="s_ipt" type="text" onkeyup="getKeyWord();" onclick="getKeyWord();" autocomplete="off" onblur='if(ismouse=="0"){document.getElementById("keytishi").style.display = "none";}'>　<em class="global_tip">请输入小区名称,如:上海绿城</em>
+					<div id="keytishi" onmouseover="ismouse='1';" onmouseout="ismouse='0';"><iframe id="listComm" src=""  scrolling="no" width="330" frameborder="0" ></iframe></div>
+					<p style="margin-top:10px;"><input type="radio" value="2" name="R1" onclick='document.getElementById("keytishi").style.display = "none";'>自定小区名称：<input type="text" name="zidingyi" style="width:200px;" class="s_ipt">　<em class="global_tip">提醒：前台将无法提供该小区的详细介绍链接</em></p>
+					</span>
+				</li>
+				<li class="w_auto_select">
+					<span class="a">区域：</span>
+					<span class="d">{$qu_classid}　地址：<input name="chraddress" id="chraddress" value="" class="s_ipt" type="text" /> <a href="#" onclick='set_newimage()' class="global_btn_blue_big">标注地图位置</a>
+            <input type="hidden" id="shop_x" name="shop_x" >
+            <input type="hidden" id="shop_y" name="shop_y" >
+            <input type="hidden" id="shop_z" name="shop_z" >
+			<input type="hidden" id="ggmap" name="ggmap"  value="0"></span>
+				</li>
+				<li>
+					<span class="a">类型：</span>
+					<span class="b">{$leixing}</span>
+					<span class="a">户型：</span>
+					<span class="b"><input name="shi" id="shi" style="width: 25px;"  onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt"> 室 <input name="ting" id="ting" style="width: 25px;" onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt"> 厅 <input name="wei" id="wei" style="width: 25px;" onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt"> 卫</span>
+				</li>
+				<li>
+					<span class="a">面积：</span>
+					<span class="b"><input name="chrsize" value="" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" /> 平米</span>
+					<span class="a">房龄：</span>
+					<span class="b"><input name="fangling" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">装修：</span>
+					<span class="b">{$zhuangxiu}</span>
+					<span class="a">朝向：</span>
+					<span class="b"><input name="chaoxiang" value="" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+				</li>
+				<li>
+					<span class="a">楼层：</span>
+					<span class="d">楼层总高 <input name="zonglou" value="" class="s_ipt" type="text" style="width:100px;" /> 层　本房在 <input name="nowlou" value="" class="s_ipt" type="text" style="width:100px;" /> 层</span>
+				</li>
+				<li>
+					<span class="a">特色：</span>
+					<span class="d"><ul class="i_list_li clearfix">{$teshe}</ul></span>
+				</li>
+				<li>
+					<span class="a">电话：</span>
+					<span class="b"><input name="chrtel" value="" class="s_ipt" type="text" />　<em class="global_tip"></em></span>
+					<span class="a">售价：</span>
+					<span class="b"><input name="price" value="" class="s_ipt" onKeyUp="if(isNaN(value))execCommand('undo')" type="text" /> 万元　<em class="global_tip">不含税 0表示“面议”</em></span>
+				</li>
+				<li>
+					<span class="a">图片：</span>
+					<span class="d">
+		<input type="button" id="J_selectImage" value="批量上传" class="global_btn_blue_big" />　<em class="global_tip">最佳尺寸900x670</em>
+		<div id="J_imageView" class="clearfix"></div>
+		<input id="filewidth" type="hidden" value="900">
+		<input id="fileheight" type="hidden" value="">	
+		<input type="hidden" id="smallfilewidth" value="195">
+		<input type="hidden" id="smallfileheight" value="145">
+		<input name="state" type="hidden" id="ipt_state" />
+		<input name="url0" type="hidden" id="url0" />
+		<input name="filewidth" type="hidden" value="195" data-txt="控制代表图的宽度">
+		<input name="fileheight" type="hidden" value="145" data-txt="控制代表图的高度">
+					</span>
+				</li>
+				<li class="display{$Api_Upload_upstyle_0}">
+					<span class="a">视频：</span>
+					<span class="d">
+						<input type="hidden" value="/upload/uploadfile.ashx?table_id=house&filetype=video&w=1080&h=608&sw=320&sh=180&id=0&action=json" id="uptoken_url" />
+						<input type="hidden" value="{$Api_Upload_upstyle_0}" id="upload_upstyle" />
+						<input type="hidden" value="house" id="table_id" />
+						<div class="imgcon">
+							<div id="container">
+								<a id="pickfiles" class="pickfiles" href="#"><s class="s"></s>上传视频</a>
+							</div>
+							<div class="fsUploadProgress_success" id="success" style="display:none;">
+								队列全部文件处理完毕
+							</div>
+							<div id="fsUploadProgress"><RemoteVideoList tplpath="VideoPlay" tplname="videoPlayList_manage.html" help="内容为空将读取tplpathlname模板"></RemoteVideoList></div>
+						</div>
+					</span>
+				</li>
+				<li>
+					<span class="a">详情：</span>
+					<span class="d"><textarea cols="80" id="chrmark" name="chrmark" rows="10"></textarea>
+<script>
+	KindEditor.ready(function(K) {
+		var editor = K.create('textarea[name="chrmark"]', {
+			uploadJson : '/kindeditor/upload_json.ashx?' + window["logincookieStr"],
+			afterBlur: function(){this.sync();},
+			fileManagerJson : '/kindeditor/file_manager_json.ashx',
+
+			allowFileManager : true,width : '100%',height : '600px'
+		});
+	});
+</script>
+					</span>
+				</li>
+				<li class="geduan">属性设置</li>
+				<li>
+					<span class="a">性质：</span>
+					<span class="d"><input type="radio" name="styleid" checked value="0" >个人 <input type="radio" name="styleid" value="1" > 中介　　赋给经纪人：{$manid}</span>
+				</li>
+				<li>
+					<span class="a">其它：</span>
+					<span class="d"><input type="checkbox" name="indexjingxuan" value="1">首页精选
+            <input type="checkbox" name="jingxuan" value="1">精选房源<em class="global_tip">(应用列表页和经纪人店铺)</em>
+            <input type="checkbox" name="indexjishou" value="1">首页急售
+            <input type="checkbox" name="jishou" value="1">急售房源<em class="global_tip">(应用到列表页)</em></span>
+				</li>
+				<li>
+					<span class="a">排序：</span>
+					<span class="b"><input name="intorder" value="{$intorder}" onKeyUp="if(isNaN(value))execCommand('undo')" class="s_ipt" type="text" />　<em class="global_tip">数字越大越靠前</em></span>
+					<span class="a">点击：</span>
+					<span class="b"><input name="views" value="" class="s_ipt" onKeyUp="value=value.replace(/\D+/g,'')" type="text" />　<em class="global_tip">在该数字基础上累加</em></span>
+				</li>
+				<li>
+					<span class="a">销售：</span>
+					<span class="b"><input type="radio" name="typeid" value="0" checked>出售中　<input type="radio" name="typeid" value="1" >已售出</span>
+					<span class="a">状态：</span>
+					<span class="b"><input type="radio" name="iskill" value="0" >待审　<input type="radio" name="iskill" value="1" checked>通过审核　<input type="radio" name="iskill" value="2" >下线</span>
+				</li>
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" value="确定提交" class="global_btn_blue_big"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+<div id="i_ifm_upload" style="z-index:9; display:none; position:absolute; top:50%; left:50%; margin-left:-340px; width:660px; padding-left:20px; height:50px; background-color:#fff; border:2px solid #36c; border-radius:5px;box-shadow:2px 2px 8px #000;"><a href="#" id="i_ifm_upload_close" style="position:absolute; z-index:10; top:5px; right:5px; display:block; color:#36c;">关闭</a><iframe name="ifm_upload" id="ifm_upload" frameborder=0 width=100% height=50 scrolling=no src="about:blank"></iframe></div>
+<div class="player_h5" id="player_h5" style="display:none;"><a href="javascript:void(0);" class="close">关闭</a><video controls webkit-playsinline playsinline autoplay></video></div>
+<div class="player_mask" id="player_mask"></div>
+<script src="{$Default_tplPath}js/mediaplay_html5.js?{$CacheHash}"></script>
+<script src="{$atplPath}js/upLoadImg2015.js"></script>
+<!-- 七牛 -->
+<script src="{$Default_tplPath}js/qiniu/moxie.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/plupload.min.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/qiniu.min.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/ui.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/main.js?{$CacheHash}"></script>
+<script>
+var table_id = 'house_chuzhu_file';
+var mathState = Math.round(Math.random()*1E16);
+$('#ipt_state').val(mathState);
+if(!!window['logincookieStr']){
+	var imgURL = window['SiteUrl']+"kindeditor/upload_json.ashx?table_id="+table_id+"&filewidth="+$('#filewidth').val()+"&fileheight="+$('#fileheight').val()+"&smallfilewidth="+$('#smallfilewidth').val()+"&smallfileheight="+$('#smallfileheight').val()+"&" + window['logincookieStr'];
+	newPLUploadImg();
+}
+if($('#upload_upstyle').val() === '1'){showHeQiniu($('#uptoken_url').val());}//qiniu
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<link href="{$Default_tplPath}js/qiniu/pickfiles.css" type="text/css" rel="stylesheet" />
+<script>
+window['SiteUrl'] = '{$SiteUrl}';
+window['Default_tplPath'] = '{$Default_tplPath}';
+</script>
+<form name="form1" method="post" action="?action=AddSave" onsubmit="return checkaddxiaoqu(this)" enctype="multipart/form-data">
+<input type="hidden" name="gotourl" value="{$gotourl}">
+<input type="hidden" name="over" value="0">
+<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+	<tr>
+		<th style="text-align:left; padding-left:12px;" colspan="3">添加小区</th>
+		<th style="text-align:right; padding-right:10px;"><a href="xiaoqu.aspx" class="global_btn">返回上一级</a></th>
+	</tr>
+	<tr>
+		<td style="border-bottom:0 none; text-align:left;" colspan="4">
+		<div class="fields_input">
+			<ul class="clearfix">
+				<li>
+					<span class="a">小区名称：</span>
+					<span class="d"><input name="chrloupan" value="" class="s_ipt" type="text" />　　　所属用户名：<input name="userid" value="" onblur="if(this.value!=''){getdata('request.aspx?action=checkloupanuserid&userid='+encMe(this.value),'tishi');}else{tishi.innerHTML='（输入用户名后，此用户可以管理此小区资料）';}" class="s_ipt" type="text" />　<em class="global_tip" id="tishi">（输入用户名后，此用户可以管理此小区资料）</em>
+					</span>
+				</li>
+				<li class="w_auto_select">
+					<span class="a">小区位置：</span>
+					<span class="d">
+{$qu_classid}　　　地址：<input type="text" name="chraddress" id="chraddress" class="s_ipt" value="">
+<a href="#" onclick='set_newimage()' class="global_btn_blue_big">标注地图位置</a>
+<input type="hidden" id="shop_x" name="shop_x" value="" >
+<input type="hidden" id="shop_y" name="shop_y"  value="">
+<input type="hidden" id="shop_z" name="shop_z"  value="">
+<input type="hidden" id="ggmap" name="ggmap"  value="0">
+					</span>
+				</li>
+				<li>
+					<span class="a">小区形象图片：</span>
+					<span class="d">
+						<p class="global_tip">限制50K以内，JPG/GIF，最佳尺寸：400x298</p>
+						<iframe name="ifm_upload" frameborder="0" width="100%" height="45" style="vertical-align:top;" scrolling="no" src="upload.aspx?type=0&action=house"></iframe>
+						<input type="hidden" name="filewidth" value="400">
+						<input type="hidden" name="fileheight" value="298">
+						<input type="hidden" name="smallfilewidth" value="195">
+						<input type="hidden" name="smallfileheight" value="145">
+						<input type=hidden name="url0" id="url0" value="">
+					</span>
+				</li>
+				<li class="display{$Api_Upload_upstyle_0}">
+					<span class="a">小区视频：</span>
+					<span class="d">
+					<input type="hidden" value="/upload/uploadfile.ashx?table_id=xiaoqu&filetype=video&w=1080&h=608&sw=320&sh=180&id=0&action=json" id="uptoken_url" />
+					<input type="hidden" value="{$Api_Upload_upstyle_0}" id="upload_upstyle" />
+					<input type="hidden" value="xiaoqu" id="table_id" />
+					<div class="imgcon">
+						<div id="container">
+							<a id="pickfiles" class="pickfiles" href="#"><s class="s"></s>上传视频</a>
+						</div>
+						<div class="fsUploadProgress_success" id="success" style="display:none;">
+							队列全部文件处理完毕
+						</div>
+						<div id="fsUploadProgress"><RemoteVideoList tplpath="VideoPlay" tplname="videoPlayList_manage.html" help="内容为空将读取tplpathlname模板"></RemoteVideoList></div>
+					</div>
+					</span>
+				</li>
+				<li>
+					<span class="a">小区类型：</span>
+					<span class="d"><ul class="i_list_li clearfix">{$categoryids}</ul></span>
+				</li>
+				<li>
+					<span class="a">建筑类别：</span>
+					<span class="b"><input name="jianzhuleibie" value="" class="s_ipt" type="text" /></span>
+					<span class="a">业主论坛：</span>
+					<span class="b"><input name="yezhu" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">小区形态与栋数：</span>
+					<span class="b"><input name="xingtai"  value="" class="s_ipt" type="text" /></span>
+					<span class="a">建筑年代：</span>
+					<span class="b"><input name="niandai"  value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">总占地面积：</span>
+					<span class="b"><input name="zhangdi"  value="" class="s_ipt" type="text" /> 平方米</span>
+					<span class="a">总建筑面积：</span>
+					<span class="b"><input name="jianzhu"  value="" class="s_ipt" type="text" /> 平方米</span>
+				</li>
+				<li>
+					<span class="a">开发商：</span>
+					<span class="b"><input name="chrsupply" value="" class="s_ipt" type="text" /></span>
+					<span class="a">总户数：</span>
+					<span class="b"><input name="hushu" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">物业公司：</span>
+					<span class="b"><input name="wuyecompany" value="" class="s_ipt" type="text" /></span>
+					<span class="a">物业管理费：</span>
+					<span class="b"><input name="wuyeguanli" value="" class="s_ipt" type="text" /> 平米/月</span>
+				</li>
+				<li>
+					<span class="a">绿化率：</span>
+					<span class="b"><input name="lvhua" value="" class="s_ipt" type="text" /></span>
+					<span class="a">得房率：</span>
+					<span class="b"><input name="defang" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">容积率：</span>
+					<span class="b"><input name="rongji" value="" class="s_ipt" type="text" /></span>
+					<span class="a">车位数：</span>
+					<span class="b"><input name="chewei" value="" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">小区介绍：</span>
+					<span class="d">
+						<textarea name="chrmark" class="s_ipt" style="width:860px; height:240px;"></textarea>
+					</span>
+				</li>
+				<li class="geduan">周边配套、小区配套</li>
+				<li>
+					<span class="a">交通：</span>
+					<span class="d"><input name="jiaotong"  value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">学校：</span>
+					<span class="d"><input name="xuexiao" value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">购物：</span>
+					<span class="d"><input name="gouwu" value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">医院：</span>
+					<span class="d"><input name="yiyuan"  value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">银行：</span>
+					<span class="d"><input name="yinghan" value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">餐饮：</span>
+					<span class="d"><input name="canyin" value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">其他：</span>
+					<span class="d"><input name="qita" value="" style="width:500px;" class="s_ipt" type="text" /></span>
+				</li>
+				<li>
+					<span class="a">周边口碑店铺：</span>
+					<span class="d">
+						<p style="margin-top: 1px; margin-bottom: 1px"><input type="radio" value="0" checked="checked" name="R1">自动调用该区域内口碑值前5位的店铺，如果该区域店铺为0，则随机调用全站口碑店铺</p>
+						<p style="margin-top: 1px; margin-bottom: 1px"><input type="radio" value="1" disabled="true"  name="R1">指定店铺(该功能计划开发中,将在下次升级中提供)</p>
+					</span>
+				</li>
+				<li class="geduan">其他信息</li>
+				<li>
+					<span class="a">二手房均价：</span>
+					<span class="d"><input name="avgprice" value="" onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt" type="text" /> 元/平米　<em class="global_tip">0则表示“不详”</em></span>
+				</li>
+				<li>
+					<span class="a">专家点评：</span>
+					<span class="d">
+						<textarea name="peitao" class="s_ipt" style="width:860px; height:240px;"></textarea>
+					</span>
+				</li>
+				<li class="geduan">属性设置</li>
+				<li>
+					<span class="a">排序：</span>
+					<span class="b"><input name="intorder" value="{$intorder}" class="s_ipt" type="text" onKeyUp="if(isNaN(value))execCommand('undo')" />　<em class="global_tip">数字越大越靠前</em></span>
+					<span class="a">点击：</span>
+					<span class="b"><input name="views" value="1" onKeyUp="value=value.replace(/\D+/g,'')" class="s_ipt" type="text" />　<em class="global_tip">会在该数字基础上累加</em></span>
+					
+				</li>
+				<li>
+					<span class="a">属性：</span>
+					<span class="b"><input type="checkbox" name="tuijian" value="1">推荐 <input type="checkbox" name="rexiao" value="1">热销</span>
+					<span class="a">状态：</span>
+					<span class="b"><input type="radio" name="iskill" value="0">待审 <input type="radio" name="iskill" value="1" checked="checked">通过审核 <input type="radio" name="iskill" value="2">下线</span>
+				</li>
+				<li>
+					<span class="a">&nbsp;</span>
+					<span class="b"><input type="submit" name="Submit" class="global_btn_blue_big" value="继续下一页" onclick="over.value='0';">　<input type="submit" name="Submit"  onclick="over.value='1';" class="global_btn_big" value="直接确定完成"></span>
+				</li>
+			</ul>
+		</div>
+		</td>
+	</tr>
+</table>
+</form>
+<div style="display:none;"><iframe src="about:blank" id="tijiao" name="tijiao" height="0" width="0" scrolling="no" frameborder="no" border="0"></iframe></div>
+<div class="player_h5" id="player_h5" style="display:none;"><a href="javascript:void(0);" class="close">关闭</a><video controls webkit-playsinline playsinline autoplay></video></div>
+<div class="player_mask" id="player_mask"></div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/mediaplay_html5.js?{$CacheHash}"></script>
+<!-- 七牛 -->
+<script src="{$Default_tplPath}js/qiniu/moxie.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/plupload.min.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/qiniu.min.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/ui.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/qiniu/main.js?{$CacheHash}"></script>
+<script>
+if($('#upload_upstyle').val() === '1'){showHeQiniu($('#uptoken_url').val());}//qiniu
+</script>
+</body>
+</html>

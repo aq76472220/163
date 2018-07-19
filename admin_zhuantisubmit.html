@@ -1,0 +1,524 @@
+<link rel="stylesheet" type="text/css" href="{$atplPath}skin/house_pingtai.css" />
+
+<style>
+    .ml0{margin-left: 0px!important;}
+
+    /* 栅格 start */
+    .ss-row:before,
+    .ss-row:after{content: " "; display: table;}
+    .ss-row:after{clear: both;}
+    .ss-col-1{float: left; width: 8.3%}
+    .ss-col-2{float: left; width: 16.6%}
+    .ss-col-3{float: left; width: 25%}
+    .ss-col-4{float: left; width: 33.3%}
+    .ss-col-5{float: left; width: 41.6%}
+    .ss-col-6{float: left; width: 50%}
+    .ss-col-7{float: left; width: 58.3%}
+    .ss-col-8{float: left; width: 66.6%}
+    .ss-col-9{float: left; width: 75%}
+    .ss-col-10{float: left; width: 83.3%}
+    .ss-col-11{float: left; width: 91.6%}
+    .ss-col-12{float: left; width: 100%}
+    /* 栅格 end */
+    .ohidden{overflow: hidden;}
+    .absolute{position: absolute}
+    .relative{position: relative;}
+    .mt30{margin-top: 30px!important}
+    .ml20{margin-left: 20px!important}
+    .mr20{margin-right: 20px!important}
+    .mb20{margin-bottom: 20px!important;}
+    .mr10{margin-right: 10px!important}
+    .mb10{margin-bottom: 10px!important;}
+    .ml0{margin-left: 0px!important;}
+    
+    .checkbox_span{cursor: pointer; left: 10px;top: 50%; margin-top: -6px; width: 13px; height: 13px; background: url('../../AdminSkin/default/images/house/checkbox_span_icon.png') no-repeat center top;}
+    .checkbox_span.on{  background: url('../../AdminSkin/default/images/house/checkbox_span_icon.png') no-repeat center -13px;}
+    .ss-house-box-bot{height: 24px; padding: 8px 40px; background: #eeeeee}
+    .fl{float: left;}
+    .ss-hx-btn{display: inline-block; height: 22px; line-height: 22px; color: #acb8d2; border: 1px solid #acb8d2; padding: 0 10px; border-radius: 3px;}
+    .ss-hx-btn:hover{color: #acb8d2}
+    .ss-house-box-bot .font{height: 22px;line-height: 22px; font-size:14px; color: #666666; padding-right: 10px;}
+    .ss-house-search{padding: 0 10px; padding-right: 40px; border: 1px solid #eeeeee}
+    .ss-house-search input{width: 100%; padding: 10px 0; border: none;}
+    .ss-house-search-btn{height: 40px; width: 40px; right: 0px; top: 0px; background: url('../../AdminSkin/default/images/house/search_btn_icon.png')}
+
+    .ss-house-ul-box{border: 1px solid #eeeeee;}
+    .ss-house-ul{height: 400px; overflow: auto;}
+    .ss-house-ul-item{height: 40px; line-height: 40px;}
+    .ss-house-ul-item h2{font-size: 14px; color: #666; padding: 0px; margin: 0; font-weight: normal; padding: 0 40px; padding-right: 80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .interClass{background: #eaf4fb}
+    .house-r-btn{right: 10px;height: 16px; width: 16px; top: 50%; margin-top: -8px; cursor: pointer; background: url('../../AdminSkin/default/images/house/sort_icon.png') no-repeat center top;}
+    .house-delet-btn{height: 16px;width: 16px; right: 10px; top: 50%; margin-top: -8px;cursor: pointer;background: url('../../AdminSkin/default/images/house/sort_delete_icon.png') no-repeat center center;}
+    .house-t-btn{height: 16px;width: 16px; right: 32px; top: 50%; margin-top: -8px;cursor: pointer;background: url('../../AdminSkin/default/images/house/sort_icon.png') no-repeat center -16px;}
+    .house-b-btn{height: 16px;width: 16px; right: 48px; top: 50%; margin-top: -8px; cursor: pointer;background: url('../../AdminSkin/default/images/house/sort_icon.png') no-repeat center -32px;}
+</style>
+
+<script src="{$Default_tplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$Default_tplPath}js/jquery.cookie.js?{$CacheHash}"></script>
+<script src="{$Default_tplPath}js/purl.js"></script>
+
+<script> 
+
+
+window['apiurl'] = '/api/ZhuanTi/'; //创建资讯信息 
+window['keyvalues'] = { //请求列表参数
+    'ZtId':'', // 专题ID
+	'Chrtitle':'', //标题
+    'Image':'', //封面 默认值('')
+	'Type':'', //枚举。。0 二手房，1 出租房，2商铺
+    'CreateTime':'',//创建时间 专题创建和更新可不传
+	'Content':'',//文宣内容
+    'IsShelf':'',  //发布/未发布 
+    'Intorder':''//排序值 默认值(0)
+};
+
+</script>
+
+<div class="wrapper_house clearfix"  id="app">
+	<div class="col_main">
+        <div class="main_wrap ml0">
+            <div class="inner_sub_box">
+                <div class="hd">创建/编辑房源专题</div> 
+                <form action="">
+                    <ul class="ul-form clearfix">
+
+                        <li>
+                            <div class="txt">专题分类：</div>
+                            <div class="con">   
+                                <input type="hidden" name=" " v-model='Type'>
+                                <label class='open_close2' :class="Type==1? 'on':''" @click='Type=1'>出租房</label>
+                                <label class='open_close2' :class="Type==0? 'on':''" @click='Type=0'>二手房</label>
+                                <label class='open_close2' :class="Type==2? 'on':''" @click='Type=2'>商铺</label>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">专题标题：</div>
+                            <div class="con">
+                                <input type="text"  placeholder="" name="" class="int inp-form-sz inp3 tac" v-model='Chrtitle'>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">封面图片：</div>
+                            <div class="con up_img">
+                                <input type="hidden" name="" v-model="Image" />
+                                <span class="po_re" v-show="Image!=''"><img :src="'../'+Image" /><span class="reup" @click="reupload('Image')">重新上传</span></span>
+                                <span class="" v-show="Image==''"><iframe name="ifm_upload" frameborder="0" width="100%" height="100" scrolling="no" src="/kindeditor/upload_one.aspx?action=5&type=Image&table_id=house&reqfile=upload_bm.aspx" style="vertical-align:top;"></iframe></span>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <div class="txt">文宣：</div>
+                            <div class="con">
+                                <script id="Content" name="Content" type="text/plain" style="width:800px;height:400px;"></script>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="txt">状态：</div>
+                            <div class="con">   
+                                <input type="hidden" name=" " v-model='IsShelf'>
+                                <label class='open_close2' :class="IsShelf ? 'on':''"  @click="IsShelf=true">发布</label>
+                                <label class='open_close2' :class="!IsShelf ? 'on':''" @click="IsShelf=false">暂不发布</label> 
+                            </div>
+                        </li>
+
+ 
+
+                        <li>
+                            <div class="txt">显示排序：</div>
+                            <div class="con">
+                                <input type="number" min="0"  placeholder="" name="" class="int inp-form-sz inp2 tac" v-model='Intorder'>
+                                <span class="zhu1 zhu2">数字越大显示越靠前</span>
+                            </div>
+                        </li> 
+                    </ul> 
+                </form> 
+
+                <!-- 房源信息 -->
+                <div v-show='ZtId'>
+                    <div class="hd mb20 mt30">房源</div> 
+
+                    <div class="mb10 ohidden">
+                        <div class=" ss-col-5">
+                            <div class="ss-house-search relative">
+                                <input type="text" placeholder="输入门店/经济人/房源编号/房源标题" v-model='Keywords' />
+                                <a href="####" class="ss-house-search-btn absolute" @click='_getHouseList()'></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ss-house-box ohidden"> 
+                        <div class="ss-col-5"> 
+                            <div class="ss-house-ul-box relative"> 
+                                <ul class='ss-house-ul'>
+                                    <li class="ss-house-ul-item relative" :class="{ interClass: index%2==0 }" v-for='(item,index) in houseListItems' :key='index'>
+                                        <span class='absolute checkbox_span' @click="selectOne('houseListItems',index)" :class="item.checked?'on':''"></span> 
+                                        <h2>{{item.Chrtitle}}</h2>
+                                        <i class="house-r-btn absolute" @click.prevent='addHouseHandle([item.HouseId],index)'></i>
+                                    </li>
+                                </ul>
+                                
+                                <div class="ss-house-box-bot relative ohidden">
+                                    <span class='absolute checkbox_span' @click="selectAll('houseListItems',1)" :class="isSelectAll_1?'on':''"></span>
+
+                                    <p class="fl font">全选</p>
+                                    <div class="ss-house-box-bot-btn ohidden">
+                                        <a href="javascript:void(0)"   class="ss-hx-btn fl mr10" @click.prevent="piliang('houseListItems','1')">添加到专题</a>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ss-col-7"> 
+                            <div class="ss-house-ul-box relative ml20"> 
+                                <ul class='ss-house-ul'>
+                                    <li class="ss-house-ul-item relative" :class="{ interClass: index%2==0 }" v-for='(item,index) in addHouseListItems' :key='index'>
+                                        <span class='absolute checkbox_span' @click="selectOne('addHouseListItems',index)" :class="item.checked?'on':''"></span>
+                                        <h2>{{item.Chrtitle}}</h2>
+
+                                        <i class="house-t-btn absolute" @click='houseSortHandle(item.HouseId,true,index)' v-show='index!==0'></i>
+                                        <i class="house-b-btn absolute" @click='houseSortHandle(item.HouseId,false,index)' v-show='index!==addHouseListItems.length-1'></i>
+
+                                        <i class="house-delet-btn absolute" @click='deleteHouseHandle([item.HouseId],index)'></i>
+                                    </li>
+                                </ul>
+
+                                <div class="ss-house-box-bot relative ohidden">
+                                    <span class='absolute checkbox_span' @click="selectAll('addHouseListItems',2)" :class="isSelectAll_2?'on':''"></span>
+
+                                    <p class="fl font">全选</p>
+                                    <div class="ss-house-box-bot-btn ohidden">
+                                        <a href="javascript:void(0)"   class="ss-hx-btn fl mr10" @click.prevent="piliang('addHouseListItems','2')">删除</a>
+                                    </div> 
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div> 
+                </div>
+
+                <input type="submit" @click.prevent="submitHandle()" value="确认提交" class="btn-form ani" :class="ZtId?'ml0':''">
+
+            </div>
+        </div>
+    </div> 
+</div>
+
+<script>
+    // 富文本相关
+    window["ueuploadcfg"]={"table_id":'house',"filewidth":"900","filehight1":"180"};
+    window['logincookieStr'] = $.cookie('{$logincookieName}')+'&'+$.cookie('{$adminlogincookieName}')+'&'+$.cookie('{$Codestate}');
+    if(!!window['logincookieStr']){
+        var arr_logincookieStr = window['logincookieStr'].split('&');
+        for(var iii = 0;iii<arr_logincookieStr.length;iii++){
+            window["ueuploadcfg"][arr_logincookieStr[iii].split('=')[0]] = arr_logincookieStr[iii].split('=')[1];
+        }
+    }
+    // 富文本相关
+</script>
+
+<script type="text/javascript" src="/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="/ueditor/ueditor.all.js"></script>
+<script src="{$atplPath}js/vue/axios.min.js"></script>
+<script src="{$atplPath}js/vue/es6-promise.auto.min.js"></script>
+<script src="{$atplPath}js/vue/vue.min.js"></script>
+<script src="{$atplPath}js/vue/houseCategory.js"></script>
+<script src="{$atplPath}js/vue/form_2018.js"></script>
+
+<script>
+
+// 富文本相关
+window['ueConfig']  = {toolbars: [
+	['fullscreen', 'undo', 'redo', '|','bold', 'italic', 'underline','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|','simpleupload', 'insertimage']
+],wordCount:true,maximumWords:1000,autoHeightEnabled:false};
+var ueSize1 = '0';
+ueSize1 === '0'&&(window['ueConfig'].wordCount = false);
+window['ueConfig'].maximumWords = ueSize1;
+// 富文本相关
+
+window['Isfabu'] = true;
+var mypage = new Vue({
+	el: '#app',
+    components: { 
+		'item-select':Item_select
+	},
+	data:function (){
+		return { 
+            isSelectAll_1:false, //批量删除房源全选状态
+            isSelectAll_2:false, //批量删除房源全选状态
+
+            ZtId:'', //专题ID
+            Chrtitle:'', //标题
+            Image:'', //封面 默认值('')
+            Type:'1', //枚举。。0 二手房，1 出租房，2商铺
+            CreateTime:'',//创建时间 专题创建和更新可不传
+            Content:'',//文宣内容
+            IsShelf:true,  //发布/未发布 
+            Intorder:'',//排序值 默认值(0)
+            url_action:'ZhuanTiAdminSubmit',
+
+            Keywords:'',//房源搜索关键字
+
+            houseListItems:'', // 左边房源
+            addHouseListItems:''// 右边房源
+		}
+	},
+	methods:{
+        reupload:function(forname){ // 图片上传
+			var that = this;
+			that[forname]='';
+		},
+        getUEContent: function () { // 富文本框
+			return this.editor.getContent()
+		},
+
+        selectOne:function(Items,index){// 批量选择单个
+			var that = this;
+			Vue.set(that[Items][index],'checked',!that[Items][index].checked);
+		},
+
+        selectAll:function(Items,n){ //批量删除全选
+			var that = this,i=0,len = that[Items].length;
+			that['isSelectAll_'+n] = !that['isSelectAll_'+n];
+			for(;i<len;i++){
+				Vue.set(that[Items][i],'checked',that['isSelectAll_'+n]);
+			}
+		},
+		piliang:function(Items,val){//批量操作
+			var that = this,arr = [],i=0,len = that[Items].length;
+			for(;i<len;i++){
+				if(!that[Items][i].checked){continue;}
+				arr.push(that[Items][i].HouseId);
+			}
+			if(arr.length ===0){
+				MSGwindowShow('house','0','您什么都没有选择哦！','','');
+				return;
+			}
+			if(!window.confirm('您确定执行该操作吗？')){return false;}
+			if(val==='1'){
+				that.addHouseHandle(arr,function(){that['isSelectAll_val'+val] = false;that._getAddHouseList()});
+			}else if(val==='2'){
+                that.deleteHouseHandle(arr,function(){that['isSelectAll_val'+val] = false;that._getAddHouseList()});
+            }
+		},
+        
+        submitHandle:function(){ // 添加或者修改   
+			var that = this,url = window['apiurl']+that.url_action;
+            that.Content = that.getUEContent();
+			if(that.Chrtitle === "") {
+				MSGwindowShow('house','0','请输入文章标题','','');
+			}else{ 
+                
+				var obj =  {
+                    ZtId:that.ZtId,
+                    Chrtitle:that.Chrtitle,
+                    Image:that.Image,
+                    Type:that.Type,
+                    CreateTime:that.CreateTime,   
+                    Content:that.Content,
+                    IsShelf:that.IsShelf,
+                    Intorder:that.Intorder
+                };
+
+				$.ajax({
+					url:url,
+					type:"POST",
+					dataType:"json",
+					contentType:"application/json;charset=utf-8",
+                    data: JSON.stringify(obj),
+					success:function(res){
+						if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+							MSGwindowShow('house','0','操作失败了！','','');
+							return;
+						}
+						MSGwindowShow('house','0','提交成功了哦！','','');
+					},
+					error:function(message){  
+						MSGwindowShow('house','0','操作失败了！','','');
+					}
+				});
+			}
+		}, 
+        addHouseHandle:function(id_arr,callback){// 添加房源
+            var that = this,url = '/api/ZhuanTi/ZhuanTiAdminAddHouse';
+            var obj = {
+                HouseIds:id_arr,
+                ZhuanTiId:that.ZtId
+            }
+
+            $.ajax({
+                url:url,
+                type:"POST",
+                dataType:"json",
+                data: JSON.stringify(obj),
+                contentType:"application/json;charset=utf-8", 
+                success:function(res){
+                    if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+                        MSGwindowShow('house','0','操作失败了！','','');
+                        return;
+                    }
+                    MSGwindowShow('house','0','添加成功了哦！','','');
+                    that._getAddHouseList()
+                    callback&&callback.call(that);
+                    
+                },
+                error:function(message){  
+                    MSGwindowShow('house','0','操作失败了！','','');
+                }
+            });
+        },
+        deleteHouseHandle:function(id_arr,callback){ // 删除 房源
+            var that = this,url = '/api/ZhuanTi/ZhuanTiAdminDeleteHouse'; 
+            var obj = {
+                HouseIds:id_arr,
+                ZhuanTiId:that.ZtId
+            }
+
+			$.ajax({
+                url:url,
+                type:"POST",
+                dataType:"json",
+                data: JSON.stringify(obj),
+                contentType:"application/json;charset=utf-8", 
+                success:function(res){
+                    if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+                        MSGwindowShow('house','0','操作失败了！','','');
+                        return;
+                    } 
+                    MSGwindowShow('house','0','删除成功！','','');
+                    that._getAddHouseList()
+                    callback&&callback.call(that);
+                    
+                },
+                error:function(message){  
+                    MSGwindowShow('house','0','操作失败了！','','');
+                }
+            });
+        },
+        houseSortHandle:function(HouseId,dir,index){ //  房源
+            var that = this,url = "/api/ZhuanTi/ZhuanTiAdminUpdateHouseSort"; 
+            var obj = {
+                ZhuanTiId:that.ZtId,
+                HouseID:HouseId,
+                Direction:dir
+            }
+
+            $.ajax({
+                url:url,
+                type:"POST",
+                dataType:"json",
+                data: JSON.stringify(obj),
+                contentType:"application/json;charset=utf-8", 
+                success:function(res){
+                    if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+                        MSGwindowShow('house','0','操作失败了！','','');
+                        return;
+                    } 
+                    MSGwindowShow('house','0','操作成功！','','');
+                    that._getAddHouseList()
+                },
+                error:function(message){  
+                    MSGwindowShow('house','0','操作失败了！','','');
+                }
+            });
+        },
+        getData:function(){ // 如果是编辑获取资讯内容
+			var that = this,url='';
+			url = '/api/ZhuanTi/GetZhuanTiInfo?zhauntiId='+that.ZtId;
+			axios.get(url).then(function(res){
+				if(typeof res.data.iserror !== 'undefined' && res.data.iserror === 1){
+					MSGwindowShow('house','0','操作失败了！','','');
+					return;
+				}
+				var Data = res.data; 
+				for(var key in Data){
+					that[key] = Data[key];
+				}  
+
+                that.editor = UE.getEditor('Content', window['ueConfig']);
+                that.editor.addListener("ready", function () {
+                    that.editor.setContent(that.Content);
+                }); 
+ 
+			}).catch(function(err){MSGwindowShow('house','0','操作失败了！','','');console.log(err);});
+		},
+        _getAddHouseList:function(){
+            var that = this,url = "/api/ZhuanTi/GetZhuanTiHouseInfos?HouseType="+that.Type+"&ZhuantiId="+that.ZtId;
+             
+			$.ajax({
+                url:url,
+                type:"GET",
+                dataType:"json",
+                contentType:"application/json;charset=utf-8", 
+                success:function(res){
+                    if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+                        MSGwindowShow('house','0','操作失败了！','','');
+                        return;
+                    } 
+                    that.addHouseListItems = res 
+                    //that._getAddHouseList()
+                },
+                error:function(message){  
+                    MSGwindowShow('house','0','操作失败了！','','');
+                }
+            });
+        },
+        _getHouseList:function(){//查询房源 不带分页
+            var that = this,url = "/api/ZhuanTi/GetZhuanTiHouseInfos?HouseType="+that.Type+"&Keywords="+that.Keywords; 
+			$.ajax({
+                url:url,
+                type:"GET",
+                dataType:"json",
+                contentType:"application/json;charset=utf-8", 
+                success:function(res){
+                    if(typeof res.iserror !== 'undefined' && res.iserror === 1){
+                        MSGwindowShow('house','0','操作失败了！','','');
+                        return;
+                    }
+                     
+                    that.houseListItems = res
+                },
+                error:function(message){  
+                    MSGwindowShow('house','0','操作失败了！','','');
+                }
+            });
+        },
+       
+  
+	},
+	created:function(){
+        var that = this;
+        //编辑文章
+        var url_obj = $.url(window.location.href).param(); 
+		if(!!url_obj['ZtId'] && url_obj['ZtId']!==''){
+			window['Isfabu'] = false;
+			that.url_action = 'ZhuanTiAdminUpdate'; 
+            that.ZtId = url_obj['ZtId']
+            that.Type = url_obj['Type']
+
+			that.getData(); 
+            that._getHouseList();
+            that._getAddHouseList(); 
+		}else{
+            that.editor = UE.getEditor('Content', window['ueConfig']);
+            that.editor.addListener("ready", function () {
+                that.editor.setContent(that.Content);
+            });
+        }
+        
+        
+
+        //getHouseCatJSON('1','12','Leixing',setQuyuSel_vue);
+		 
+	},
+})
+
+//上传图片
+function uploadsuccess(sid,surl,num){
+	mypage[num] = surl;
+}
+</script>

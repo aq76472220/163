@@ -1,0 +1,72 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<script src="{$atplPath}js/cookies.js"></script>
+<script language="javascript">
+function del(id)
+{
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？"))
+    {
+	    setCookie("delurl",window.location.href);
+        location.href = "xuqiu.aspx?action=del&ID=" + id
+     }
+}
+function delAll(o,str,astr)
+{
+	if ( confirm("您确定要"+astr+"所有选中的信息吗？"))
+	{
+		setCookie("delurl",window.location.href);
+		document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+	}
+}
+</script>
+<div class="wrapper">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li id="purl" class="{$colname}"><a href="?colname=" data-colname="">全部</a></li>
+			<li id="purl0" class="{$colname0}"><a href="?colname=0" data-colname="0">求租<em>{$num1$}</em></a></li>
+			<li id="purl2" class="{$colname2}"><a href="?colname=2" data-colname="2">求租待审<em>{$num2$}</em></a></li>
+			<li id="purl1" class="{$colname1}"><a href="?colname=1" data-colname="1">求购<em>{$num3$}</em></a></li>
+			<li id="purl3" class="{$colname3}"><a href="?colname=3" data-colname="3">求购待审<em>{$num4$}</em></a></li>
+			<div class="right" style="padding:0;"><a href="?action=add" class="global2_btn_orange global2_btn_add">添加求租求购</a></div>
+		</ul>
+	</div>
+	<form name="form2" id="form2" method="post" action="" style="display:block; padding:5px 0 20px;">
+		<div style="display:none;">按状态查找： <input type="radio" name="colname" id="colname_" value="" {$colname}/> 全部 <input type="radio" id="colname_0" name="colname" value="0" {$colname0}/> 求租<input type="radio" name="colname" id="colname_1" value="1" {$colname1}/> 求购 <input type="radio" name="colname" value="2" id="colname_2" {$colname2}/> 求租待审 <input type="radio" name="colname" value="3" id="colname_3" {$colname3}/> 求购待审</div>
+		按关键字/电话搜索：
+		<input name="KeyWord" type="text"  value="{$keyword}" size="20">　按服务区域显示：{$category} <input type="submit" name="Submit3" id="Submit3" class="global2_btn" style="line-height:26px;" value="确定">
+	</form>
+	
+	<form name="form" id="form" method="post" action="?action=del">
+	<input type="hidden" name="styleid" id="styleid" value="1">
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr>
+			<th>需求编号</th>
+			<th>登记人</th>
+			<th>标题</th>
+			<th>需求区域</th>
+			<th>发布人IP</th>
+			<th>属性</th>
+			<th>发布时间</th>
+			<th>操作</th>
+		</tr>
+		<tag:Loop ListType="listxuqiu" RecType="New" PageSize="50" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_xuqiu_Tr.htm" />
+	</table>
+	<div style="margin-top:10px;">
+		<input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">全选　<a href="javascript:delAll(this,'1','通过审核');" class="global2_btn_blue">通过审核</a> <a href="javascript:delAll(this,2,'等待审核');" class="global2_btn_orange">等待审核</a> <a href="javascript:delAll(this,'3','删除');" class="global2_btn">删除选中</a>
+	</div>
+	</form>
+	<div style="padding:20px 0;">{$PageSplit}</div>
+</div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script>
+jQuery.fn.tab_change_iskill = function(){
+	var t=jQuery(this),list = t.find('a');
+	list.click(function(e){
+		e.preventDefault();
+		jQuery('#colname_'+jQuery(this).attr('data-colname')).trigger('click');
+		jQuery('#Submit3').click();
+	});
+}
+jQuery('#tab_change_iskill').tab_change_iskill();
+</script>
+</body></html>

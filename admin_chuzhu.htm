@@ -1,0 +1,71 @@
+﻿<link rel="stylesheet" type="text/css" href="{$atplPath}skin/admin2013_child.css" />
+<script src="{$atplPath}js/cookies.js"></script>
+<script language="javascript">
+function del(id){
+    if ( confirm("该操作将不可逆！\n您确定要删除吗？")){
+	    setCookie("delurl",window.location.href);
+        location.href = "shoulou.aspx?action=del&ID=" + id
+     }
+}
+function delAll(o,str,astr){
+	if ( confirm("您确定要"+astr+"所有选中的信息吗？")){
+		setCookie("delurl",window.location.href);
+		document.getElementById("styleid").value=str;
+       document.getElementById("form").submit();
+	}
+}
+</script>
+<div class="wrapper">
+	<div class="tab_01" id="tab_change_iskill">
+		<ul class="clearfix">
+			<li id="purl"><a href="?colname=">全部<em>{$total$}</em></a></li>
+			<li id="purl1"><a href="?colname=1">正常<em>{$num2$}</em></a></li>
+			<li id="purl0"><a href="?colname=0">未审<em>{$num1$}</em></a></li>
+			<li id="purl2"><a href="?colname=2">下线<em>{$num3$}</em></a></li>
+			<li id="purl3"><a href="?colname=3">出租中<em>{$num4$}</em></a></li>
+			<li id="purl4"><a href="?colname=4">已租出<em>{$num5$}</em></a></li>
+			<div class="right" style="padding:0;"><a href="?action=add" class="global2_btn_orange global2_btn_add">添加新房源</a></div>
+		</ul>
+	</div>
+	<form name="form2" method="get" action="" style="display:block; padding:5px 0 20px;">
+	<div style="display:none;">按状态查找：<input type="radio" name="colname" value="" {$colname}/>全部　<input type="radio" name="colname" value="0" {$colname0}/>待审　<input type="radio" name="colname" value="1" {$colname1}/>正常　<input type="radio" name="colname" value="2" {$colname2}/>下线　<input type="radio" name="colname" value="3" {$colname3}/>出租中　<input type="radio" name="colname" value="4" {$colname4}/>已租出　</div>
+		按性质：<input type="radio" name="keyword4" id="keyword4_" onclick="this.form.submit();" value="" />全部房源 <input type="radio" name="keyword4" id="keyword4_0" value="0" onclick="this.form.submit();" />个人房源 <input type="radio" name="keyword4" id="keyword4_1" value="1" onclick="this.form.submit();" />中介房源　按区域：{$category}　排序：<input type="radio" name="intorder" value="1" {$intorder1} onclick="this.form.submit();" />发布时间 <input type="radio" name="intorder" value="2" {$intorder2} onclick="this.form.submit();" />刷新时间 <input type="radio" name="intorder" value="0" {$intorder0} onclick="this.form.submit();" />排序值　按标题/发布人/编号/电话：<input name="KeyWord" type="text"  value="{$keyword}" size="15"> <input type="submit" class="global2_btn" style="line-height:26px;" value="确定">
+	</form>
+	<form name="form" id="form" method="post" action="?action=del">
+	<input type="hidden" name="styleid" id="styleid" value="1">
+	<table align="center" cellpadding="2" width="100%" cellspacing="0" class="toptable grid table_style table_style_2017" border="0">
+		<tr>
+			<th>房源编号</th>
+			<th>标题</th>
+			<th>区域</th>
+			<th>出租状态</th>
+			<th>审核状态</th>
+			<th>发布人/单位/性质/昵称</th>	
+			<th>发布时间</th>
+			<th>操作</th>
+		</tr>
+		<tag:Loop ListType="listchuzhu" RecType="New" PageSize="50" ColorSplit="1" TitleLen="55" RecColumn="4" CusTpl="0" Template="house/List_chuzhu_Tr.htm" />
+	</table>
+	<div style="margin-top:10px;">
+		<input name="alldel" type="checkbox" id="alldel" value="on" onclick="Allaction(this.form)">全选　<a href="javascript:delAll(this,'1','出租中');" class="global2_btn_orange">出租中</a> <a href="javascript:delAll(this,'2','已租出');" class="global2_btn_orange">已租出</a> <a href="javascript:delAll(this,'3','审核通过');" class="global2_btn_blue">已审</a> <a href="javascript:delAll(this,'4','等待审核');" class="global2_btn_blue">待审</a> <a href="javascript:delAll(this,'6','刷新房源');" class="global2_btn">刷新房源</a> <a href="javascript:delAll(this,'5','删除');" class="global2_btn">删除</a>
+	</div>
+	</form>
+	<div style="padding:20px 0;">{$PageSplit}</div>
+</div>
+<script src="{$atplPath}js/jquery-1.10.2.min.js"></script>
+<script src="{$atplPath}js/purl.js"></script>
+<script>
+var current_host = window.location;
+var url_obj = $.url(current_host).param();
+if(!!url_obj['colname'] && url_obj['colname'] !== ''){
+	$('#purl'+url_obj['colname']).addClass('cur');
+}else{
+	$('#purl').addClass('cur');
+}
+if(!!url_obj['keyword4'] && url_obj['keyword4'] !== ''){
+	$('#keyword4_'+url_obj['keyword4']).prop('checked',true);
+}else{
+	$('#keyword4_').prop('checked',true);
+}
+</script>
+</body></html>

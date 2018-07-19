@@ -1,0 +1,10 @@
+﻿ <tr align="center" onMouseOver="c=this.style.backgroundColor;this.style.backgroundColor='#f6f6f6'" onMouseOut="this.style.backgroundColor=c;"> 
+	<td><input name="ID" type="checkbox" value="{$ID}"> {$NID}</td>
+	<td><a href="{$fcurl}xiaoqu_{$ID}.html" target="_blank">{$chrloupan}</a></td>
+	<td>{$chrcategory}</td>
+	<td>{$smallcategory}</td>
+	<td>{$chrname}</td>
+	<td>{$iskill}</td>
+	<td>{$dtappenddate}</td>
+	<td><a href="?action=e1&ID={$ID}" class="global2_btn_orange">房型相册</a> <a href="?action=edit&ID={$ID}" class="global2_btn_blue">编辑</a> <a href="javascript:del({$ID});" class="global2_btn">删除</a></td>
+</tr>
